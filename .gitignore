@@ -1,0 +1,16 @@
+# Rubbish files.
+*.swp
+.DS_Store
+*.pyc
+
+# We don't want the world to know our database settings and secret key.
+gdsp/settings_prod.py
+
+# We probably don't need to keep a bunch of test data in SCM.
+db.sqlite
+
+# Our MEDIA_ROOT and STATIC_ROOT directories.
+uploaded_media/*
+!uploaded_media/.gitkeep
+collected_static_files/*
+!collected_static_files/.gitkeep
