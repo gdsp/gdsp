@@ -123,6 +123,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.admin',
     'south',
+    'core',
 )
 
 # In production, make sure that the settings_prod.py file is present
