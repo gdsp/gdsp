@@ -18,5 +18,11 @@ class BaseLessonElement(models.Model):
     def to_html(self):
         raise NotImplementedError
 
+    def __unicode__(self):
+        return self.description
+
 class Lesson(models.Model):
     title = models.CharField(max_length=255)
+
+    def __unicode__(self):
+        return self.title
