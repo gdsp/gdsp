@@ -33,6 +33,9 @@ class MarkdownElement(BaseLessonElement):
     def to_html(self):
         return markdown(self.text)
 
+    class Meta:
+        verbose_name = 'text element'
+
 class Lesson(models.Model):
     title = models.CharField(max_length=255)
 
