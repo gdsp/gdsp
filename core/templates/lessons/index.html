@@ -1,4 +1,10 @@
-{% for element in elements %}
-  {{ element.to_html | safe }}
-  <hr>
-{% endfor %}
+{% extends 'base.html' %}
+
+{% block content %}
+
+    {% for element in elements %}
+      {{ element.to_html | safe }}
+      <hr>
+    {% endfor %}
+
+{% endblock %}
