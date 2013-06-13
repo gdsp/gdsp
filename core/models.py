@@ -1,4 +1,5 @@
 from django.db import models
+from markdown import markdown
 
 class BaseLessonElement(models.Model):
     """
@@ -20,6 +21,17 @@ class BaseLessonElement(models.Model):
 
     def __unicode__(self):
         return self.description
+
+class MarkdownElement(BaseLessonElement):
+    """
+    A lesson element containing text written in the Markdown
+    markup language.
+    """
+
+    text = models.TextField()
+
+    def to_html(self):
+        return markdown(self.text)
 
 class Lesson(models.Model):
     title = models.CharField(max_length=255)
