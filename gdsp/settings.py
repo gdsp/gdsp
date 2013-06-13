@@ -45,10 +45,12 @@ USE_L10N = True
 # If you set this to False, Django will not use timezone-aware datetimes.
 USE_TZ = True
 
+# The root directory of our project; useful for building the paths below.
+PROJECT_DIRECTORY = path.abspath(path.join(path.dirname(__file__), '..'))
+
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/var/www/example.com/media/"
-MEDIA_ROOT = path.abspath(path.join(path.dirname(__file__),
-                                    '../uploaded_media'))
+MEDIA_ROOT = path.join(PROJECT_DIRECTORY, 'uploaded_media')
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
@@ -59,8 +61,7 @@ MEDIA_URL = '/media/'
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/var/www/example.com/static/"
-STATIC_ROOT = path.abspath(path.join(path.dirname(__file__),
-                                     '../collected_static_files'))
+STATIC_ROOT = path.join(PROJECT_DIRECTORY, 'collected_static_files')
 
 # URL prefix for static files.
 # Example: "http://example.com/static/", "http://static.example.com/"
@@ -110,6 +111,7 @@ TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
+    path.join(PROJECT_DIRECTORY, 'templates')
 )
 
 INSTALLED_APPS = (
