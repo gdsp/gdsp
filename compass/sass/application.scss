@@ -41,15 +41,47 @@ div#wrapper {
 
     h1, h2, h3, h4, h5, h6 {
         font-weight: bold;
+        @include trailer;
     }
 
     h1 {
         @include adjust-font-size-to(24px);
-        @include trailer;
     }
 
     p {
         @include leader;
         @include trailer;
+    }
+
+    em {
+        font-style: italic;
+    }
+
+    strong {
+        font-weight: bold;
+    }
+
+    ul li {
+        list-style-type: disc;
+        li { list-style-type: circle; }
+        li li { list-style-type: square; }
+    }
+
+    ol li {
+        list-style-type: decimal;
+        li { list-style-type: lower-alpha; }
+        li li { list-style-type: lower-roman; }
+    }
+
+    li {
+        list-style-position: inside;
+        text-indent: 1.5em;
+        li { text-indent: 3em; }
+        li li { text-indent: 4.5em; }
+
+        p {
+            @include leader(0);
+            @include trailer(0);
+        }
     }
 }
