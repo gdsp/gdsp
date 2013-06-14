@@ -1,5 +1,11 @@
 from django.contrib import admin
 from models import Lesson, MarkdownElement
 
-admin.site.register(Lesson)
+class MarkdownElementInline(admin.StackedInline):
+    model = MarkdownElement
+
+class LessonAdmin(admin.ModelAdmin):
+    inlines = [MarkdownElementInline]
+
+admin.site.register(Lesson, LessonAdmin)
 admin.site.register(MarkdownElement)
