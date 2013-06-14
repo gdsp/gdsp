@@ -1,5 +1,9 @@
 from django.db import models
 from markdown import markdown
+from model_utils.managers import InheritanceManager
+from pygments import highlight
+from pygments.lexers import guess_lexer
+from pygments.formatters import HtmlFormatter
 
 class BaseLessonElement(models.Model):
     """
@@ -15,6 +19,12 @@ class BaseLessonElement(models.Model):
 
     description = models.CharField(max_length=255)
     lesson = models.ForeignKey('Lesson', related_name='elements')
+
+    # model_utils.managers.InheritanceManager allows us to fetch subclass
+    # objects as instances of those subclasses rather than as instances of
+    # BaseLessonElement. This means that the correct to_html() method will be
+    # called in our views.
+    objects = InheritanceManager()
 
     def to_html(self):
         raise NotImplementedError
@@ -35,6 +45,18 @@ class MarkdownElement(BaseLessonElement):
 
     class Meta:
         verbose_name = 'text element'
+
+class CodeElement(BaseLessonElement):
+    """
+    A lesson element containing example code. The returned HTML is produced
+    by Pygments attempting to guess the programming language and add markup
+    for syntax highlighting.
+    """
+
+    code = models.TextField()
+
+    def to_html(self):
+        return highlight(self.code, guess_lexer(self.code), HtmlFormatter())
 
 class Lesson(models.Model):
     title = models.CharField(max_length=255)
