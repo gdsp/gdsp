@@ -2,9 +2,9 @@
 
 ## South database migrations
 
-This project uses [South](http://south.aeracode.org/) migrations for database
-management. South allows you to make changes to the database without dealing
-with raw SQL. The workflow is as follows:
+This project uses [South][south] migrations for database management. South
+allows you to make changes to the database without dealing with raw SQL. The
+workflow is as follows:
 
 1. Make some change to a model which affects the database, e.g. add a field.
 2. Create a migration for this change. If the change was made to a model in the
@@ -20,10 +20,9 @@ with raw SQL. The workflow is as follows:
 
 ## SASS and Compass for stylesheets
 
-The CSS for this project is generated from stylesheets written in
-[SASS](http://sass-lang.com/) using the [Compass](http://compass-style.org/)
-framework. Compass is a Ruby application which can be installed using
-[RubyGems](http://rubygems.org/) by running:
+The CSS for this project is generated from stylesheets written in [SASS][sass]
+using the [Compass][compass] framework. Compass is a Ruby application which can
+be installed using [RubyGems][rubygems] by running:
 
         [sudo] gem install compass
 
@@ -46,17 +45,16 @@ settings in `compass/config.rb`.
 ## Python packages
 
 The Python packages required by this project are listed in the file
-`requirements.txt`. Assuming [pip](http://www.pip-installer.org/) is present,
-these packages can be installed with:
+`requirements.txt`. Assuming [pip][pip] is present, these packages can be
+installed with:
 
         pip install -r requirements.txt
 
-Using a [virtualenv](http://www.virtualenv.org/) environment is a
-good idea, both in development and production, as it allows you to
-maintain several different Python environments on one system, as well
-as install packages without root privileges. When using virtualenv
-with Apache and mod\_wsgi, remember to set the WSGIPythonPath ([see
-this](https://docs.djangoproject.com/en/dev/howto/deployment/wsgi/modwsgi/)).
+Using a [virtualenv][virtualenv] environment is a good idea, both in
+development and production, as it allows you to maintain several different
+Python environments on one system, as well as install packages without root
+privileges. When using virtualenv with Apache and mod\_wsgi, [remember to set
+the WSGIPythonPath][django_docs].
 
 ## Configuration in a production environment
 
@@ -65,3 +63,11 @@ project are kept out of Git. This information, along with other configuration
 variables which differ from development to production, is set in the file
 `gdsp/settings_prod.py`. In production, this file is expected to be present and
 the environment variable `DJANGO_PRODUCTION` is expected to be set.
+
+[south]: http://south.aeracode.org/ "South migration tool"
+[sass]: http://sass-lang.com/ "SASS stylesheet language"
+[compass]: http://compass-style.org/ "Compass framework"
+[rubygems]: http://rubygems.org/ "RubyGems package manager"
+[pip]: http://www.pip-installer.org/ "pip package manager"
+[virtualenv]: http://www.virtualenv.org/ "virtualenv environment manager"
+[django_docs]: https://docs.djangoproject.com/en/dev/howto/deployment/wsgi/modwsgi/#using-a-virtualenv "Django documentation"
