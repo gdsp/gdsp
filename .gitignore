@@ -2,6 +2,7 @@
 *.swp
 .DS_Store
 *.pyc
+.sass-cache/
 
 # We don't want the world to know our database settings and secret key.
 gdsp/settings_prod.py

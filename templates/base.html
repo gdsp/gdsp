@@ -1,10 +1,12 @@
 {% load i18n %}
+{% load staticfiles %}
 
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
     <title>{% block title %}{% endblock %}</title>
+    <link rel='stylesheet' href='{% static "css/application.css" %}'>
   </head>
   <body>
     <nav>
@@ -13,7 +15,11 @@
         <li><a href='#'>{% trans 'Lessons' %}</a></li>
         <li><a href='#'>{% trans 'Other stuff' %}</a></li>
     </nav>
-    {% block content %}
-    {% endblock %}
+    {# for submenus and such #}
+    {% block header %} {% endblock %}
+    <div id='wrapper'>
+      {# the main content of the page #}
+      {% block content %} {% endblock %}
+    </div>
   </body>
 </html>

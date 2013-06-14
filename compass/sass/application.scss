@@ -1,0 +1,46 @@
+@import 'compass/reset';
+@import 'compass/css3';
+@import 'compass/typography';
+
+$base-font-size: 20px;
+$base-line-height: 30px;
+@include establish-baseline;
+
+html, body {
+    font-family: Helvetica, Arial, sans-serif;
+}
+
+nav ul {
+    @include trailer;
+    background-color: lightslategrey;
+    width: 100%;
+
+    li {
+        display: inline;
+        list-style-type: none;
+        margin: 0 2em;
+    }
+
+    a {
+        @include adjust-font-size-to(24px);
+        color: white;
+        text-decoration: none;
+        border-radius: 3px;
+        padding: 0 .5em;
+
+        &:hover {
+            color: lightslategrey;
+            background-color: white;
+        }
+    }
+}
+
+div#wrapper {
+    width: 50%;
+    margin-left: 3em;
+
+    p {
+        @include leader;
+        @include trailer;
+    }
+}
