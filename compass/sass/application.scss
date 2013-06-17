@@ -52,7 +52,6 @@ div#wrapper {
     }
 
     p {
-        @include leader;
         @include trailer;
     }
 
@@ -89,6 +88,7 @@ div#wrapper {
     }
 
     code, div.highlight {
+        @include trailer;
         @include adjust-font-size-to(16px);
         font-family: Monaco, Courier, monospace;
     }
