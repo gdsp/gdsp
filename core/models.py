@@ -58,6 +58,25 @@ class CodeElement(BaseLessonElement):
     def to_html(self):
         return highlight(self.code, guess_lexer(self.code), HtmlFormatter())
 
+class ImageElement(BaseLessonElement):
+    """
+    A lesson element containing an image and, optionally, a caption.
+    The returned HTML wraps the image and caption (if present) in
+    a figure element.
+    """
+
+    caption = models.CharField(max_length=255, blank=True)
+    # The upload_to value is a directory in MEDIA_ROOT
+    image = models.ImageField(upload_to='images')
+
+    def to_html(self):
+        html = u'<figure class="image-element">'
+        html += u'<img src="{}">'.format(self.image.url)
+        if self.caption:
+            html += u'<figcaption>{}</figcaption>'.format(self.caption)
+        html += u'</figure>'
+        return html
+
 class Lesson(models.Model):
     title = models.CharField(max_length=255)
 

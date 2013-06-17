@@ -92,4 +92,17 @@ div#wrapper {
         @include adjust-font-size-to(16px);
         font-family: Monaco, Courier, monospace;
     }
+
+    figure.image-element {
+        @include trailer;
+        text-align: center;
+
+        img {
+            max-width: 100%;
+        }
+
+        figcaption {
+            font-style: italic;
+        }
+    }
 }
