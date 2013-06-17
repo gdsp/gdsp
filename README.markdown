@@ -18,6 +18,9 @@ workflow is as follows:
 
         ./manage.py migrate core
 
+**Note**: You need to run `./manage syncdb` once when you first set up the
+project to prepare the database for South.
+
 ## SASS and Compass for stylesheets
 
 The CSS for this project is generated from stylesheets written in [SASS][sass]
