@@ -5,19 +5,19 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>{% block title %}{% endblock %}</title>
-    <link rel='stylesheet' href='{% static "css/application.css" %}'>
+    <title>{% block title %}gDSP{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/application.css' %}">
   </head>
   <body>
     <nav>
       <ul>
-        <li><a href='#'>{% trans 'Home' %}</a></li>
-        <li><a href='#'>{% trans 'Lessons' %}</a></li>
-        <li><a href='#'>{% trans 'Other stuff' %}</a></li>
+        <li><a href="#">{% trans 'Home' %}</a></li>
+        <li><a href="{% url 'lessons' %}">{% trans 'Lessons' %}</a></li>
+        <li><a href="#">{% trans 'Other stuff' %}</a></li>
     </nav>
     {# for submenus and such #}
     {% block header %} {% endblock %}
-    <div id='wrapper'>
+    <div id="wrapper">
       {# the main content of the page #}
       {% block content %} {% endblock %}
     </div>

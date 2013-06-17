@@ -1,10 +1,18 @@
 {% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{{ block.super }} | {% trans 'Lessons' %}{% endblock %}
 
 {% block content %}
 
-    {% for element in elements %}
-      {{ element.to_html | safe }}
-      <hr>
-    {% endfor %}
+<h1>{% trans 'Lessons' %}</h1>
+
+<ul>
+  {% for lesson in lessons %}
+    <li>
+      <a href="{% url 'lesson' lesson.id %}">{{ lesson.title }}</a>
+    </li>
+  {% endfor %}
+</ul>
 
 {% endblock %}

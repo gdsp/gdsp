@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ block.super }} | {{ lesson.title }}{% endblock %}
+
+{% block content %}
+
+{% for element in elements %}
+  {{ element.to_html | safe }}
+{% endfor %}
+
+{% endblock %}

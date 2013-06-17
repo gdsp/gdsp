@@ -1,7 +1,8 @@
 from django.conf.urls import patterns, include, url
 
-from views import IndexView
+from views import LessonsListView, LessonDetailView
 
 urlpatterns = patterns('',
-    url(r'^$', IndexView.as_view()),
+    url(r'^$', LessonsListView.as_view(), name='lessons'),
+    url(r'^(?P<pk>\d+)', LessonDetailView.as_view(), name='lesson'),
 )
