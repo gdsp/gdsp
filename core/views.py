@@ -1,19 +1,19 @@
 from django.views.generic import ListView, DetailView
 
-from models import Lesson, BaseLessonElement
+from models import Topic, BaseTopicElement
 
-class LessonsListView(ListView):
-    model = Lesson
-    template_name = 'lessons/index.html'
-    queryset = Lesson.objects.all()
-    context_object_name = 'lessons'
+class TopicsListView(ListView):
+    model = Topic
+    template_name = 'topics/index.html'
+    queryset = Topic.objects.all()
+    context_object_name = 'topics'
 
-class LessonDetailView(DetailView):
-    model = Lesson
-    template_name = 'lessons/lesson.html'
-    context_object_name = 'lesson'
+class TopicDetailView(DetailView):
+    model = Topic
+    template_name = 'topics/topic.html'
+    context_object_name = 'topic'
 
     def get_context_data(self, **kwargs):
-        context = super(LessonDetailView, self).get_context_data(**kwargs)
-        context['elements'] = BaseLessonElement.objects.select_subclasses()
+        context = super(TopicDetailView, self).get_context_data(**kwargs)
+        context['elements'] = BaseTopicElement.objects.select_subclasses()
         return context

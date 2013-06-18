@@ -5,12 +5,12 @@ from pygments import highlight
 from pygments.lexers import guess_lexer
 from pygments.formatters import HtmlFormatter
 
-class BaseLessonElement(models.Model):
+class BaseTopicElement(models.Model):
     """
-    A base class for the elements that go into a lesson, such as
-    text, images etc. The description attribute should describe to an
-    administrator putting together a lesson what the subject matter
-    of the element is.
+    A base class for the elements that go into a topic, such as text,
+    images etc. The description attribute should describe to an
+    administrator putting together a topic what the subject matter of
+    the element is.
 
     Inheriting classes must implement a to_html() instance method
     which renders an HTML representation of the element suitable to be
@@ -18,11 +18,11 @@ class BaseLessonElement(models.Model):
     """
 
     description = models.CharField(max_length=255)
-    lesson = models.ForeignKey('Lesson', related_name='elements')
+    topic = models.ForeignKey('Topic', related_name='elements')
 
     # model_utils.managers.InheritanceManager allows us to fetch subclass
     # objects as instances of those subclasses rather than as instances of
-    # BaseLessonElement. This means that the correct to_html() method will be
+    # BaseTopicElement. This means that the correct to_html() method will be
     # called in our views.
     objects = InheritanceManager()
 
@@ -32,9 +32,9 @@ class BaseLessonElement(models.Model):
     def __unicode__(self):
         return self.description
 
-class MarkdownElement(BaseLessonElement):
+class MarkdownElement(BaseTopicElement):
     """
-    A lesson element containing text written in the Markdown
+    A topic element containing text written in the Markdown
     markup language.
     """
 
@@ -46,9 +46,9 @@ class MarkdownElement(BaseLessonElement):
     class Meta:
         verbose_name = 'text element'
 
-class CodeElement(BaseLessonElement):
+class CodeElement(BaseTopicElement):
     """
-    A lesson element containing example code. The returned HTML is produced
+    A topic element containing example code. The returned HTML is produced
     by Pygments attempting to guess the programming language and add markup
     for syntax highlighting.
     """
@@ -58,9 +58,9 @@ class CodeElement(BaseLessonElement):
     def to_html(self):
         return highlight(self.code, guess_lexer(self.code), HtmlFormatter())
 
-class ImageElement(BaseLessonElement):
+class ImageElement(BaseTopicElement):
     """
-    A lesson element containing an image and, optionally, a caption.
+    A topic element containing an image and, optionally, a caption.
     The returned HTML wraps the image and caption (if present) in
     a figure element.
     """
@@ -77,7 +77,7 @@ class ImageElement(BaseLessonElement):
         html += u'</figure>'
         return html
 
-class Lesson(models.Model):
+class Topic(models.Model):
     title = models.CharField(max_length=255)
 
     def __unicode__(self):

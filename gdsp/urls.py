@@ -9,7 +9,7 @@ urlpatterns = patterns('',
     # Examples:
     # url(r'^$', 'gdsp.views.home', name='home'),
 
-    url(r'^lessons/', include('core.urls')),
+    url(r'^topics/', include('core.urls')),
     url(r'^admin/', include(admin.site.urls)),
 )
 

@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{{ block.super }} | {% trans 'Topics' %}{% endblock %}
+
+{% block content %}
+
+<h1>{% trans 'Topics' %}</h1>
+
+<ul>
+  {% for topic in topics %}
+    <li>
+      <a href="{% url 'topic' topic.id %}">{{ topic.title }}</a>
+    </li>
+  {% endfor %}
+</ul>
+
+{% endblock %}
