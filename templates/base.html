@@ -7,6 +7,7 @@
     <meta charset="utf-8">
     <title>{% block title %}gDSP{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'css/application.css' %}">
+    {% block head %} {% endblock %}  {# for including JS, CSS etc. #}
   </head>
   <body>
     <nav>
@@ -15,11 +16,9 @@
         <li><a href="{% url 'topics' %}">{% trans 'Topics' %}</a></li>
         <li><a href="#">{% trans 'Other stuff' %}</a></li>
     </nav>
-    {# for submenus and such #}
-    {% block header %} {% endblock %}
+    {% block header %} {% endblock %}  {# for submenus and such #}
     <div id="wrapper">
-      {# the main content of the page #}
-      {% block content %} {% endblock %}
+      {% block content %} {% endblock %}  {# the main content of the page #}
     </div>
   </body>
 </html>

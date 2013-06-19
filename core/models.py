@@ -17,7 +17,10 @@ class BaseTopicElement(models.Model):
     included as part of a web page.
     """
 
-    description = models.CharField(max_length=255)
+    description = models.CharField(
+            max_length=255,
+            help_text='What does this element contain?',
+    )
     topic = models.ForeignKey('Topic', related_name='elements')
 
     # model_utils.managers.InheritanceManager allows us to fetch subclass
@@ -48,9 +51,9 @@ class MarkdownElement(BaseTopicElement):
 
 class CodeElement(BaseTopicElement):
     """
-    A topic element containing example code. The returned HTML is produced
-    by Pygments attempting to guess the programming language and add markup
-    for syntax highlighting.
+    A topic element containing example code. Its HTML representation is
+    produced by Pygments attempting to guess the programming language and
+    add markup for syntax highlighting.
     """
 
     code = models.TextField()
@@ -61,12 +64,11 @@ class CodeElement(BaseTopicElement):
 class ImageElement(BaseTopicElement):
     """
     A topic element containing an image and, optionally, a caption.
-    The returned HTML wraps the image and caption (if present) in
-    a figure element.
+    Its  HTML representation wraps the image and caption (if present)
+    in a figure element.
     """
 
     caption = models.CharField(max_length=255, blank=True)
-    # The upload_to value is a directory in MEDIA_ROOT
     image = models.ImageField(upload_to='images')
 
     def to_html(self):
@@ -76,6 +78,26 @@ class ImageElement(BaseTopicElement):
             html += u'<figcaption>{}</figcaption>'.format(self.caption)
         html += u'</figure>'
         return html
+
+class AudioElement(BaseTopicElement):
+    """
+    A topic element containing an audio file and a title. Its HTML
+    representation is a link which, if all goes well, plays / stops
+    the audio when clicked; if a problem occurs, it falls back to
+    being a regular link allowing the student to download the file.
+    """
+
+    title = models.CharField(
+            max_length=128,
+            help_text='The title of the track as displayed to the student.',
+    )
+    file = models.FileField(upload_to='audio')
+
+    def to_html(self):
+        return u'<a class="sm2_link" href="{url}">{title}</a>'.format(
+                url=self.file.url,
+                title=self.title,
+        )
 
 class Topic(models.Model):
     title = models.CharField(max_length=255)
