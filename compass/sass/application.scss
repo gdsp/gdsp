@@ -80,6 +80,10 @@ div#wrapper {
         font-weight: bold;
     }
 
+    ul, ol {
+        @include trailer;
+    }
+
     ul li {
         list-style-type: disc;
         li { list-style-type: circle; }
