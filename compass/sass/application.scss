@@ -9,13 +9,20 @@ $base-font-size: 20px;
 $base-line-height: 30px;
 @include establish-baseline;
 
+$bg-color: white;
+$fg-color: rgb(3, 1, 4);
+$light-accent-color: #DDD;
+$dark-accent-color: slategray;
+
 html, body {
     font-family: Helvetica, Arial, sans-serif;
+    color: $fg-color;
+    background-color: $bg-color;
 }
 
 nav ul {
     @include trailer;
-    background-color: lightslategrey;
+    background-color: $dark-accent-color;
     width: 100%;
 
     li {
@@ -26,14 +33,14 @@ nav ul {
 
     a {
         @include adjust-font-size-to(24px);
-        color: white;
+        color: $bg-color;
         text-decoration: none;
         border-radius: 3px;
         padding: 0 .5em;
 
         &:hover {
-            color: lightslategrey;
-            background-color: white;
+            color: $dark-accent-color;
+            background-color: $bg-color;
         }
     }
 }
@@ -53,6 +60,16 @@ div#wrapper {
 
     p {
         @include trailer;
+    }
+
+    a {
+        color: $fg-color;
+        text-decoration: none;
+        border-bottom: 2px dotted $fg-color;
+
+        &:hover {
+            background-color: $light-accent-color;
+        }
     }
 
     em {
@@ -103,6 +120,28 @@ div#wrapper {
 
         figcaption {
             font-style: italic;
+        }
+    }
+
+    a.audio-element {
+        display: block;
+        @include trailer;
+        @include border-radius(5px);
+        padding: $base-half-leader 0 $base-half-leader 3em;
+        background-color: $light-accent-color;
+        background-repeat: no-repeat;
+        background-position: 0.3em 50%;
+
+        &:hover {
+            background-color: darken($light-accent-color, 3%);
+        }
+
+        &.sm2_link, &.sm2_paused {
+            background-image: image-url('play.png');
+        }
+
+        &.sm2_playing {
+            background-image: image-url('pause.png');
         }
     }
 }

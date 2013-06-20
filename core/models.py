@@ -94,7 +94,7 @@ class AudioElement(BaseTopicElement):
     file = models.FileField(upload_to='audio')
 
     def to_html(self):
-        return u'<a class="sm2_link" href="{url}">{title}</a>'.format(
+        return u'<a class="audio-element" href="{url}">{title}</a>'.format(
                 url=self.file.url,
                 title=self.title,
         )
