@@ -32,8 +32,8 @@ be installed using [RubyGems][rubygems] by running:
 (At the time of writing, this will install `compass-0.12.2` and its dependencies
 `sass`, `chunky_png` and `fssm`.)
 
-To have Compass pick up on changes to SASS files when they're saved, `cd` into the
-`compass` directory and run:
+To have Compass pick up on changes to SASS files when they're saved, navigate
+into the `compass` directory and run:
 
         compass watch
 
@@ -53,6 +53,10 @@ installed with:
 
         pip install -r requirements.txt
 
+The file `requirements_dev.txt` includes all of `requirements.txt` as well as
+packages that should only be installed in a development environment. It can be
+passed to `pip install` in the same way as `requirements.txt`.
+
 Using a [virtualenv][virtualenv] environment is a good idea, both in
 development and production, as it allows you to maintain several different
 Python environments on one system, as well as install packages without root
@@ -61,11 +65,11 @@ the WSGIPythonPath][django_docs].
 
 ## Configuration in a production environment
 
-For security reasons, the database configuration and SECRET\_KEY of the
+For security reasons, the database configuration and `SECRET_KEY` of the
 project are kept out of Git. This information, along with other configuration
 variables which differ from development to production, is set in the file
-`gdsp/settings_prod.py`. In production, this file is expected to be present and
-the environment variable `DJANGO_PRODUCTION` is expected to be set.
+`gdsp/settings_prod.py`. In production, this file needs to be present and the
+environment variable `DJANGO_PRODUCTION` needs to be set.
 
 [south]: http://south.aeracode.org/ "South migration tool"
 [sass]: http://sass-lang.com/ "SASS stylesheet language"

@@ -97,8 +97,6 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    # Uncomment the next line for simple clickjacking protection:
-    # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
 ROOT_URLCONF = 'gdsp.urls'
@@ -122,6 +120,16 @@ INSTALLED_APPS = (
     'south',
     'core',
 )
+
+# Enable the Django Debug Toolbar in development
+if not environ.get('DJANGO_PRODUCTION', None):
+    MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + (
+            'debug_toolbar.middleware.DebugToolbarMiddleware',
+    )
+    INSTALLED_APPS = INSTALLED_APPS + (
+            'debug_toolbar',
+    )
+    INTERNAL_IPS = ('127.0.0.1',)
 
 # In production, make sure that the settings_prod.py file is present
 # and that the DJANGO_PRODUCTION environment variable is set.
