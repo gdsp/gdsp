@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.urlresolvers import reverse
 from markdown import markdown
 from model_utils.managers import InheritanceManager
 from pygments import highlight
@@ -109,6 +110,9 @@ class AudioElement(BaseTopicElement):
 
 class Topic(models.Model):
     title = models.CharField(max_length=255)
+
+    def get_absolute_url(self):
+        return reverse('core:topic', kwargs={'pk': self.id})
 
     def __unicode__(self):
         return self.title
