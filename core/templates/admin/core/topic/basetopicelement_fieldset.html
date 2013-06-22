@@ -1,0 +1,35 @@
+{# Modified version of admin/templates/admin/includes/fieldset.html #}
+
+<fieldset class="module aligned {{ fieldset.classes }}">
+
+  {% for line in fieldset %}
+    <div class="form-row{% for field in line %}{% if field.field.name %} field-{{ field.field.name }}{% endif %}{% endfor %}">
+      {% if line.fields|length_is:'1' %}{{ line.errors }}{% endif %}
+      {% for field in line %}
+        <div{% if not line.fields|length_is:'1' %} class="field-box{% if field.field.name %} field-{{ field.field.name }}{% endif %}{% if not field.is_readonly and field.errors %} errors{% endif %}"{% endif %}>
+          {% if not line.fields|length_is:'1' and not field.is_readonly %}{{ field.errors }}{% endif %}
+          {% if field.is_checkbox %}
+            {{ field.field }}{{ field.label_tag }}
+          {% else %}
+            {{ field.label_tag }}
+            {% if field.is_readonly %}
+              <p>{{ field.contents|linebreaksbr }}</p>
+            {% else %}
+              {{ field.field }}
+            {% endif %}
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  {% endfor %}
+
+  <div class="topicelement-order">
+    {% if inline_admin_form.formset.can_order %}
+      <div class="form-row">
+        {{ inline_admin_form.ordering_field.label_tag }}
+        {{ inline_admin_form.ordering_field.field }}
+      </div>
+    {% endif %}
+  </div>
+
+</fieldset>

@@ -1,0 +1,49 @@
+{# Modified version of admin/templates/admin/edit_inline/stacked.html #}
+
+{% load i18n admin_static %}
+
+<div class="inline-group" id="{{ inline_admin_formset.formset.prefix }}-group">
+  <h2>{% trans 'Topic Element Display Order' %}</h2>
+
+  {{ inline_admin_formset.formset.management_form }}
+  {{ inline_admin_formset.formset.non_form_errors }}
+
+  {% for inline_admin_form in inline_admin_formset %}
+    <div class="inline-related{% if forloop.last %} empty-form last-related{% endif %}" id="{{ inline_admin_formset.formset.prefix }}-{% if not forloop.last %}{{ forloop.counter0 }}{% else %}empty{% endif %}">
+
+      {% if inline_admin_form.form.non_field_errors %}
+        {{ inline_admin_form.form.non_field_errors }}
+      {% endif %}
+
+      {% for fieldset in inline_admin_form %}
+        {% include "admin/core/topic/basetopicelement_fieldset.html" %}
+        <hr>
+      {% endfor %}
+
+      {% if inline_admin_form.has_auto_field %}
+        {{ inline_admin_form.pk_field.field }}
+      {% endif %}
+
+      {{ inline_admin_form.fk_field.field }}
+    </div>
+  {% endfor %}
+</div>
+
+<script type="text/javascript">
+(function($) {
+  $("#{{ inline_admin_formset.formset.prefix }}-group .inline-related").stackedFormset({
+    prefix: '{{ inline_admin_formset.formset.prefix }}',
+    adminStaticPrefix: '{% static "admin/" %}',
+    deleteText: "{% trans "Remove" %}",
+    addText: "{% blocktrans with verbose_name=inline_admin_formset.opts.verbose_name|title %}Add another {{ verbose_name }}{% endblocktrans %}"
+  });
+})(django.jQuery);
+</script>
+
+{% comment %}
+<script type="text/javascript">
+  (function($) {
+    $("div.topicelement-order").hide();
+  })(django.jQuery);
+</script>
+{% endcomment %}

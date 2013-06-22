@@ -35,26 +35,9 @@ class BaseTopicElement(models.Model):
     def __unicode__(self):
         return self.description
 
-    def move_up(self):
-        """Move the element up on the page (decrease its '_order' field)."""
-        order = self.topic.get_basetopicelement_order()
-        pos = order.index(self.id)
-        if pos == 0 or len(order) < 2:
-            return
-        order[pos], order[pos-1] = order[pos-1], order[pos]
-        self.topic.set_basetopicelement_order(order)
-
-    def move_down(self):
-        """Move the element down on the page (increase its '_order' field)."""
-        order = self.topic.get_basetopicelement_order()
-        pos = order.index(self.id)
-        if pos == len(order)-1 or len(order) < 2:
-            return
-        order[pos], order[pos+1] = order[pos+1], order[pos]
-        self.topic.set_basetopicelement_order(order)
-
     class Meta:
         order_with_respect_to = 'topic'
+
 
 class MarkdownElement(BaseTopicElement):
     """

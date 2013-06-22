@@ -130,6 +130,9 @@ if not environ.get('DJANGO_PRODUCTION', None):
             'debug_toolbar',
     )
     INTERNAL_IPS = ('127.0.0.1',)
+    DEBUG_TOOLBAR_CONFIG = {
+            'INTERCEPT_REDIRECTS': False,
+    }
 
 # In production, make sure that the settings_prod.py file is present
 # and that the DJANGO_PRODUCTION environment variable is set.
