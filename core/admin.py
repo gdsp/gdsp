@@ -61,7 +61,3 @@ class TopicAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Topic, TopicAdmin)
-admin.site.register(MarkdownElement)
-admin.site.register(CodeElement)
-admin.site.register(ImageElement)
-admin.site.register(AudioElement)

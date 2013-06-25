@@ -2,6 +2,8 @@ from django.db import models
 from django.core.urlresolvers import reverse
 from markdown import markdown
 from model_utils.managers import InheritanceManager
+from taggit.managers import TaggableManager, _TaggableManager
+from taggit.models import TagBase, GenericTaggedItemBase
 from pygments import highlight
 from pygments.lexers import guess_lexer
 from pygments.formatters import HtmlFormatter
@@ -108,8 +110,71 @@ class AudioElement(BaseTopicElement):
         )
 
 
+class LowerCaseTag(TagBase):
+    """
+    A django-taggit tag which forces the tag name to be lower-case in order to
+    avoid having two separate tags named, say, 'time-based' and 'Time-based'.
+    """
+
+    def save(self, *args, **kwargs):
+        self.name = self.name.lower()
+        super(LowerCaseTag, self).save(*args, **kwargs)
+
+
+class LowerCaseTaggedItem(GenericTaggedItemBase):
+    """
+    An intermediary model which enables case-insensitive (forced lower-case)
+    tags with django-taggit.
+
+    See: http://django-taggit.readthedocs.org/en/latest/custom_tagging.html
+    """
+
+    tag = models.ForeignKey(LowerCaseTag, related_name='tagged_items')
+
+
+# The add() method defined in django-taggit's _TaggableManager causes an
+# infinite loop when an existing tag is 'added' again with a different
+# combination of upper and lower case letters. Because the logic that looks
+# for existing tags is in add() case-sensitive, whereas LowerCaseTag's save()
+# method is not, the same tag is always considered new causing a World of Hurt.
+#
+# Monkey patching our Topic's tag manager proved to be infeasible, hence
+# the two Manager classes below. The only difference from the original
+# django-taggit code is that the tags in add() are all lower-cased, and that
+# _TaggableManager is replaced with _LowerCaseTaggableManager in __get__().
+
+class _LowerCaseTaggableManager(_TaggableManager):
+    def add(self, *tags):
+        tags = [tag.lower() for tag in tags]
+        super(_LowerCaseTaggableManager, self).add(*tags)
+
+
+class LowerCaseTaggableManager(TaggableManager):
+    def __get__(self, instance, model):
+        if instance is not None and instance.pk is None:
+            raise ValueError(
+                    '{} objects need to have a primary key value before ' \
+                    'you can access their tags.'.format(model.__name__)
+            )
+        manager = _LowerCaseTaggableManager(through=self.through, model=model,
+                                            instance=instance)
+        return manager
+
+
 class Topic(models.Model):
+    """
+    A topic is an ordered collection of topic elements relished with a title
+    and a collection of tags. It constitutes one web page of content and part
+    of a lesson.
+    """
+
     title = models.CharField(max_length=255)
+    tags = LowerCaseTaggableManager(
+            through=LowerCaseTaggedItem,
+            help_text='A comma-separated list of keywords that describe ' \
+                      'this topic.',
+            blank=True,
+    )
 
     def get_absolute_url(self):
         return reverse('core:topic', kwargs={'pk': self.id})
