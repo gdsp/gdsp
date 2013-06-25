@@ -2,6 +2,23 @@
 
 {% load i18n admin_static %}
 
+<style type="text/css">
+  img.up, img.down {
+    width: 16px;
+    height: 16px;
+  }
+  div.js-ordering {
+    float: left;
+    margin-right: 1em;
+    display: none;
+  }
+  span.element-type {
+    margin-left: 1em;
+    font-style: italic;
+  }
+</style>
+
+
 <div class="inline-group" id="{{ inline_admin_formset.formset.prefix }}-group">
   <h2>{% trans 'Topic Element Display Order' %}</h2>
 
@@ -40,10 +57,44 @@
 })(django.jQuery);
 </script>
 
-{% comment %}
 <script type="text/javascript">
-  (function($) {
+(function($) {
+    // Replace the text input fields with images and JavaScript
     $("div.topicelement-order").hide();
-  })(django.jQuery);
+    $("div.js-ordering").show();
+
+    // #elements-group is the first div.inline-group, i.e. the list of
+    // BaseTopicElement objects that we want to order
+    $("div#elements-group div.inline-related").delegate(
+            ".up, .down", "click", function() {
+
+        var $current_element = $(this).closest("div.inline-related"),
+            $previous_element = $current_element.prev(),
+            $next_element = $current_element.next(),
+            ordinal = "div.topicelement-order input";
+
+        if ($(this).hasClass("up")) {
+            if (!$previous_element)
+                return;
+            var current_ordinal = parseInt($current_element.find(ordinal)
+                                                           .val());
+            var previous_ordinal = parseInt($previous_element.find(ordinal)
+                                                             .val());
+            if (isNaN(previous_ordinal))  // handle a mystery bug; JS <3
+                return;
+            $current_element.find(ordinal).val(previous_ordinal);
+            $previous_element.find(ordinal).val(current_ordinal);
+            $current_element.insertBefore($previous_element);
+        } else if ($(this).hasClass("down")) {
+            if (!$next_element || $next_element.hasClass("empty-form"))
+                return;
+            var current_ordinal = parseInt($current_element.find(ordinal)
+                                                           .val());
+            var next_ordinal = parseInt($next_element.find(ordinal).val());
+            $current_element.find(ordinal).val(next_ordinal);
+            $next_element.find(ordinal).val(current_ordinal);
+            $current_element.insertAfter($next_element);
+        }
+    });
+ })(django.jQuery);
 </script>
-{% endcomment %}

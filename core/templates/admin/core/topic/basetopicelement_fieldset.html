@@ -1,35 +1,51 @@
 {# Modified version of admin/templates/admin/includes/fieldset.html #}
+{% load staticfiles %}
 
 <fieldset class="module aligned {{ fieldset.classes }}">
 
   {% for line in fieldset %}
-    <div class="form-row{% for field in line %}{% if field.field.name %} field-{{ field.field.name }}{% endif %}{% endfor %}">
+    <div class="form-row field-description">
       {% if line.fields|length_is:'1' %}{{ line.errors }}{% endif %}
       {% for field in line %}
         <div{% if not line.fields|length_is:'1' %} class="field-box{% if field.field.name %} field-{{ field.field.name }}{% endif %}{% if not field.is_readonly and field.errors %} errors{% endif %}"{% endif %}>
-          {% if not line.fields|length_is:'1' and not field.is_readonly %}{{ field.errors }}{% endif %}
-          {% if field.is_checkbox %}
-            {{ field.field }}{{ field.label_tag }}
-          {% else %}
-            {{ field.label_tag }}
-            {% if field.is_readonly %}
-              <p>{{ field.contents|linebreaksbr }}</p>
-            {% else %}
-              {{ field.field }}
-            {% endif %}
+          {% if not line.fields|length_is:'1' and not field.is_readonly %}
+            {{ field.errors }}
           {% endif %}
+
+          {{ field.contents }}
+
+          <span class="element-type">
+            {% comment %}
+              I couldn't find an elegant way of doing this given Django's
+              somewhat restrictive idea of inheritance and polymorphism.
+            {% endcomment %}
+            {% if inline_admin_form.original.audioelement %}
+              (audio)
+            {% endif %}
+            {% if inline_admin_form.original.codeelement %}
+              (code)
+            {% endif %}
+            {% if inline_admin_form.original.imageelement %}
+              (image)
+            {% endif %}
+            {% if inline_admin_form.original.markdownelement %}
+              (text)
+            {% endif %}
+          </span>
+
+          <div class="topicelement-order">
+            {{ inline_admin_form.ordering_field.label_tag }}
+            {{ inline_admin_form.ordering_field.field }}
+          </div>
+
+          <div class="js-ordering">
+            <img class="up" src="{% static 'images/up.png' %}">
+            <img class="down" src="{% static 'images/down.png' %}">
+          </div>
         </div>
       {% endfor %}
     </div>
   {% endfor %}
 
-  <div class="topicelement-order">
-    {% if inline_admin_form.formset.can_order %}
-      <div class="form-row">
-        {{ inline_admin_form.ordering_field.label_tag }}
-        {{ inline_admin_form.ordering_field.field }}
-      </div>
-    {% endif %}
-  </div>
 
 </fieldset>
