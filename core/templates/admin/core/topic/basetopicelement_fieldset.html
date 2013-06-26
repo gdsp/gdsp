@@ -15,22 +15,7 @@
           {{ field.contents }}
 
           <span class="element-type">
-            {% comment %}
-              I couldn't find an elegant way of doing this given Django's
-              somewhat restrictive idea of inheritance and polymorphism.
-            {% endcomment %}
-            {% if inline_admin_form.original.audioelement %}
-              (audio)
-            {% endif %}
-            {% if inline_admin_form.original.codeelement %}
-              (code)
-            {% endif %}
-            {% if inline_admin_form.original.imageelement %}
-              (image)
-            {% endif %}
-            {% if inline_admin_form.original.markdownelement %}
-              (text)
-            {% endif %}
+            ({{ inline_admin_form.original.element_type }})
           </span>
 
           <div class="topicelement-order">

@@ -8,6 +8,11 @@ from pygments import highlight
 from pygments.lexers import guess_lexer
 from pygments.formatters import HtmlFormatter
 
+# LowerCaseTaggableManager needs to be ignored by South; it inherits from
+# django-taggit's TaggableManager which is already ignored by default.
+from south.modelsinspector import add_ignored_fields
+add_ignored_fields(['^core\.models\.LowerCaseTaggableManager'])
+
 class BaseTopicElement(models.Model):
     """
     A base class for the elements that go into a topic, such as text,
@@ -25,6 +30,13 @@ class BaseTopicElement(models.Model):
             help_text='What does this element contain?',
     )
     topic = models.ForeignKey('Topic', related_name='elements')
+    # The element_type is set in the save() method of the subclass, and will
+    # be the same for all elements of a given type. This reduces the number of
+    # database queries needed to determine a BaseTopicElement's actual type
+    # when compared to iterating over the possible subclasses and looking for
+    # an attribute of that name. It is, of course, data duplication, but the
+    # speed-up is worth it.
+    element_type = models.CharField(max_length=16, blank=False, editable=False)
 
     # model_utils.managers.InheritanceManager allows us to fetch subclass
     # objects as instances of those subclasses rather than as instances of
@@ -50,6 +62,11 @@ class MarkdownElement(BaseTopicElement):
 
     text = models.TextField()
 
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            self.element_type = 'text'
+        super(MarkdownElement, self).save(*args, **kwargs)
+
     def to_html(self):
         return markdown(self.text)
 
@@ -66,6 +83,11 @@ class CodeElement(BaseTopicElement):
 
     code = models.TextField()
 
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            self.element_type = 'code'
+        super(CodeElement, self).save(*args, **kwargs)
+
     def to_html(self):
         return highlight(self.code, guess_lexer(self.code), HtmlFormatter())
 
@@ -79,6 +101,11 @@ class ImageElement(BaseTopicElement):
 
     caption = models.CharField(max_length=255, blank=True)
     image = models.ImageField(upload_to='images')
+
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            self.element_type = 'image'
+        super(ImageElement, self).save(*args, **kwargs)
 
     def to_html(self):
         html = u'<figure class="image-element">'
@@ -102,6 +129,11 @@ class AudioElement(BaseTopicElement):
             help_text='The title of the track as displayed to the student.',
     )
     file = models.FileField(upload_to='audio')
+
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            self.element_type = 'audio'
+        super(AudioElement, self).save(*args, **kwargs)
 
     def to_html(self):
         return u'<a class="audio-element" href="{url}">{title}</a>'.format(
