@@ -18,6 +18,11 @@ workflow is as follows:
 
         ./manage.py migrate core
 
+   To run the migrations for all installed apps, including third party ones
+   such as `taggit`, simply run:
+
+        ./manage.py migrate
+
 **Note**: You need to run `./manage syncdb` once when you first set up the
 project to prepare the database for South.
 
