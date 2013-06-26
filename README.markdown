@@ -59,8 +59,10 @@ installed with:
         pip install -r requirements.txt
 
 The file `requirements_dev.txt` includes all of `requirements.txt` as well as
-packages that should only be installed in a development environment. It can be
-passed to `pip install` in the same way as `requirements.txt`.
+packages that should only be installed in a development environment. Similarly,
+`requirements_prod.txt` includes packages only needed in a production
+environment. Both of these can be passed to `pip install` in the same way as
+`requirements.txt`.
 
 Using a [virtualenv][virtualenv] environment is a good idea, both in
 development and production, as it allows you to maintain several different
