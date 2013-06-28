@@ -1,7 +1,15 @@
 {% extends "admin/base.html" %}
-{% load i18n %}
+{% load i18n staticfiles %}
 
 {% block title %}{{ title }} | {% trans 'gDSP site admin' %}{% endblock %}
+
+{% block extrahead %}
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+<link rel="stylesheet" type="text/css"
+      href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/ui-lightness/jquery-ui.min.css">
+<script src="{% static 'javascript/application.js' %}"></script>
+{% endblock %}
 
 {% block branding %}
 <h1 id="site-name">{% trans 'gDSP Master Control' %}</h1>

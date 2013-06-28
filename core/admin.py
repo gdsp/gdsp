@@ -44,6 +44,9 @@ class TopicAdmin(admin.ModelAdmin):
             AudioElementInline,
     ]
 
+    class Media:
+        js = ['javascript/autocomplete-topic-tags.js']
+
     def save_formset(self, request, form, formset, change):
         instances = formset.save(commit=False)
         if hasattr(formset, 'ordered_forms'):
