@@ -1,12 +1,13 @@
+import markdown
+import model_utils.managers
+import pygments
+import pygments.formatters
+import pygments.lexers
+import taggit.managers
+import taggit.models
+
 from django.db import models
 from django.core.urlresolvers import reverse
-from markdown import markdown
-from model_utils.managers import InheritanceManager
-from taggit.managers import TaggableManager, _TaggableManager
-from taggit.models import TagBase, GenericTaggedItemBase
-from pygments import highlight
-from pygments.lexers import guess_lexer
-from pygments.formatters import HtmlFormatter
 
 # LowerCaseTaggableManager needs to be ignored by South; it inherits from
 # django-taggit's TaggableManager which is already ignored by default.
@@ -42,7 +43,7 @@ class BaseTopicElement(models.Model):
     # objects as instances of those subclasses rather than as instances of
     # BaseTopicElement. This means that the correct to_html() method will be
     # called in our views.
-    objects = InheritanceManager()
+    objects = model_utils.managers.InheritanceManager()
 
     def to_html(self):
         raise NotImplementedError
@@ -68,7 +69,7 @@ class MarkdownElement(BaseTopicElement):
         super(MarkdownElement, self).save(*args, **kwargs)
 
     def to_html(self):
-        return markdown(self.text)
+        return markdown.markdown(self.text)
 
     class Meta:
         verbose_name = 'text element'
@@ -89,7 +90,11 @@ class CodeElement(BaseTopicElement):
         super(CodeElement, self).save(*args, **kwargs)
 
     def to_html(self):
-        return highlight(self.code, guess_lexer(self.code), HtmlFormatter())
+        return pygments.highlight(
+                self.code,
+                pygments.lexers.guess_lexer(self.code),
+                pygments.formatters.HtmlFormatter(),
+        )
 
 
 class ImageElement(BaseTopicElement):
@@ -142,7 +147,7 @@ class AudioElement(BaseTopicElement):
         )
 
 
-class LowerCaseTag(TagBase):
+class LowerCaseTag(taggit.models.TagBase):
     """
     A django-taggit tag which forces the tag name to be lower-case in order to
     avoid having two separate tags named, say, 'time-based' and 'Time-based'.
@@ -153,7 +158,7 @@ class LowerCaseTag(TagBase):
         super(LowerCaseTag, self).save(*args, **kwargs)
 
 
-class LowerCaseTaggedItem(GenericTaggedItemBase):
+class LowerCaseTaggedItem(taggit.models.GenericTaggedItemBase):
     """
     An intermediary model which enables case-insensitive (forced lower-case)
     tags with django-taggit.
@@ -175,13 +180,13 @@ class LowerCaseTaggedItem(GenericTaggedItemBase):
 # django-taggit code is that the tags in add() are all lower-cased, and that
 # _TaggableManager is replaced with _LowerCaseTaggableManager in __get__().
 
-class _LowerCaseTaggableManager(_TaggableManager):
+class _LowerCaseTaggableManager(taggit.managers._TaggableManager):
     def add(self, *tags):
         tags = [tag.lower() for tag in tags]
         super(_LowerCaseTaggableManager, self).add(*tags)
 
 
-class LowerCaseTaggableManager(TaggableManager):
+class LowerCaseTaggableManager(taggit.managers.TaggableManager):
     def __get__(self, instance, model):
         if instance is not None and instance.pk is None:
             raise ValueError(
