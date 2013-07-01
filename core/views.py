@@ -7,20 +7,23 @@ from models import Topic, BaseTopicElement, LowerCaseTag
 
 class TopicsListView(ListView):
     model = Topic
-    template_name = 'topics/index.html'
+    template_name = 'core/topics/index.html'
     queryset = Topic.objects.all()
     context_object_name = 'topics'
 
+
 class TopicDetailView(DetailView):
     model = Topic
-    template_name = 'topics/topic.html'
+    template_name = 'core/topics/topic.html'
     context_object_name = 'topic'
 
     def get_context_data(self, **kwargs):
         context = super(TopicDetailView, self).get_context_data(**kwargs)
         context['elements'] = BaseTopicElement.objects.filter(
-                topic_id=self.kwargs['pk']).select_subclasses()
+                topic_id=self.kwargs['pk'],
+        ).select_subclasses()
         return context
+
 
 def tag_autocomplete_view(request):
     """
