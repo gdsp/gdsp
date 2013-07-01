@@ -12,9 +12,8 @@
   <body>
     <nav>
       <ul>
-        <li><a href="#">{% trans 'Home' %}</a></li>
+        <li><a href="{% url 'core:lessons' %}">{% trans 'Lessons' %}</a></li>
         <li><a href="{% url 'core:topics' %}">{% trans 'Topics' %}</a></li>
-        <li><a href="#">{% trans 'Other stuff' %}</a></li>
     </nav>
     {% block header %} {% endblock %}  {# for submenus and such #}
     <div id="wrapper">

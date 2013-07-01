@@ -182,6 +182,11 @@ class Topic(models.Model):
     )
     objects = TopicManager()
 
+    def to_html(self):
+        return u'\n'.join(
+                (e.to_html() for e in self.elements.select_subclasses())
+        )
+
     def get_absolute_url(self):
         return reverse('core:topic', kwargs={'pk': self.id})
 
@@ -196,6 +201,9 @@ class Lesson(models.Model):
 
     title = models.CharField(max_length=255)
     topics = models.ManyToManyField(Topic, through='LessonTopicRelation')
+
+    def get_absolute_url(self):
+        return reverse('core:lesson', kwargs={'pk': self.id})
 
     def __unicode__(self):
         return self.title

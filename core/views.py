@@ -3,7 +3,7 @@ import json
 from django.http import HttpResponse, HttpResponseNotAllowed
 from django.views.generic import ListView, DetailView
 
-from models import Topic, BaseTopicElement, LowerCaseTag
+from models import Lesson, Topic, BaseTopicElement, LowerCaseTag
 
 class TopicsListView(ListView):
     model = Topic
@@ -22,6 +22,24 @@ class TopicDetailView(DetailView):
         context['elements'] = BaseTopicElement.objects.filter(
                 topic_id=self.kwargs['pk'],
         ).select_subclasses()
+        return context
+
+
+class LessonsListView(ListView):
+    model = Lesson
+    template_name = 'core/lessons/index.html'
+    queryset = Lesson.objects.all()
+    context_object_name = 'lessons'
+
+
+class LessonDetailView(DetailView):
+    model = Lesson
+    context_object_name = 'lesson'
+    template_name = 'core/lessons/lesson.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(LessonDetailView, self).get_context_data(**kwargs)
+        context['topic'] = self.object.topics.first()
         return context
 
 
