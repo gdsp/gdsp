@@ -1,6 +1,6 @@
 from django.contrib import admin
-from models import (Topic, BaseTopicElement, MarkdownElement, CodeElement,
-                    ImageElement, AudioElement)
+from models import (Lesson, Topic, BaseTopicElement, MarkdownElement,
+                    CodeElement, ImageElement, AudioElement)
 
 class BaseTopicElementInline(admin.StackedInline):
     model = BaseTopicElement
@@ -58,9 +58,19 @@ class TopicAdmin(admin.ModelAdmin):
         else:
             for instance in instances:
                 instance.save()
-        # We don't actually have any many-to-many fields at the time
-        # of writing, but you never know what the future will bring.
         formset.save_m2m()
 
 
+class TopicInline(admin.TabularInline):
+    model = Lesson.topics.through
+    fields = ['topic_ordinal', 'topic']
+    extra = 0
+
+
+class LessonAdmin(admin.ModelAdmin):
+    model = Lesson
+    inlines = [TopicInline]
+
+
 admin.site.register(Topic, TopicAdmin)
+admin.site.register(Lesson, LessonAdmin)

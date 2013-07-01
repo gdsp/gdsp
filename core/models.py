@@ -218,3 +218,27 @@ class Topic(models.Model):
 
     def __unicode__(self):
         return self.title
+
+
+class Lesson(models.Model):
+    """
+    A lesson is an ordered collection of topics.
+    """
+
+    title = models.CharField(max_length=255)
+    topics = models.ManyToManyField(Topic, through='LessonTopicRelation')
+
+    def __unicode__(self):
+        return self.title
+
+
+class LessonTopicRelation(models.Model):
+    topic = models.ForeignKey(Topic)
+    lesson = models.ForeignKey(Lesson)
+    topic_ordinal = models.PositiveIntegerField()
+
+    class Meta:
+        ordering = ['lesson', 'topic_ordinal']
+        index_together = [
+                ['lesson', 'topic_ordinal'],
+        ]
