@@ -1,20 +1,50 @@
 import taggit.managers as taggit
 
+from django.db.models import manager
+
+class TopicManager(manager.Manager):
+    """
+    The TopicManager class adds some useful methods for fetching topics to
+    the default, plain Manager.
+
+    Note: Even though this is the manager for all of Topic, the topics related
+          to a Lesson are wrapped in a ManyRelatedManager which filters the
+          queryset (returned by all()) to include only the relevant topics.
+          I.e., `lesson.topics.first()` will return the first topic for the
+          given lesson, not the first of all the topics.
+    """
+
+    def first(self):
+        return self.all()[0]
+
+    def next(self, topic):
+        topic_ids = [topic.id for topic in self.all()]
+        try:
+            current_topic = topic_ids.index(topic.id)
+            next_topic = self.get(id=topic_ids[current_topic+1])
+            return next_topic
+        except (ValueError, IndexError):
+            return None
+
+
 # LowerCaseTaggableManager needs to be ignored by South; it inherits from
 # django-taggit's TaggableManager which is already ignored by default.
 from south.modelsinspector import add_ignored_fields
 add_ignored_fields(['^core\.managers\.LowerCaseTaggableManager'])
 
-# The add() method defined in django-taggit's _TaggableManager causes an
-# infinite loop when an existing tag is 'added' again with a different
-# combination of upper and lower case letters. Because the logic that looks
-# for existing tags is in add() case-sensitive, whereas LowerCaseTag's save()
-# method is not, the same tag is always considered new causing a World of Hurt.
-#
-# Monkey patching our Topic's tag manager proved to be infeasible, hence
-# the two Manager classes below. The only difference from the original
-# django-taggit code is that the tags in add() are all lower-cased, and that
-# _TaggableManager is replaced with _LowerCaseTaggableManager in __get__().
+################################################################################
+# The add() method defined in django-taggit's _TaggableManager causes an       #
+# infinite loop when an existing tag is 'added' again with a different         #
+# combination of upper and lower case letters. Because the logic that looks    #
+# for existing tags is in add() case-sensitive, whereas LowerCaseTag's save()  #
+# method is not, the same tag is always considered new causing a World of      #
+# Hurt.                                                                        #
+#                                                                              #
+# Monkey patching our Topic's tag manager proved to be infeasible, hence       #
+# the two Manager classes below. The only difference from the original         #
+# django-taggit code is that the tags in add() are all lower-cased, and that   #
+# _TaggableManager is replaced with _LowerCaseTaggableManager in __get__().    #
+################################################################################
 
 class _LowerCaseTaggableManager(taggit._TaggableManager):
     def add(self, *tags):

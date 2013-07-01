@@ -8,7 +8,7 @@ import taggit.models
 from django.db import models
 from django.core.urlresolvers import reverse
 
-from managers import LowerCaseTaggableManager
+from managers import TopicManager, LowerCaseTaggableManager
 
 
 class BaseTopicElement(models.Model):
@@ -180,6 +180,7 @@ class Topic(models.Model):
                       'this topic.',
             blank=True,
     )
+    objects = TopicManager()
 
     def get_absolute_url(self):
         return reverse('core:topic', kwargs={'pk': self.id})
