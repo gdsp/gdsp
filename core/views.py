@@ -1,6 +1,6 @@
 import json
 
-from django.http import HttpResponse, HttpResponseNotAllowed
+from django.http import HttpResponse, HttpResponseNotAllowed, Http404
 from django.views.generic import ListView, DetailView
 
 from models import Lesson, Topic, BaseTopicElement, LowerCaseTag
@@ -39,7 +39,17 @@ class LessonDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(LessonDetailView, self).get_context_data(**kwargs)
-        context['topic'] = self.object.topics.first()
+        topic_id = self.kwargs.get('topic', None)
+        if topic_id:
+            try:
+                topic = self.object.topics.get(id=topic_id)
+            except Topic.DoesNotExist:
+                raise Http404
+        else:
+            topic = self.object.topics.first()
+        context['topic'] = topic
+        context['next_topic'] = self.object.topics.next(topic)
+        context['previous_topic'] = self.object.topics.previous(topic)
         return context
 
 

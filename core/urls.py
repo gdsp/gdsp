@@ -5,7 +5,8 @@ from views import (LessonsListView, LessonDetailView, TopicsListView,
 
 urlpatterns = patterns('',
     url(r'^$', LessonsListView.as_view(), name='lessons'),
-    url(r'^(?P<pk>\d+)/$', LessonDetailView.as_view(), name='lesson'),
+    url(r'^(?P<pk>\d+)(?:/(?P<topic>\d+))?/$', LessonDetailView.as_view(),
+        name='lesson'),
     url(r'^topics/$', TopicsListView.as_view(), name='topics'),
-    url(r'^topics/(?P<pk>\d+)', TopicDetailView.as_view(), name='topic'),
+    url(r'^topics/(?P<pk>\d+)/$', TopicDetailView.as_view(), name='topic'),
 )

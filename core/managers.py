@@ -15,9 +15,11 @@ class TopicManager(manager.Manager):
     """
 
     def first(self):
+        """Returns the first topic in the queryset."""
         return self.all()[0]
 
     def next(self, topic):
+        """Takes a topic and returns the succeeding topic in the queryset."""
         topic_ids = [t.id for t in self.all()]
         try:
             current_topic = topic_ids.index(topic.id)
@@ -25,6 +27,29 @@ class TopicManager(manager.Manager):
             return next_topic
         except (ValueError, IndexError):
             return None
+
+    def previous(self, topic):
+        """Takes a topic and returns the preceding topic in the queryset."""
+        topic_ids = [t.id for t in self.all()]
+        try:
+            current_topic = topic_ids.index(topic.id)
+            if current_topic == 0:
+                # A negative index will currently raise an AssertionError,
+                # but who knows what the future will bring? Let's just return.
+                return None
+            previous_topic = self.get(id=topic_ids[current_topic-1])
+            return previous_topic
+        except (ValueError, IndexError):
+            return None
+
+    def contains(self, topic):
+        """
+        Takes a topic id or a topic instance and returns true if that topic
+        is in the queryset, else false.
+        """
+        if isinstance(topic, self.model):
+            topic = topic.id
+        return self.filter(id=topic).count() > 0
 
 
 # LowerCaseTaggableManager needs to be ignored by South; it inherits from

@@ -149,4 +149,16 @@ div#wrapper {
             background-image: image-url('pause.png');
         }
     }
+
+    nav.next-and-prev {
+        float: right;
+        @include trailer;
+
+        a {
+            @include adjust-font-size-to(18px);
+            color: $dark-accent-color;
+            border: none;
+            margin: 0 1em;
+        }
+    }
 }
