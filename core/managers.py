@@ -18,7 +18,7 @@ class TopicManager(manager.Manager):
         """Returns the first topic in the queryset."""
         return self.all()[0]
 
-    def next(self, topic):
+    def after(self, topic):
         """Takes a topic and returns the succeeding topic in the queryset."""
         topic_ids = [t.id for t in self.all()]
         try:
@@ -28,7 +28,7 @@ class TopicManager(manager.Manager):
         except (ValueError, IndexError):
             return None
 
-    def previous(self, topic):
+    def before(self, topic):
         """Takes a topic and returns the preceding topic in the queryset."""
         topic_ids = [t.id for t in self.all()]
         try:

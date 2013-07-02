@@ -5,20 +5,26 @@
 
 {% block content %}
 
-{{ topic.to_html | safe }}
+{% for element in lesson_topic.topic_elements %}
+  {{ element.to_html | safe }}
+{% endfor %}
 
 <nav class="next-and-prev">
-  {% if previous_topic %}
-    <a href="{% url 'core:lesson' pk=lesson.id topic=previous_topic.id %}">
-      &lt;&lt; {% trans 'Previous topic' %}
-    </a>
-  {% endif %}
+  {% with prev=lesson_topic.previous_topic next=lesson_topic.next_topic %}
 
-  {% if next_topic %}
-    <a href="{% url 'core:lesson' pk=lesson.id topic=next_topic.id %}">
-      {% trans 'Next topic' %} &gt;&gt;
-    </a>
-  {% endif %}
+    {% if prev %}
+      <a href="{% url 'core:lesson' pk=lesson.id topic=prev.id %}">
+        &lt;&lt; {{ prev.title }}
+      </a>
+    {% endif %}
+
+    {% if next %}
+      <a href="{% url 'core:lesson' pk=lesson.id topic=next.id %}">
+        {{ next.title }} &gt;&gt;
+      </a>
+    {% endif %}
+
+  {% endwith %}
 </nav>
 
 {% endblock %}

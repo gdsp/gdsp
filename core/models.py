@@ -23,17 +23,26 @@ class BaseTopicElement(models.Model):
     included as part of a web page.
     """
 
+    AUDIO, CODE, IMAGE, TEXT = 'audio', 'code', 'image', 'text'
+    ELEMENT_TYPES = (
+            (AUDIO, 'Audio'),
+            (CODE, 'Code'),
+            (IMAGE, 'Image'),
+            (TEXT, 'Text'),
+    )
+
     description = models.CharField(
             max_length=255,
             help_text='What does this element contain?',
     )
     topic = models.ForeignKey('Topic', related_name='elements')
     # The element_type is set in the save() method of the subclass, and will
-    # be the same for all elements of a given type. This reduces the number of
-    # database queries needed to determine a BaseTopicElement's actual type
-    # when compared to iterating over the possible subclasses and looking for
-    # an attribute of that name. It is, of course, data duplication, but the
-    # speed-up is worth it.
+    # be the same for all elements of a given type; its value should be one
+    # of the ELEMENT_TYPES defined above, e.g. AUDIO ('audio'). This reduces
+    # the number of database queries needed to determine a BaseTopicElement's
+    # actual type when compared to iterating over the possible subclasses
+    # and looking for an attribute of that name. It is, of course, data
+    # duplication, but the speed-up is worth it.
     element_type = models.CharField(max_length=16, blank=False, editable=False)
 
     # model_utils.managers.InheritanceManager allows us to fetch subclass
@@ -62,7 +71,7 @@ class MarkdownElement(BaseTopicElement):
 
     def save(self, *args, **kwargs):
         if not self.pk:
-            self.element_type = 'text'
+            self.element_type = BaseTopicElement.TEXT
         super(MarkdownElement, self).save(*args, **kwargs)
 
     def to_html(self):
@@ -83,7 +92,7 @@ class CodeElement(BaseTopicElement):
 
     def save(self, *args, **kwargs):
         if not self.pk:
-            self.element_type = 'code'
+            self.element_type = BaseTopicElement.CODE
         super(CodeElement, self).save(*args, **kwargs)
 
     def to_html(self):
@@ -106,7 +115,7 @@ class ImageElement(BaseTopicElement):
 
     def save(self, *args, **kwargs):
         if not self.pk:
-            self.element_type = 'image'
+            self.element_type = BaseTopicElement.IMAGE
         super(ImageElement, self).save(*args, **kwargs)
 
     def to_html(self):
@@ -134,7 +143,7 @@ class AudioElement(BaseTopicElement):
 
     def save(self, *args, **kwargs):
         if not self.pk:
-            self.element_type = 'audio'
+            self.element_type = BaseTopicElement.AUDIO
         super(AudioElement, self).save(*args, **kwargs)
 
     def to_html(self):
@@ -182,11 +191,6 @@ class Topic(models.Model):
     )
     objects = TopicManager()
 
-    def to_html(self):
-        return u'\n'.join(
-                (e.to_html() for e in self.elements.select_subclasses())
-        )
-
     def get_absolute_url(self):
         return reverse('core:topic', kwargs={'pk': self.id})
 
@@ -213,6 +217,27 @@ class LessonTopicRelation(models.Model):
     topic = models.ForeignKey(Topic)
     lesson = models.ForeignKey(Lesson)
     topic_ordinal = models.PositiveIntegerField()
+    # excluded_content is a comma-separated list of topic element types
+    # which should not be displayed in this lesson, e.g. 'code, audio':
+    excluded_content = models.CharField(max_length=255, blank=True)
+
+    @property
+    def excludes(self):
+        return (e.strip() for e in self.excluded_content.split(','))
+
+    @property
+    def topic_elements(self):
+        return self.topic.elements.select_subclasses().exclude(
+                element_type__in=self.excludes,
+        )
+
+    @property
+    def next_topic(self):
+        return self.lesson.topics.after(self.topic)
+
+    @property
+    def previous_topic(self):
+        return self.lesson.topics.before(self.topic)
 
     class Meta:
         ordering = ['lesson', 'topic_ordinal']

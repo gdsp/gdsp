@@ -3,7 +3,8 @@ import json
 from django.http import HttpResponse, HttpResponseNotAllowed, Http404
 from django.views.generic import ListView, DetailView
 
-from models import Lesson, Topic, BaseTopicElement, LowerCaseTag
+from models import (Lesson, Topic, LessonTopicRelation, BaseTopicElement,
+                    LowerCaseTag)
 
 class TopicsListView(ListView):
     model = Topic
@@ -47,9 +48,10 @@ class LessonDetailView(DetailView):
                 raise Http404
         else:
             topic = self.object.topics.first()
-        context['topic'] = topic
-        context['next_topic'] = self.object.topics.next(topic)
-        context['previous_topic'] = self.object.topics.previous(topic)
+        context['lesson_topic'] = LessonTopicRelation.objects.get(
+                lesson=self.object.id,
+                topic=topic.id,
+        )
         return context
 
 

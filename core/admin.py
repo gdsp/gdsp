@@ -1,4 +1,5 @@
 from django.contrib import admin
+from forms import TopicInlineForm
 from models import (Lesson, Topic, BaseTopicElement, MarkdownElement,
                     CodeElement, ImageElement, AudioElement)
 
@@ -63,7 +64,7 @@ class TopicAdmin(admin.ModelAdmin):
 
 class TopicInline(admin.TabularInline):
     model = Lesson.topics.through
-    fields = ['topic_ordinal', 'topic']
+    form = TopicInlineForm
     extra = 0
 
 
