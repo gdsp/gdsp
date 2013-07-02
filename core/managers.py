@@ -18,7 +18,7 @@ class TopicManager(manager.Manager):
         return self.all()[0]
 
     def next(self, topic):
-        topic_ids = [topic.id for topic in self.all()]
+        topic_ids = [t.id for t in self.all()]
         try:
             current_topic = topic_ids.index(topic.id)
             next_topic = self.get(id=topic_ids[current_topic+1])
