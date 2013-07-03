@@ -1,4 +1,5 @@
 from django import forms
+from django.utils.translation import ugettext_lazy as _
 
 from models import Lesson, BaseTopicElement
 
@@ -40,7 +41,7 @@ class TopicInlineForm(forms.ModelForm):
     excluded_content = CSVMultipleChoiceField(
             choices=BaseTopicElement.ELEMENT_TYPES,
             required=False,
-            label='Excluded content',
+            label=_('Excluded content'),
     )
 
     class Meta:

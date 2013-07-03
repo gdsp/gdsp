@@ -7,6 +7,7 @@ import taggit.models
 
 from django.db import models
 from django.core.urlresolvers import reverse
+from django.utils.translation import ugettext_lazy as _
 
 from managers import TopicManager, LowerCaseTaggableManager
 
@@ -25,15 +26,15 @@ class BaseTopicElement(models.Model):
 
     AUDIO, CODE, IMAGE, TEXT = 'audio', 'code', 'image', 'text'
     ELEMENT_TYPES = (
-            (AUDIO, 'Audio'),
-            (CODE, 'Code'),
-            (IMAGE, 'Image'),
-            (TEXT, 'Text'),
+            (AUDIO, _('Audio')),
+            (CODE, _('Code')),
+            (IMAGE, _('Image')),
+            (TEXT, _('Text')),
     )
 
     description = models.CharField(
             max_length=255,
-            help_text='What does this element contain?',
+            help_text=_('What does this element contain?'),
     )
     topic = models.ForeignKey('Topic', related_name='elements')
     # The element_type is set in the save() method of the subclass, and will
@@ -78,7 +79,8 @@ class MarkdownElement(BaseTopicElement):
         return markdown.markdown(self.text)
 
     class Meta:
-        verbose_name = 'text element'
+        verbose_name = _('text element')
+        verbose_name_plural = _('text elements')
 
 
 class CodeElement(BaseTopicElement):
@@ -101,6 +103,10 @@ class CodeElement(BaseTopicElement):
                 pygments.lexers.guess_lexer(self.code),
                 pygments.formatters.HtmlFormatter(),
         )
+
+    class Meta:
+        verbose_name = _('code element')
+        verbose_name_plural = _('code elements')
 
 
 class ImageElement(BaseTopicElement):
@@ -126,6 +132,10 @@ class ImageElement(BaseTopicElement):
         html += u'</figure>'
         return html
 
+    class Meta:
+        verbose_name = _('image element')
+        verbose_name_plural = _('image elements')
+
 
 class AudioElement(BaseTopicElement):
     """
@@ -137,7 +147,7 @@ class AudioElement(BaseTopicElement):
 
     title = models.CharField(
             max_length=128,
-            help_text='The title of the track as displayed to the student.',
+            help_text=_('The title of the track as displayed to the student.'),
     )
     file = models.FileField(upload_to='audio')
 
@@ -152,6 +162,9 @@ class AudioElement(BaseTopicElement):
                 title=self.title,
         )
 
+    class Meta:
+        verbose_name = _('audio element')
+        verbose_name_plural = _('audio elements')
 
 class LowerCaseTag(taggit.models.TagBase):
     """
@@ -185,8 +198,8 @@ class Topic(models.Model):
     title = models.CharField(max_length=255)
     tags = LowerCaseTaggableManager(
             through=LowerCaseTaggedItem,
-            help_text='A comma-separated list of keywords that describe ' \
-                      'this topic.',
+            help_text=_('A comma-separated list of keywords that describe '
+                        'this topic.'),
             blank=True,
     )
     objects = TopicManager()
@@ -196,6 +209,10 @@ class Topic(models.Model):
 
     def __unicode__(self):
         return self.title
+
+    class Meta:
+        verbose_name = _('topic')
+        verbose_name_plural = _('topics')
 
 
 class Lesson(models.Model):
@@ -211,6 +228,10 @@ class Lesson(models.Model):
 
     def __unicode__(self):
         return self.title
+
+    class Meta:
+        verbose_name = _('lesson')
+        verbose_name_plural = _('lessons')
 
 
 class LessonTopicRelation(models.Model):
@@ -244,3 +265,5 @@ class LessonTopicRelation(models.Model):
         index_together = [
                 ['lesson', 'topic_ordinal'],
         ]
+        verbose_name = _('lesson topic')
+        verbose_name_plural = _('lesson topics')
