@@ -5,7 +5,7 @@ from models import (Lesson, Topic, BaseTopicElement, MarkdownElement,
 
 class BaseTopicElementInline(admin.StackedInline):
     model = BaseTopicElement
-    template = 'admin/core/topic/inline_basetopicelement.html'
+    template = 'admin/core/inline_basetopicelement.html'
     ordering = ['_order']
     readonly_fields = ['description']
     max_num = 0
