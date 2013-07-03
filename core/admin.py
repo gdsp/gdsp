@@ -44,6 +44,7 @@ class TopicAdmin(admin.ModelAdmin):
             ImageElementInline,
             AudioElementInline,
     ]
+    search_fields = ['title', 'tags__name']
 
     class Media:
         js = ['javascript/autocomplete-topic-tags.js']
@@ -65,6 +66,7 @@ class TopicAdmin(admin.ModelAdmin):
 class TopicInline(admin.TabularInline):
     model = Lesson.topics.through
     form = TopicInlineForm
+    raw_id_fields = ['topic']
     extra = 0
 
 
