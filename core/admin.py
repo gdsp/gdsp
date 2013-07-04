@@ -66,6 +66,7 @@ class TopicAdmin(admin.ModelAdmin):
 class TopicInline(admin.TabularInline):
     model = Lesson.topics.through
     form = TopicInlineForm
+    template = 'admin/core/inline_topic.html'
     raw_id_fields = ['topic']
     extra = 0
 

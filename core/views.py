@@ -47,7 +47,7 @@ class LessonDetailView(DetailView):
             except Topic.DoesNotExist:
                 raise Http404
         else:
-            topic = self.object.topics.first()
+            topic = LessonTopicRelation.objects.first(self.object).topic
         context['lesson_topic'] = LessonTopicRelation.objects.get(
                 lesson=self.object.id,
                 topic=topic.id,

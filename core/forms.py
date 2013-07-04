@@ -38,6 +38,7 @@ class CSVMultipleChoiceField(forms.MultipleChoiceField):
 
 
 class TopicInlineForm(forms.ModelForm):
+    topic_ordinal = forms.CharField(label=_('Order'))
     excluded_content = CSVMultipleChoiceField(
             choices=BaseTopicElement.ELEMENT_TYPES,
             required=False,

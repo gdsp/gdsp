@@ -1,0 +1,210 @@
+{# Modified version of admin/templates/admin/edit_inline/tabular.html #}
+{% load i18n admin_static admin_modify %}
+<style type="text/css">
+  img.up, img.down {
+    width: 16px;
+    height: 16px;
+  }
+  div.js-ordering {
+    float: left;
+    margin-right: 1em;
+    display: none;
+  }
+</style>
+
+<div class="inline-group" id="{{ inline_admin_formset.formset.prefix }}-group">
+  <div class="tabular inline-related {% if forloop.last %}last-related{% endif %}">
+    {{ inline_admin_formset.formset.management_form }}
+    <fieldset class="module">
+      <h2>{{ inline_admin_formset.opts.verbose_name_plural|capfirst }}</h2>
+      {{ inline_admin_formset.formset.non_form_errors }}
+      <table>
+        <thead>
+          <tr>
+            {% for field in inline_admin_formset.fields %}
+              {% if not field.widget.is_hidden %}
+                <th{% if forloop.first %} colspan="2"{% endif %}
+                   {% if field.required %} class="required"{% endif %}>
+                  {{ field.label|capfirst }}
+                  {% if field.help_text %}
+                    &nbsp;<img src="{% static "admin/img/icon-unknown.gif" %}"
+                               class="help help-tooltip" width="10" height="10"
+                               alt="({{ field.help_text|striptags }})"
+                               title="{{ field.help_text|striptags }}" />
+                  {% endif %}
+                </th>
+              {% endif %}
+            {% endfor %}
+            {% if inline_admin_formset.formset.can_delete %}
+              <th>{% trans "Delete?" %}</th>
+            {% endif %}
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for inline_admin_form in inline_admin_formset %}
+            {% if inline_admin_form.form.non_field_errors %}
+            <tr>
+              <td colspan="{{ inline_admin_form|cell_count }}">
+                {{ inline_admin_form.form.non_field_errors }}
+              </td>
+            </tr>
+            {% endif %}
+            <tr class="form-row {% cycle "row1" "row2" %} {% if inline_admin_form.original or inline_admin_form.show_url %}has_original{% endif %}{% if forloop.last %} empty-form{% endif %}"
+                id="{{ inline_admin_formset.formset.prefix }}-{% if not forloop.last %}{{ forloop.counter0 }}{% else %}empty{% endif %}">
+              <td class="original">
+                {% if inline_admin_form.original or inline_admin_form.show_url %}
+                  <p>
+                    {% if inline_admin_form.original %}
+                      {{ inline_admin_form.original }}
+                    {% endif %}
+                    {% if inline_admin_form.show_url %}
+                      <a href="{% url 'admin:view_on_site' inline_admin_form.original_content_type_id inline_admin_form.original.pk %}">
+                        {% trans "View on site" %}
+                      </a>
+                    {% endif %}
+                  </p>
+                {% endif %}
+                {% if inline_admin_form.has_auto_field %}
+                  {{ inline_admin_form.pk_field.field }}
+                {% endif %}
+                {{ inline_admin_form.fk_field.field }}
+                {% spaceless %}
+                  {% for fieldset in inline_admin_form %}
+                    {% for line in fieldset %}
+                      {% for field in line %}
+                        {% if field.is_hidden %}
+                          {{ field.field }}
+                        {% endif %}
+                      {% endfor %}
+                    {% endfor %}
+                  {% endfor %}
+                {% endspaceless %}
+              </td>
+              {% for fieldset in inline_admin_form %}
+                {% for line in fieldset %}
+                  {% for field in line %}
+                  <td{% if field.field.name %} class="field-{{ field.field.name }}"{% endif %}>
+                      {% if field.is_readonly %}
+                        <p>{{ field.contents|linebreaksbr }}</p>
+                      {% else %}
+                        {{ field.field.errors.as_ul }}
+                        {{ field.field }}
+                      {% endif %}
+                      {% if field.field.name == 'topic_ordinal' %}
+                        <div class="js-ordering">
+                          <img class="up" src="{% static 'images/up.png' %}">
+                          <img class="down" src="{% static 'images/down.png' %}">
+                        </div>
+                      {% endif %}
+                    </td>
+                  {% endfor %}
+                {% endfor %}
+              {% endfor %}
+              {% if inline_admin_formset.formset.can_delete %}
+                <td class="delete">
+                  {% if inline_admin_form.original %}
+                    {{ inline_admin_form.deletion_field.field }}
+                  {% endif %}
+                </td>
+              {% endif %}
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </fieldset>
+  </div>
+</div>
+
+<script type="text/javascript">
+(function($) {
+    $("#{{ inline_admin_formset.formset.prefix }}-group .tabular.inline-related tbody tr").tabularFormset({
+        prefix: "{{ inline_admin_formset.formset.prefix }}",
+        adminStaticPrefix: '{% static "admin/" %}',
+        addText: "{% blocktrans with inline_admin_formset.opts.verbose_name|title as verbose_name %}Add another {{ verbose_name }}{% endblocktrans %}",
+        deleteText: "{% trans 'Remove' %}",
+    });
+ })(django.jQuery);
+ </script>
+
+<script type="text/javascript">
+(function($) {
+    // Replace the text input fields with images and JavaScript
+    $("td.field-topic_ordinal input").hide();
+    $("div.js-ordering").show();
+
+    // For each row, there's a rather pointless paragraph containing the text
+    // 'LessonTopicRelation object'. Setting 'display: none' or
+    // 'visibility: hidden' in CSS causes problems with padding and margins,
+    // so let's just remove the text itself:
+    $("td.original p").text("");
+
+    // Handle reordering of topics:
+    $("div#lessontopicrelation_set-group div.inline-related").delegate(
+            ".up, .down", "click", function() {
+
+        var $current_element = $(this).closest("tr.form-row"),
+            $previous_element = $current_element.prev(),
+            $next_element = $current_element.next(),
+            ordinal = "td.field-topic_ordinal input";
+
+        if ($(this).hasClass("up")) {
+            if (!$previous_element)
+                return;
+            var current_ordinal = parseInt($current_element.find(ordinal)
+                                                           .val());
+            var previous_ordinal = parseInt($previous_element.find(ordinal)
+                                                             .val());
+            if (isNaN(previous_ordinal))  // handle a mystery bug; JS <3
+                return;
+            $current_element.find(ordinal).val(previous_ordinal);
+            $previous_element.find(ordinal).val(current_ordinal);
+            $current_element.insertBefore($previous_element);
+            // The rows have stripes:
+            if ($current_element.hasClass("row1")) {
+                $current_element.removeClass("row1").addClass("row2");
+                $previous_element.removeClass("row2").addClass("row1");
+            } else {
+                $current_element.removeClass("row2").addClass("row1");
+                $previous_element.removeClass("row1").addClass("row2");
+            }
+        } else if ($(this).hasClass("down")) {
+            if (!$next_element || $next_element.hasClass("empty-form"))
+                return;
+            var current_ordinal = parseInt($current_element.find(ordinal)
+                                                           .val());
+            var next_ordinal = parseInt($next_element.find(ordinal).val());
+            $current_element.find(ordinal).val(next_ordinal);
+            $next_element.find(ordinal).val(current_ordinal);
+            $current_element.insertAfter($next_element);
+            // The rows still have stripes:
+            if ($current_element.hasClass("row1")) {
+                $current_element.removeClass("row1").addClass("row2");
+                $next_element.removeClass("row2").addClass("row1");
+            } else {
+                $current_element.removeClass("row2").addClass("row1");
+                $next_element.removeClass("row1").addClass("row2");
+            }
+        }
+    });
+
+    // We'll need to add a topic_ordinal value to dynamically added rows:
+    $("tr.add-row").delegate("*", "click", function() {
+        var max_ordinal = 0;
+        $("td.field-topic_ordinal").each(function() {
+            // If we set a value in empty-form, all dynamically added rows
+            // will have the same topic ordinal. That would be bad.
+            if ($(this).parent().hasClass("empty-form"))
+                return true;
+            var this_ordinal = parseInt($(this).find("input").val());
+            // New rows will not have a value, i.e. this_ordinal will be NaN:
+            if (isNaN(this_ordinal)) {
+                $(this).find("input").val(max_ordinal + 1);
+            } else {
+                if (this_ordinal > max_ordinal)
+                    max_ordinal = this_ordinal;
+            }
+        });
+    });
+})(django.jQuery);
+</script>

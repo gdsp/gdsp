@@ -9,7 +9,7 @@ from django.db import models
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 
-from managers import TopicManager, LowerCaseTaggableManager
+from managers import LessonTopicManager, LowerCaseTaggableManager
 
 
 class BaseTopicElement(models.Model):
@@ -202,7 +202,6 @@ class Topic(models.Model):
                         'this topic.'),
             blank=True,
     )
-    objects = TopicManager()
 
     def get_absolute_url(self):
         return reverse('core:topic', kwargs={'pk': self.id})
@@ -241,6 +240,7 @@ class LessonTopicRelation(models.Model):
     # excluded_content is a comma-separated list of topic element types
     # which should not be displayed in this lesson, e.g. 'code, audio':
     excluded_content = models.CharField(max_length=255, blank=True)
+    objects = LessonTopicManager()
 
     @property
     def excludes(self):
@@ -253,12 +253,15 @@ class LessonTopicRelation(models.Model):
         )
 
     @property
-    def next_topic(self):
-        return self.lesson.topics.after(self.topic)
+    def next(self):
+        return LessonTopicRelation.objects.after(self)
 
     @property
-    def previous_topic(self):
-        return self.lesson.topics.before(self.topic)
+    def previous(self):
+        return LessonTopicRelation.objects.before(self)
+
+    def __unicode__(self):
+        return u'Topic: "{}", Lesson: "{}"'.format(self.topic, self.lesson)
 
     class Meta:
         ordering = ['lesson', 'topic_ordinal']

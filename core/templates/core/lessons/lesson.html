@@ -10,7 +10,7 @@
 {% endfor %}
 
 <nav class="next-and-prev">
-  {% with prev=lesson_topic.previous_topic next=lesson_topic.next_topic %}
+  {% with prev=lesson_topic.previous.topic next=lesson_topic.next.topic %}
 
     {% if prev %}
       <a href="{% url 'core:lesson' pk=lesson.id topic=prev.id %}">

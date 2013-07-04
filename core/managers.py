@@ -2,54 +2,61 @@ import taggit.managers as taggit
 
 from django.db.models import manager
 
-class TopicManager(manager.Manager):
+class LessonTopicManager(manager.Manager):
     """
-    The TopicManager class adds some useful methods for fetching topics to
-    the default, plain Manager.
+    LessonTopicManager adds some useful methods for fetching lesson-topic
+    relations relative to a lesson or another lesson-topic relation.
 
-    Note: Even though this is the manager for all of Topic, the topics related
-          to a Lesson are wrapped in a ManyRelatedManager which filters the
-          queryset (returned by all()) to include only the relevant topics.
-          I.e., `lesson.topics.first()` will return the first topic for the
-          given lesson, not the first of all the topics.
+    It is often necessary to go through a lesson-topic relation when what you
+    really want is a topic because the order of a lesson's topics is stored in
+    the relation objects, not in the lesson or topics.
     """
 
-    def first(self):
-        """Returns the first topic in the queryset."""
-        return self.all()[0]
+    def first(self, lesson):
+        """
+        Takes a lesson object or a lesson id and returns the first lesson-topic
+        relation for that lesson.
+        """
+        if not isinstance(lesson, int):
+            lesson = lesson.id
+        return self.filter(lesson=lesson)[0]
 
-    def after(self, topic):
-        """Takes a topic and returns the succeeding topic in the queryset."""
-        topic_ids = [t.id for t in self.all()]
+    def after(self, lesson_topic):
+        """
+        Takes a lesson-topic relation and returns the next one in the lesson.
+        """
+        ids = [rel.id for rel in self.filter(lesson=lesson_topic.lesson.id)]
         try:
-            current_topic = topic_ids.index(topic.id)
-            next_topic = self.get(id=topic_ids[current_topic+1])
-            return next_topic
+            current_rel = self.get(
+                    lesson=lesson_topic.lesson.id,
+                    topic=lesson_topic.topic.id,
+            )
+            current_index = ids.index(current_rel.id)
+            next_rel = self.get(id=ids[current_index+1])
+            return next_rel
         except (ValueError, IndexError):
             return None
 
-    def before(self, topic):
-        """Takes a topic and returns the preceding topic in the queryset."""
-        topic_ids = [t.id for t in self.all()]
+    def before(self, lesson_topic):
+        """
+        Takes a lesson-topic relation and returns the previous one
+        in the lesson.
+        """
+        ids = [rel.id for rel in self.filter(lesson=lesson_topic.lesson.id)]
         try:
-            current_topic = topic_ids.index(topic.id)
-            if current_topic == 0:
+            current_rel = self.get(
+                    lesson=lesson_topic.lesson.id,
+                    topic=lesson_topic.topic.id,
+            )
+            current_index = ids.index(current_rel.id)
+            if current_index == 0:
                 # A negative index will currently raise an AssertionError,
                 # but who knows what the future will bring? Let's just return.
                 return None
-            previous_topic = self.get(id=topic_ids[current_topic-1])
-            return previous_topic
+            previous_rel = self.get(id=ids[current_index-1])
+            return previous_rel
         except (ValueError, IndexError):
             return None
-
-    def contains(self, topic):
-        """
-        Takes a topic id or a topic instance and returns true if that topic
-        is in the queryset, else false.
-        """
-        if isinstance(topic, self.model):
-            topic = topic.id
-        return self.filter(id=topic).count() > 0
 
 
 # LowerCaseTaggableManager needs to be ignored by South; it inherits from
