@@ -74,10 +74,11 @@ WSGIDaemonProcess][wsgidaemonprocess].
 ## Configuration in a production environment
 
 For security reasons, the database configuration and `SECRET_KEY` of the
-project are kept out of Git. This information, along with other configuration
-variables which differ from development to production, is set in the file
+project are kept out of Git. These settings, along with other configuration
+variables which differ from development to production, are defined in the file
 `gdsp/settings_prod.py`. In production, this file needs to be present and the
-environment variable `DJANGO_PRODUCTION` needs to be set.
+environment variable `DJANGO_PRODUCTION` needs to be set to a value which is
+truthy in Python, e.g. `1`.
 
 ## Updating the application in production
 
