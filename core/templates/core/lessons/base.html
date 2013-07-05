@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block header %}
+<nav id="lesson-sidebar">
+  <ul>
+    {% for lesson in lessons %}
+      <ul>
+        {% for topic in lesson.topics.all %}
+          {% if lesson == lesson_topic.lesson and topic == lesson_topic.topic %}
+            <li class="active">
+          {% else %}
+            <li>
+          {% endif %}
+              <a href="{% url 'core:lesson' pk=lesson.id topic=topic.id %}">
+                {{ topic.title }}
+              </a>
+            </li>
+        {% endfor %}
+      </ul>
+    {% endfor %}
+  </ul>
+</nav>
+{% endblock %}

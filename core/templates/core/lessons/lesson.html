@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'core/lessons/base.html' %}
 {% load staticfiles i18n %}
 
 {% block title %}{{ block.super }} | {{ lesson.title }}{% endblock %}
@@ -9,17 +9,17 @@
   {{ element.to_html | safe }}
 {% endfor %}
 
-<nav class="next-and-prev">
+<nav id="next-and-prev">
   {% with prev=lesson_topic.previous.topic next=lesson_topic.next.topic %}
 
     {% if prev %}
-      <a href="{% url 'core:lesson' pk=lesson.id topic=prev.id %}">
+      <a href="{% url 'core:lesson' pk=lesson.id topic=prev.id %}" class="prev">
         &lt;&lt; {{ prev.title }}
       </a>
     {% endif %}
 
     {% if next %}
-      <a href="{% url 'core:lesson' pk=lesson.id topic=next.id %}">
+      <a href="{% url 'core:lesson' pk=lesson.id topic=next.id %}" class="next">
         {{ next.title }} &gt;&gt;
       </a>
     {% endif %}

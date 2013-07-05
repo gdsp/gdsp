@@ -210,6 +210,10 @@ class Topic(models.Model):
         return self.title
 
     class Meta:
+        ordering = [
+                'lessontopicrelation__lesson',
+                'lessontopicrelation__topic_ordinal',
+        ]
         verbose_name = _('topic')
         verbose_name_plural = _('topics')
 

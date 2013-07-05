@@ -52,6 +52,7 @@ class LessonDetailView(DetailView):
                 lesson=self.object.id,
                 topic=topic.id,
         )
+        context['lessons'] = Lesson.objects.all()
         return context
 
 

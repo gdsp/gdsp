@@ -9,14 +9,18 @@
     {% block head %} {% endblock %}  {# for including JS, CSS etc. #}
   </head>
   <body>
-    <nav>
-      <ul>
-        <li><a href="{% url 'core:lessons' %}">{% trans 'Lessons' %}</a></li>
-        <li><a href="{% url 'core:topics' %}">{% trans 'Topics' %}</a></li>
-    </nav>
-    {% block header %} {% endblock %}  {# for submenus and such #}
-    <div id="wrapper">
-      {% block content %} {% endblock %}  {# the main content of the page #}
+    <div id="body-wrapper">
+      <nav>
+        <ul>
+          <li><a href="{% url 'core:lessons' %}">{% trans 'Lessons' %}</a></li>
+          <li><a href="#">About</a></li>
+          <li><a href="#" id="login">Log in</a></li>
+        </ul>
+      </nav>
+      {% block header %} {% endblock %}  {# for submenus and such #}
+      <div id="content-wrapper">
+        {% block content %} {% endblock %}  {# the main content of the page #}
+      </div>
     </div>
   </body>
 </html>
