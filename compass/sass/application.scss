@@ -76,15 +76,23 @@ nav#lesson-sidebar {
     ul {
         height: auto;
         background-color: $light-accent-color;
+        margin-bottom: 0;
 
         li {
             display: list-item;
             list-style-type: none;
             margin-left: 0;
             width: 100%;
+        }
+
+        ul li {
+            /* These are topics; the above 'li' styles
+               apply to both lessons and topics. */
+            padding-left: 0.1 * $sidebar-width;
+            width: 0.9 * $sidebar-width;
 
             &.active {
-                background-color: darken($light-accent-color, 10%);
+                font-weight: bold;
             }
         }
 
