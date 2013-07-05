@@ -1,11 +1,4 @@
-{% extends 'base.html' %}
-{% load staticfiles %}
-
-{% block head %}
-<script src="{% static 'javascript/soundmanager2.js' %}"></script>
-<script src="{% static 'javascript/inlineplayer.js' %}"></script>
-<script src="{% static 'javascript/soundmanager2-config.js' %}"></script>
-{% endblock %}
+{% extends 'core/base.html' %}
 
 {% block title %}{{ block.super }} | {{ topic.title }}{% endblock %}
 
