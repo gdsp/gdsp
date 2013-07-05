@@ -79,6 +79,52 @@ variables which differ from development to production, is set in the file
 `gdsp/settings_prod.py`. In production, this file needs to be present and the
 environment variable `DJANGO_PRODUCTION` needs to be set.
 
+## Updating the application in production
+
+Updating the running application is a simple matter of following these steps
+from the root directory of the project:
+
+1. Fetch the updated code:
+
+        git pull origin master
+
+2. If you have added any Python packages (third party applications or
+   libraries), these need to be installed. Assuming that you've added these
+   packages to either `requirements.txt` or `requirements_prod.txt`, that you
+   are using `virtualenv` and that the `virtualenv` environment is kept in a
+   directory `.virtualenv` in your project root, this is achieved like so:
+
+        # Enter virtualenv; this assumes you are running bash.
+        source .virtualenv/bin/activate
+
+        # Install the packages. requirements_prod.txt includes all of
+        # requirements.txt, so packages listed there will also be installed.
+        pip install -r requirements_prod.txt
+
+        # Leave virtualenv (if you want to).
+        deactivate
+
+3. If you have added any static files (CSS, JavaScript, images etc.), you need
+   to collect these into the directory whence static files are served:
+
+        # Enter virtualenv if you haven't already.
+        source .virtualenv/bin/activate
+
+        ./manage.py collectstatic
+
+4. If you have made any changes to the database schema, i.e. you have added
+   South migrations, you need to run these migrations:
+
+        # Enter virtualenv if you haven't already.
+        source .virtualenv/bin/activate
+
+        ./manage.py migrate
+
+5. Now restart the application. Assuming you are running Apache with mod\_wsgi
+   in daemon mode, simply `touch` the WSGI application script:
+
+        touch gdsp/wsgi.py
+
 [south]: http://south.aeracode.org/ "South migration tool"
 [sass]: http://sass-lang.com/ "SASS stylesheet language"
 [compass]: http://compass-style.org/ "Compass framework"
