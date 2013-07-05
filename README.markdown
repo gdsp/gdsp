@@ -68,7 +68,8 @@ Using a [virtualenv][virtualenv] environment is a good idea, both in
 development and production, as it allows you to maintain several different
 Python environments on one system, as well as install packages without root
 privileges. When using virtualenv with Apache and mod\_wsgi, [remember to set
-the WSGIPythonPath][django_docs].
+the WSGIPythonPath][wsgipythonpath] or to [pass the right path to
+WSGIDaemonProcess][wsgidaemonprocess].
 
 ## Configuration in a production environment
 
@@ -84,4 +85,5 @@ environment variable `DJANGO_PRODUCTION` needs to be set.
 [rubygems]: http://rubygems.org/ "RubyGems package manager"
 [pip]: http://www.pip-installer.org/ "pip package manager"
 [virtualenv]: http://www.virtualenv.org/ "virtualenv environment manager"
-[django_docs]: https://docs.djangoproject.com/en/dev/howto/deployment/wsgi/modwsgi/#using-a-virtualenv "Django documentation"
+[wsgipythonpath]: https://docs.djangoproject.com/en/1.5/howto/deployment/wsgi/modwsgi/#using-a-virtualenv "Django documentation"
+[wsgidaemonprocess]: https://docs.djangoproject.com/en/1.5/howto/deployment/wsgi/modwsgi/#using-mod-wsgi-daemon-mode "Django documentation"
