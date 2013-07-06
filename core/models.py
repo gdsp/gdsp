@@ -210,6 +210,12 @@ class Topic(models.Model):
         return self.title
 
     class Meta:
+        # NOTE: Because lesson-topic relations which are unique may
+        #       well include topics which are not, this ordering causes
+        #       Topic.objects.all() to return the same topic once for
+        #       every relation it is part of. If you need actually
+        #       distinct topics, specify a different ordering, e.g.
+        #       Topic.objects.order_by('id').
         ordering = [
                 'lessontopicrelation__lesson',
                 'lessontopicrelation__topic_ordinal',

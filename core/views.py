@@ -9,7 +9,7 @@ from models import (Lesson, Topic, LessonTopicRelation, BaseTopicElement,
 class TopicsListView(ListView):
     model = Topic
     template_name = 'core/topics/index.html'
-    queryset = Topic.objects.all()
+    queryset = Topic.objects.order_by('title')
     context_object_name = 'topics'
 
 
