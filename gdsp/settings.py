@@ -119,6 +119,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'south',
     'taggit',
+    'accounts',
     'core',
 )
 

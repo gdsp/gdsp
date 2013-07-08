@@ -14,7 +14,19 @@
         <ul>
           <li><a href="{% url 'core:lessons' %}">{% trans 'Lessons' %}</a></li>
           <li><a href="#">About</a></li>
-          <li><a href="#" id="login">Log in</a></li>
+          {% if user.is_authenticated %}
+            <li id="logout">
+              <a href="{% url 'accounts:logout' %}">
+                {% blocktrans with user.username as username %}
+                  Log out {{ username }}
+                {% endblocktrans %}
+              </a>
+            </li>
+          {% else %}
+            <li id="login">
+              <a href="{% url 'accounts:login' %}">{% trans 'Log in' %}</a>
+            </li>
+          {% endif %}
         </ul>
       </nav>
       {% block header %} {% endblock %}  {# for submenus and such #}

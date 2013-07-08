@@ -6,9 +6,8 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
-    # Examples:
-    # url(r'^$', 'gdsp.views.home', name='home'),
-
+    url(r'^accounts/', include('accounts.urls', app_name='accounts',
+                               namespace='accounts')),
     url(r'^lessons/', include('core.urls', app_name='core', namespace='core')),
     url(r'^admin/tag_autocomplete/$', 'core.views.tag_autocomplete_view'),
     url(r'^admin/', include(admin.site.urls)),

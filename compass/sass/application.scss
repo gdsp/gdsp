@@ -40,23 +40,23 @@ nav ul {
         display: inline;
         list-style-type: none;
         margin: 0 2em;
-    }
 
-    a {
-        @include adjust-font-size-to(24px);
-        color: $bg-color;
-        text-decoration: none;
-        border-radius: 3px;
-        padding: 0 .5em;
 
-        &:hover {
-            color: $dark-accent-color;
-            background-color: $bg-color;
+        &#login, &#logout {
+            float: right;
         }
 
-        &#login {
-            float: right;
-            margin-right: 2em;
+        a {
+            @include adjust-font-size-to(24px);
+            color: $bg-color;
+            text-decoration: none;
+            border-radius: 3px;
+            padding: 0 .5em;
+
+            &:hover {
+                color: $dark-accent-color;
+                background-color: $bg-color;
+            }
         }
     }
 }
