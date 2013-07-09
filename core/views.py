@@ -29,7 +29,7 @@ class TopicDetailView(DetailView):
 class LessonsListView(ListView):
     model = Lesson
     template_name = 'core/lessons/index.html'
-    queryset = Lesson.objects.all()
+    queryset = Lesson.objects.have_topics()
     context_object_name = 'lessons'
 
 
@@ -52,7 +52,7 @@ class LessonDetailView(DetailView):
                 lesson=self.object.id,
                 topic=topic.id,
         )
-        context['lessons'] = Lesson.objects.all()
+        context['lessons'] = Lesson.objects.have_topics()
         return context
 
 

@@ -1,6 +1,14 @@
 import taggit.managers as taggit
 
-from django.db.models import manager
+from django.db.models import manager, Count
+
+class LessonManager(manager.Manager):
+
+    def have_topics(self):
+        """Returns all lessons that have topics associated with them."""
+        return self.annotate(
+                topics_count=Count('topics'),
+        ).filter(topics_count__gt=0)
 
 class LessonTopicManager(manager.Manager):
     """
@@ -19,7 +27,10 @@ class LessonTopicManager(manager.Manager):
         """
         if not isinstance(lesson, int):
             lesson = lesson.id
-        return self.filter(lesson=lesson)[0]
+        try:
+            return self.filter(lesson=lesson)[0]
+        except IndexError:
+            return None
 
     def after(self, lesson_topic):
         """
