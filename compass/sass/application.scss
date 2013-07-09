@@ -84,13 +84,19 @@ nav#lesson-sidebar {
             list-style-type: none;
             margin-left: 0;
             width: 100%;
+
+            /* Let's indent wrapped lines of text. */
+            padding-left: 1em;
+            text-indent: -1em;
+            width: $sidebar-width - 1em;
         }
 
         ul li {
             /* These are topics; the above 'li' styles
                apply to both lessons and topics. */
-            padding-left: 0.1 * $sidebar-width;
-            width: 0.9 * $sidebar-width;
+            padding-left: 1em + 0.1 * $sidebar-width;
+            text-indent: -1em;
+            width: 0.9 * $sidebar-width - 1em;
 
             &.active {
                 font-weight: bold;
