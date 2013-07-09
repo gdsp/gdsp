@@ -197,7 +197,7 @@ class MathElement(BaseTopicElement):
                         'your markup in delimiters, like so: '
                         '<code>\[ 2^3 = 8 \]</code>.'),
     )
-    caption = models.CharField(max_length=255)
+    caption = models.CharField(max_length=255, blank=True)
 
     def save(self, *args, **kwargs):
         if not self.pk:
