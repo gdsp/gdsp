@@ -14,6 +14,7 @@ $bg-color: white;
 $fg-color: rgb(3, 1, 4);
 $light-accent-color: #DDD;
 $dark-accent-color: slategray;
+$error-color: red;
 
 $sidebar-width: 8em;
 $border-style: 2px dotted $fg-color;
@@ -173,6 +174,10 @@ div#content-wrapper {
         }
     }
 
+    form {
+        @include trailer;
+    }
+
     code, div.highlight {
         @include trailer;
         @include adjust-font-size-to(16px);
@@ -236,6 +241,16 @@ div#content-wrapper {
 
             &.prev { float: left; }
             &.next { float: right; }
+        }
+    }
+
+    ul.errorlist {
+        display: inline;
+
+        li {
+            color: $error-color;
+            display: inline;
+            list-style-type: none;
         }
     }
 }
