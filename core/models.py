@@ -172,6 +172,18 @@ class AudioElement(BaseTopicElement):
         verbose_name_plural = _('audio elements')
 
 
+# Pseudocode for Axel:
+#
+# class TestElement(BaseTopicElement):
+#     test = models.ForeignKey('Test')
+#
+#     def to_html(self):
+#         context = RequestContext()
+#         context['bla'] = self.bla
+#
+#         render('template.html', context)
+
+
 class LowerCaseTag(taggit.models.TagBase):
     """
     A django-taggit tag which forces the tag name to be lower-case in order to
