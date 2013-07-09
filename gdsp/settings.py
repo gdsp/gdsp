@@ -121,6 +121,7 @@ INSTALLED_APPS = (
     'taggit',
     'accounts',
     'core',
+    'pages',
 )
 
 # Enable the Django Debug Toolbar in development

@@ -12,8 +12,9 @@
     <div id="body-wrapper">
       <nav>
         <ul>
+          <li><a href="{% url 'home' %}">{% trans 'gDSP' %}</a></li>
           <li><a href="{% url 'core:lessons' %}">{% trans 'Lessons' %}</a></li>
-          <li><a href="#">About</a></li>
+          <li><a href="{% url 'about' %}">About</a></li>
           {% if user.is_authenticated %}
             <li id="logout">
               <a href="{% url 'accounts:logout' %}">

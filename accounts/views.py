@@ -19,7 +19,7 @@ class RegisterView(TemplateView):
                         password=form.cleaned_data['password1'],
                 )
                 login(request, user)
-                return HttpResponseRedirect(reverse('core:lessons'))
+                return HttpResponseRedirect(reverse('home'))
         else:
             form = UserCreationForm()
         return render(request, self.__class__.template_name, {'form': form})
