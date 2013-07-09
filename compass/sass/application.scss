@@ -203,6 +203,15 @@ div#content-wrapper {
         }
     }
 
+    figure.math-element {
+        @include trailer;
+        text-align: center;
+
+        figcaption {
+            font-style: italic;
+        }
+    }
+
     a.audio-element {
         display: block;
         @include trailer;

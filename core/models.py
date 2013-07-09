@@ -24,11 +24,12 @@ class BaseTopicElement(models.Model):
     included as part of a web page.
     """
 
-    AUDIO, CODE, IMAGE, TEXT = 'audio', 'code', 'image', 'text'
+    AUDIO, CODE, IMAGE, MATH, TEXT = 'audio', 'code', 'image', 'math', 'text'
     ELEMENT_TYPES = (
             (AUDIO, _('Audio')),
             (CODE, _('Code')),
             (IMAGE, _('Imagery')),
+            (MATH, _('Mathematics')),
             (TEXT, _('Text')),
     )
 
@@ -182,6 +183,38 @@ class AudioElement(BaseTopicElement):
 #         context['bla'] = self.bla
 #
 #         render('template.html', context)
+
+
+class MathElement(BaseTopicElement):
+    """
+    A topic element containing equations, formulae or other mathematical
+    writing expressed in the LaTeX markup language and rendered to HTML+CSS
+    client-side by the MathJax JavaScript library.
+    """
+
+    latex = models.TextField(
+            help_text=_('LaTeX-formatted mathematics. Remember to enclose '
+                        'your markup in delimiters, like so: '
+                        '<code>\[ 2^3 = 8 \]</code>.'),
+    )
+    caption = models.CharField(max_length=255)
+
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            self.element_type = BaseTopicElement.MATH
+        super(MathElement, self).save(*args, **kwargs)
+
+    def to_html(self):
+        html = u'<figure class="math-element">'
+        html += u'<p>{}</p>'.format(self.latex)
+        if self.caption:
+            html += u'<figcaption>{}</figcaption>'.format(self.caption)
+        html += u'</figure>'
+        return html
+
+    class Meta:
+        verbose_name = _('math element')
+        verbose_name_plural = _('math elements')
 
 
 class LowerCaseTag(taggit.models.TagBase):

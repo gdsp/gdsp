@@ -1,7 +1,7 @@
 from django.contrib import admin
 from forms import TopicInlineForm
 from models import (Lesson, Topic, BaseTopicElement, MarkdownElement,
-                    CodeElement, ImageElement, AudioElement)
+                    CodeElement, ImageElement, AudioElement, MathElement)
 
 class BaseTopicElementInline(admin.StackedInline):
     model = BaseTopicElement
@@ -36,6 +36,11 @@ class AudioElementInline(admin.StackedInline):
     extra = 0
 
 
+class MathElementInline(admin.StackedInline):
+    model = MathElement
+    extra = 0
+
+
 class TopicAdmin(admin.ModelAdmin):
     inlines = [
             BaseTopicElementInline,
@@ -43,6 +48,7 @@ class TopicAdmin(admin.ModelAdmin):
             CodeElementInline,
             ImageElementInline,
             AudioElementInline,
+            MathElementInline,
     ]
     search_fields = ['title', 'tags__name']
 
