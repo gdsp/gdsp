@@ -28,7 +28,7 @@ class BaseTopicElement(models.Model):
     ELEMENT_TYPES = (
             (AUDIO, _('Audio')),
             (CODE, _('Code')),
-            (IMAGE, _('Image')),
+            (IMAGE, _('Imagery')),
             (TEXT, _('Text')),
     )
 
@@ -68,7 +68,12 @@ class MarkdownElement(BaseTopicElement):
     markup language.
     """
 
-    text = models.TextField()
+    text = models.TextField(
+            help_text=_('Markdown-formatted text. '
+                        'For information about Markdown, please see the '
+                        '<a href="http://daringfireball.net/projects/markdown">'
+                        'official documentation</a>.'),
+    )
 
     def save(self, *args, **kwargs):
         if not self.pk:
@@ -165,6 +170,7 @@ class AudioElement(BaseTopicElement):
     class Meta:
         verbose_name = _('audio element')
         verbose_name_plural = _('audio elements')
+
 
 class LowerCaseTag(taggit.models.TagBase):
     """
