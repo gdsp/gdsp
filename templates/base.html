@@ -30,10 +30,14 @@
           {% endif %}
         </ul>
       </nav>
-      {% block header %} {% endblock %}  {# for submenus and such #}
+      {# Submenus etc.: #}
+      {% block header %} {% endblock %}
       <div id="content-wrapper">
-        {% block content %} {% endblock %}  {# the main content of the page #}
+        {# The main content of the page: #}
+        {% block content %} {% endblock %}
       </div>
+      {# JS and other resources that should load after the main content: #}
+      {% block footer %} {% endblock %}
     </div>
   </body>
 </html>
