@@ -2,6 +2,7 @@
 *.swp
 .DS_Store
 *.pyc
+*.bak
 .sass-cache/
 data/user/
 

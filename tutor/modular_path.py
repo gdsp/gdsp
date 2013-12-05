@@ -1,11 +1,14 @@
 import sys
+from os import path
+
+root_directory = path.abspath(path.join(path.dirname(__file__), '..'))
 
 # For importing CSound-Python code that lives in modular.
-modular = '/srv/www/gdsp.hf.ntnu.no/tutor/modular'
+modular = path.join(root_directory, 'tutor/modular')
 sys.path.append(modular)
 
-systemfiles = '/srv/www/gdsp.hf.ntnu.no/data/system'
+systemfiles = path.join(root_directory, 'data/system')
 sys.path.append(systemfiles)
 
-userfiles = '/srv/www/gdsp.hf.ntnu.no/data/user'
+userfiles = path.join(root_directory, 'data/user')
 sys.path.append(userfiles)

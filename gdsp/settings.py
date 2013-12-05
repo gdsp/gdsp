@@ -33,7 +33,7 @@ TIME_ZONE = 'Europe/Oslo'
 LANGUAGE_CODE = 'en-us'
 
 # Must correspond to setting in django_site
-SITE_ID = 2
+SITE_ID = 1
 
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
