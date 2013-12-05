@@ -11,6 +11,12 @@ from django.utils.translation import ugettext_lazy as _
 
 from managers import LessonManager, LessonTopicManager, LowerCaseTaggableManager
 
+from tutor.tests import find_tagged_tests
+from tutor.tests import find_inc_files
+from multiple import MultiSelectField
+
+from south.modelsinspector import add_introspection_rules
+add_introspection_rules([], ["^core\.multiple\.MultiSelectField"])
 
 class BaseTopicElement(models.Model):
     """
@@ -24,13 +30,15 @@ class BaseTopicElement(models.Model):
     included as part of a web page.
     """
 
-    AUDIO, CODE, IMAGE, MATH, TEXT = 'audio', 'code', 'image', 'math', 'text'
+    AUDIO, CODE, IMAGE, MATH, TEXT, TEST, RESULTS = 'audio', 'code', 'image', 'math', 'text', 'test', 'results'
     ELEMENT_TYPES = (
             (AUDIO, _('Audio')),
             (CODE, _('Code')),
             (IMAGE, _('Imagery')),
             (MATH, _('Mathematics')),
             (TEXT, _('Text')),
+            (TEST, _('Test')),
+            (RESULTS, _('Results')),
     )
 
     description = models.CharField(
@@ -173,17 +181,61 @@ class AudioElement(BaseTopicElement):
         verbose_name_plural = _('audio elements')
 
 
-# Pseudocode for Axel:
-#
-# class TestElement(BaseTopicElement):
-#     test = models.ForeignKey('Test')
-#
-#     def to_html(self):
-#         context = RequestContext()
-#         context['bla'] = self.bla
-#
-#         render('template.html', context)
+# This method is called from the initialization variable - and
+# therefore cannot be part of the class. It is therefore left outside.
+def test_choices():
+    indices = []
+    choices = []
+    for tag in find_tagged_tests():
+        indices.append('')
+        choices.append('tag: ' + tag[0])
+        for choice in tag[1]:
+            indices.append(choice)
+            choices.append(' - ' + choice)
+        indices.append('')
+        choices.append('')
+    return zip(indices, choices)
 
+class TestElement(BaseTopicElement):
+    """"
+    Integration with the automatic tutor. The test is embedded via an iframe,
+    which makes it very easy to just use the tutor app standalone.
+    """
+    
+    test = models.CharField(max_length=256,choices=test_choices())
+    difficulty = models.CharField(max_length=256,choices=(('Easy', 'Easy'), ('Hard', 'Hard')))
+    effect_files = MultiSelectField(default='NULL.inc', max_length=10000,
+                                    choices=tuple([ (fx,fx) for fx in find_inc_files() + ['ALL FX', 'Effects the student has seen so far' ]]))
+
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            self.element_type = BaseTopicElement.TEST
+        super(TestElement, self).save(*args, **kwargs)
+
+    def to_html(self):
+        return u'<h2>{description}</h2><iframe src="{url}/{test}/{difficulty}/{FX}" frameborder="0" scrolling="no" width="100%" onload="javascript:resizeIframe(this);"></iframe>'.format(url='http://gdsp.hf.ntnu.no/tutor/',
+                                                                                                                                                  description=self.description, test=self.test, difficulty = self.difficulty, FX=str(' '.join(self.effect_files)))
+
+    class Meta:
+        verbose_name = _('test element')
+        verbose_name_plural = _('test elements')
+
+class ResultsElement(BaseTopicElement):
+    """"
+    Displays the aggregated results for the student.
+    """
+
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            self.element_type = BaseTopicElement.RESULTS
+        super(ResultsElement, self).save(*args, **kwargs)
+
+    def to_html(self):
+        return u'<h2>{description}</h2><iframe src="http://gdsp.hf.ntnu.no/tutor/results" frameborder="0" scrolling="yes" width="100%" onload="javascript:resizeIframe(this);"></iframe>'.format(description=self.description)
+
+    class Meta:
+        verbose_name = _('results element')
+        verbose_name_plural = _('results elements')
 
 class MathElement(BaseTopicElement):
     """
