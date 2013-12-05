@@ -213,7 +213,7 @@ class TestElement(BaseTopicElement):
         super(TestElement, self).save(*args, **kwargs)
 
     def to_html(self):
-        return u'<h2>{description}</h2><iframe src="{url}/{test}/{difficulty}/{FX}" frameborder="0" scrolling="no" width="100%" onload="javascript:resizeIframe(this);"></iframe>'.format(url='http://gdsp.hf.ntnu.no/tutor/',
+        return u'<h2>{description}</h2><iframe src="{url}/{test}/{difficulty}/{FX}" frameborder="0" scrolling="yes" width="100%" onload="javascript:resizeIframe(this);"></iframe>'.format(url='http://gdsp.hf.ntnu.no/tutor/',
                                                                                                                                                   description=self.description, test=self.test, difficulty = self.difficulty, FX=str(' '.join(self.effect_files)))
 
     class Meta:
