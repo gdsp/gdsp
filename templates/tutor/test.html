@@ -1,0 +1,55 @@
+<html>
+<head><title>Test</title>
+<link rel="stylesheet" href="/static/css/application.css">
+</head>
+<body>
+
+{% load dict_key_lookup %}
+
+<B>{{ context.msg }}</B> <P>
+
+Original: 
+<EMBED
+SRC="/site_media/system/samples/{{ context.sound }}"
+HEIGHT="16"
+WIDTH="250"
+AUTOPLAY="false" CONTROLLER="true" LOOP="false"
+PLUGINSPAGE="http://www.apple.com/quicktime/download/">
+
+Processed: 
+<EMBED
+SRC="/site_media/user/{{ context.csd }}_normalized.wav"
+HEIGHT="16"
+WIDTH="250"
+AUTOPLAY="false" CONTROLLER="true" LOOP="false"
+PLUGINSPAGE="http://www.apple.com/quicktime/download/">
+
+<form action="/tutor/{{ context.test_name }}/{{ context.level }}/{{ context.FX }}" method="post">
+{% csrf_token %}
+
+{% for choice in context.choices %}
+
+    <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice }}" />
+    <label for="choice{{ forloop.counter }}">{% dictKeyLookup context.effectsDict choice %}</label><br />
+    <input type="hidden" name="alternative{{ forloop.counter }}" value="{{ choice }}">
+
+{% endfor %}
+
+<input type="hidden" name="answer" value="{{ context.answer }}">
+<input type="hidden" name="sound" value="{{ context.sound }}">
+<input type="hidden" name="csd" value="{{ context.csd }}">
+<input type="hidden" id="cheated" name="cheated" value="False">
+<input type="submit" value="Submit" />
+<br><br>
+The <a href = "/site_media/user/{{ context.csd }}"
+onclick="document.getElementById('cheated').value='True';"> CSD file</a> used to generate the sound. If you open it, the
+result will not count (you cheated!)
+
+<br><br>
+The <a href = "/site_media/user/{{ context.last_csd }}"> CSD file</a>
+of the previous test where you answered correctly.
+
+</form>
+
+</body>
+</html>

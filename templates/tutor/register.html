@@ -1,0 +1,10 @@
+<h1>Eartraining course</h1>
+
+<form action="/tutor/" method="post">
+{% csrf_token %}
+I want to register a new user: <input type="checkbox" name="new" value="True">
+<br>
+Name: <input type="text" name="name">
+Password: <input type="password" name="password">
+
+<input type="submit" value="Start >">

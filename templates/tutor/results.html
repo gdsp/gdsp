@@ -1,0 +1,68 @@
+<html>
+<head>
+
+<script type="text/javascript"
+  src="http://dygraphs.com/dygraph-combined.js"></script>
+
+<link rel="stylesheet" href="/static/css/application.css">
+
+<script type="text/javascript">
+  function unhide(divID) {
+    var item = document.getElementById(divID);
+    if (item) {
+      item.className=(item.className=='hidden')?'unhidden':'hidden';
+    }
+  }
+</script>
+
+<style>
+.hidden { display: none; }
+.unhidden { display: block; }
+</style>
+</head>
+<body>
+
+{% for task, correct, total, ratio, day_groups, all in context.results %}
+
+Task <B>"{{ task }}"</B>: {{ correct }} out of {{ total }}. {{ ratio|floatformat }}% 
+
+<br>
+History:
+
+<div id="graphdiv{{ task }}"></div>
+<script type="text/javascript">
+  g = new Dygraph(
+
+    // containing div
+    document.getElementById("graphdiv{{ task }}"),
+
+    // CSV or path to a CSV file.
+    "Date,Percent correct answers\n" +
+{% for key, value in day_groups %}
+    "{{ key|date:"Y-m-d" }}, {{ value }}\n"
+    {% if forloop.last %} , {% else %} + {% endif %}
+{% endfor %}
+
+{ valueRange: [0,101] }
+
+  );
+</script>
+
+<br>
+<a href="javascript:unhide('history {{ task }}');">Result log</a>
+<br>
+
+<div id="history {{ task }}" class="hidden">
+
+{% for q in all %}
+{{ q.timestamp }}: {% if q.correct %} Correct {% else %} Wrong {% endif %} 
+<a href ="/site_media/tutor/modular/{{ q.csd }}">{{ q.csd }}</a>
+{% if q.cheated %} -> opened CSD file prior to answering, not part of statistics {% endif %}
+<br>
+{% endfor %}
+</div>
+<br>
+{% endfor %}
+
+</body>
+</html>
