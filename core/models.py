@@ -242,7 +242,7 @@ class ResultsElement(BaseTopicElement):
 
     """
     def to_html(self):
-        return u'<h2>{description}</h2><iframe src="http://gdsp.hf.ntnu.no/tutor/results" frameborder="0" scrolling="no" width="100%" height=300;"></iframe>'.format(description=self.description)
+        return u'<h2>{description}</h2><iframe src="http://gdsp.hf.ntnu.no/tutor/results" frameborder="0" scrolling="no" width="100%" height=500;"></iframe>'.format(description=self.description)
 
     class Meta:
         verbose_name = _('results element')
