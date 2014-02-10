@@ -212,8 +212,14 @@ class TestElement(BaseTopicElement):
             self.element_type = BaseTopicElement.TEST
         super(TestElement, self).save(*args, **kwargs)
 
+    """"
     def to_html(self):
         return u'<h2>{description}</h2><iframe src="{url}/{test}/{difficulty}/{FX}" frameborder="0" scrolling="yes" width="100%" onload="javascript:resizeIframe(this);"></iframe>'.format(url='http://gdsp.hf.ntnu.no/tutor/',
+                                                                                                                                                  description=self.description, test=self.test, difficulty = self.difficulty, FX=str(' '.join(self.effect_files)))
+
+    """
+    def to_html(self):
+        return u'<h2>{description}</h2><iframe src="{url}/{test}/{difficulty}/{FX}" frameborder="0" scrolling="no" width="100%" height=300"></iframe>'.format(url='http://gdsp.hf.ntnu.no/tutor/',
                                                                                                                                                   description=self.description, test=self.test, difficulty = self.difficulty, FX=str(' '.join(self.effect_files)))
 
     class Meta:
@@ -230,8 +236,13 @@ class ResultsElement(BaseTopicElement):
             self.element_type = BaseTopicElement.RESULTS
         super(ResultsElement, self).save(*args, **kwargs)
 
+    """"
     def to_html(self):
         return u'<h2>{description}</h2><iframe src="http://gdsp.hf.ntnu.no/tutor/results" frameborder="0" scrolling="yes" width="100%" onload="javascript:resizeIframe(this);"></iframe>'.format(description=self.description)
+
+    """
+    def to_html(self):
+        return u'<h2>{description}</h2><iframe src="http://gdsp.hf.ntnu.no/tutor/results" frameborder="0" scrolling="no" width="100%" height=300;"></iframe>'.format(description=self.description)
 
     class Meta:
         verbose_name = _('results element')
