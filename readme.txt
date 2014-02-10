@@ -58,3 +58,33 @@ TopicAdmin:
 * Inlines: BaseTopicElementInline (ordering!), ImageElementInline, etc.
 * Templates: admin/core/inline_basetopicelement.html (BaseTopicElementInline)
 * Customizations: Ordering (BaseTopicElementInline)
+
+4. Template dependencies
+------------------------
+
+In folder templates:
+
+base.html --> links to style template css/application.css
+* Defines the top menu and some Java tools
+* Also layout of login/out
+
+In folder core/templates:
+
+/core/base.html --> extends base.html
+* Many Java tools (soundmanager, inlineplayer, mathjax)
+
+/core/lessons/base.html --> extends /core/base.html
+* Layout for the lesson sidebar
+
+/core/lessons/index.html --> extends /core/lessons/base.html
+* Called from LessonsListView
+* Shows a bulleted list of lessons in the main window 
+
+/core/lessons/lesson.html --> extends /core/lessons/base.html
+* Called from LessonDetailView
+
+/core/topics/index.html --> extends /core/base.html
+* Called from TopicsListView
+
+/core/topics/topic.html --> extends /core/base.html
+* Called from TopicDetailView
