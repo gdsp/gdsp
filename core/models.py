@@ -310,6 +310,10 @@ class Topic(models.Model):
     """
 
     title = models.CharField(max_length=255)
+    caption = models.CharField(max_length=255,
+                                  default='',
+                                  help_text=_('The title that will be displayed '
+                        '(use if different from title)'),)
     tags = LowerCaseTaggableManager(
             through=LowerCaseTaggedItem,
             help_text=_('A comma-separated list of keywords that describe '
@@ -322,6 +326,9 @@ class Topic(models.Model):
 
     def __unicode__(self):
         return self.title
+
+    def display_title(self):
+        return self.caption if self.caption else self.title
 
     class Meta:
         # NOTE: Because lesson-topic relations which are unique may

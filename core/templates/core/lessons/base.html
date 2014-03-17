@@ -16,7 +16,7 @@
           {% for topic in lesson.topics.all %}
             <li class="{% if topic == lesson_topic.topic %}active{% endif %}">
               <a href="{% url 'core:lesson' pk=lesson.id topic=topic.id %}">
-                {{ topic.title }}
+                {{ topic.display_title }}
               </a>
             </li>
           {% endfor %}
