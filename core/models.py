@@ -344,6 +344,7 @@ class Topic(models.Model):
         verbose_name = _('topic')
         verbose_name_plural = _('topics')
 
+
 class Lesson(models.Model):
     """
     A lesson is an ordered collection of topics.
@@ -362,6 +363,7 @@ class Lesson(models.Model):
     class Meta:
         verbose_name = _('lesson')
         verbose_name_plural = _('lessons')
+
 
 class LessonTopicRelation(models.Model):
     topic = models.ForeignKey(Topic)
@@ -400,3 +402,21 @@ class LessonTopicRelation(models.Model):
         ]
         verbose_name = _('lesson topic')
         verbose_name_plural = _('lesson topics')
+
+
+class Course(models.Model):
+    """
+    A course is an ordered collection of lessons.
+    """
+
+    title = models.CharField(max_length=255)
+
+    def get_absolute_url(self):
+        return reverse('core:course', kwargs={'pk': self.id})
+
+    def __unicode__(self):
+        return self.title
+
+    class Meta:
+        verbose_name = _('course')
+        verbose_name_plural = _('courses')

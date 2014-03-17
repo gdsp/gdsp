@@ -1,6 +1,6 @@
 from django.contrib import admin
 from forms import TopicInlineForm
-from models import (Lesson, Topic, BaseTopicElement, MarkdownElement,
+from models import (Course, Lesson, Topic, BaseTopicElement, MarkdownElement,
                     CodeElement, ImageElement, AudioElement, MathElement, TestElement, ResultsElement)
 
 class BaseTopicElementInline(admin.StackedInline):
@@ -92,5 +92,11 @@ class LessonAdmin(admin.ModelAdmin):
     inlines = [TopicInline]
 
 
+class CourseAdmin(admin.ModelAdmin):
+    model = Course
+    extra = 0
+
+
 admin.site.register(Topic, TopicAdmin)
 admin.site.register(Lesson, LessonAdmin)
+admin.site.register(Course, CourseAdmin)
