@@ -92,9 +92,14 @@ class LessonAdmin(admin.ModelAdmin):
     inlines = [TopicInline]
 
 
+class LessonInline(admin.TabularInline):
+    model = Lesson
+    ordering = ['_order']
+
+
 class CourseAdmin(admin.ModelAdmin):
     model = Course
-    extra = 0
+    inlines = [LessonInline]
 
 
 admin.site.register(Topic, TopicAdmin)

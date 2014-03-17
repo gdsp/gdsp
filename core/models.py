@@ -351,6 +351,7 @@ class Lesson(models.Model):
     """
 
     title = models.CharField(max_length=255)
+    course = models.ForeignKey('Course', related_name='lessons')
     topics = models.ManyToManyField(Topic, through='LessonTopicRelation')
     objects = LessonManager()
 
@@ -363,6 +364,7 @@ class Lesson(models.Model):
     class Meta:
         verbose_name = _('lesson')
         verbose_name_plural = _('lessons')
+        order_with_respect_to = 'course'
 
 
 class LessonTopicRelation(models.Model):
