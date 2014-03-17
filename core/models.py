@@ -310,7 +310,7 @@ class Topic(models.Model):
     """
 
     title = models.CharField(max_length=255)
-    caption = models.CharField(max_length=255,
+    caption = models.CharField(max_length=255, null=True,
                                   default='',
                                   help_text=_('The title that will be displayed '
                         '(use if different from title)'),)
@@ -344,7 +344,6 @@ class Topic(models.Model):
         verbose_name = _('topic')
         verbose_name_plural = _('topics')
 
-
 class Lesson(models.Model):
     """
     A lesson is an ordered collection of topics.
@@ -363,7 +362,6 @@ class Lesson(models.Model):
     class Meta:
         verbose_name = _('lesson')
         verbose_name_plural = _('lessons')
-
 
 class LessonTopicRelation(models.Model):
     topic = models.ForeignKey(Topic)
