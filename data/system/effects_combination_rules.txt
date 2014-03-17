@@ -1,6 +1,6 @@
 # Rule 1:
 # Do not combine hard clipping effects
-hardclip_effects = ['hardclip.inc','mirror.inc','mirror_rectify.inc','wrap.inc','bitreduce.inc']
+hardclip_effects = ['hardclip.inc','mirror.inc','mirrorrectify.inc','wrap.inc','bitreduce.inc']
 
 # Rule 2:
 # Do not filter redundantly, so do not insert a filter that will operate in a frequency range filtered out by a preceding effect.
@@ -9,8 +9,8 @@ filter_effects = ['bandpass.inc', 'bandreject.inc','hipass.inc','lowpass.inc']
 
 # Rule 3:
 # Do not combine frequency freeze effects of different kinds, it just looks stupid to have two different effets chained that does the same job
-pvsfreeze_effects =['pvsfreeze_freq.inc', 'pvsfreeze_amp.inc', 'pvsfreeze_both.inc']
+pvsfreeze_effects =['pvsfreezefreq.inc', 'pvsfreezeamp.inc', 'pvsfreezeboth.inc']
 
 # Rule 4:
 # Do not combine different types of tanh dist
-tanh_effects = ['tanh_dist.inc', 'tanh_dist_mod.inc']
+tanh_effects = ['tanhdist.inc', 'tanhdistmod.inc']
