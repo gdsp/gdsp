@@ -310,6 +310,10 @@ class Topic(models.Model):
     """
 
     title = models.CharField(max_length=255)
+    caption = models.CharField(max_length=255, null=True,
+                                  default='',
+                                  help_text=_('The title that will be displayed '
+                        '(use if different from title)'),)
     tags = LowerCaseTaggableManager(
             through=LowerCaseTaggedItem,
             help_text=_('A comma-separated list of keywords that describe '
