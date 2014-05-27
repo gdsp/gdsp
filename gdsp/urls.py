@@ -5,7 +5,7 @@ from os import environ
 from django.contrib import admin
 admin.autodiscover()
 
-from pages.views import HomeView, AboutView
+from pages.views import HomeView, AboutView, PnaclView
 
 urlpatterns = patterns('',
     # Account handling (login, logout, registration, ...):
@@ -29,6 +29,7 @@ urlpatterns = patterns('',
     # Static pages such as the home page, 'About' etc.:
     url(r'^$', HomeView.as_view(), name='home'),
     url(r'^about/$', AboutView.as_view(), name='about'),
+    url(r'^pnacl/$', PnaclView.as_view(), name='pnacl'),
 )
 
 if not environ.get('DJANGO_PRODUCTION', None):
