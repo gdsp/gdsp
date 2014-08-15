@@ -16,7 +16,7 @@
 	kduty		= kDuty * kDrive
 
 	atemp    	delayr  0.1                          
-	aout   		deltapi ((2-a1)*kduty) + (aslope * kslope) + 0.004	; Slope&Duty controlled delay time
+	aout   		deltapi 0.004 + ((2-a1)*kduty) + (aslope * kslope)	; Slope&Duty controlled delay time
 			delayw  	a1
 
 	a1		butterlp aout, kCutoff
