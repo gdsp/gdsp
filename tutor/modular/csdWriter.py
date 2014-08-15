@@ -136,8 +136,9 @@ def getEffectParameterValues(effectParameterSet):
 def writeCsoundFile(filename, effectParameterValues, systemfiles, userfiles, inputsound):
     # create a file object
     outfilename = filename
+    print 'outfilename', outfilename
     f = open(userfiles + '/' + outfilename, 'w')
-    
+    print 'opened file', outfilename
     #options = '-otest.wav -f'#'-odac -b1024 -B2048'
     # This is done so files with unique names can be created.
     options = '-o%s/%s.wav -f' % (userfiles, filename) #'-odac -b1024 -B2048'
@@ -161,12 +162,20 @@ def writeCsoundFile(filename, effectParameterValues, systemfiles, userfiles, inp
     f.write(';*****************************************************\n\n')
     f.write('\tiamp \t\t= ampdbfs(-0) \n\n')
 
-
     # sound generator
+    print 'inputsound', inputsound
     f.write('\n;****************sound generator***********************\n')
-    f.write('\ta1 \t\tdiskin "%s", 1, 0, 1 \n'%inputsound)
-    f.write('\tilen \t\tfilelen "%s" \n'%inputsound)
-    f.write('\tp3 \t\t= ilen \n\n')    
+    if inputsound == 'sine':
+        freq = effectParameterValues['bandpass.inc']['kCutoff']
+        f.write('\ta1 \t\toscili 0.7, %f, giSine \n'%freq)
+        f.write('\tilen \t\t= 4 \n')
+    elif inputsound == 'noise':
+        f.write('\ta1 \t\trnd31 1, 1 \n')
+        f.write('\tilen \t\t= 4 \n')
+    else:
+        f.write('\ta1 \t\tdiskin "%s", 1, 0, 1 \n'%inputsound)
+        f.write('\tilen \t\tfilelen "%s" \n'%inputsound)
+        f.write('\tp3 \t\t= ilen \n\n')    
     f.write(';*** generate event for the effects processing instr ***\n')
     f.write('\t\t\tevent_i "i", 9, 0, p3+30\n\n')
     currentSignalType = 'mono'
