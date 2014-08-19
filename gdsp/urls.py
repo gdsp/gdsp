@@ -24,7 +24,7 @@ urlpatterns = patterns('',
     # The automatic tutor app:
     url(r'^tutor/', include('tutor.urls')),
     (r'^site_media/(?P<path>.*)$', 'django.views.static.serve',
-     {'document_root': '/srv/www/gdsp.hf.ntnu.no/data/', 'show_indexes': True}),
+     {'document_root': '/Users/tidemann/Documents/NTNU/gdsp/data/', 'show_indexes': True}),
 
     # Static pages such as the home page, 'About' etc.:
     url(r'^$', HomeView.as_view(), name='home'),

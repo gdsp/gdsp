@@ -79,7 +79,7 @@ class TestCode(object):
         # Store which effects are being used
         for effect in effectParameterValues.keys():
             History.objects.get_or_create(user = self.user, effect = effect)
-
+            
         cs.writeCsoundFile(csoundFilename, effectParameterValues, md.systemfiles, md.userfiles, inputSound)
 
         retcode = subprocess.call(['csound', '-d', md.userfiles + '/' + csoundFilename])
@@ -115,7 +115,7 @@ class TestCode(object):
         return request.POST['answer'], self.diminish_choices(request), request.POST['sound'], request.POST['csd']
 
     def store_result(self, request):
-        correct = request.POST['answer'] == request.POST['choice']
+	correct = request.POST['answer'] == request.POST['choice']
         result = Result(test = self.name, correct = correct, user = request.user, csd = request.POST['csd'],
                         cheated = request.POST['cheated'] == 'True')
         result.save()
@@ -152,10 +152,10 @@ class GuessEffect(TestCode):
     def check(self, request, correct):
         return self.first() if correct else self.less_choices(request)
 
-class Filter(TestCode):
+class BandpassMusic(TestCode):
 
-    name = 'General filter'
-    tags = 'filter'
+    name = 'Bandpass music'
+    tags = 'frequency, filter'
 
     # Easy and hard returns a random starting frequency, the scaling factor (in each direction) and Q.
     def easy(self):
@@ -172,13 +172,16 @@ class Filter(TestCode):
         freq, scaling, Q = self.level()
         fxs, answer = self.shuffle_fxs(freq, scaling)
         sound, csd = self.filter_effect(answer, Q)
+	print 'first', answer, fxs, sound, csd
         return answer, fxs, sound, csd
 
     def check(self, request, correct):
         if correct:
-            # Simple solution: walk 50% in each direction, randomly.
-            freq = int(int(request.POST['answer'])*random.choice([0.5, 1.5]))
-            _, scaling, Q = self.level()
+            # Simple solution: walk up to 50% in each direction, randomly.
+            freq = int(int(request.POST['answer'])*random.choice([0.67, 0.71, 0.77, 1.3, 1.4, 1.5]))
+            x, scaling, Q = self.level()
+            if (freq > 12000) or (freq < 50):
+                freq = x # reset to randrange if out of range
             fxs, answer = self.shuffle_fxs(freq, scaling)
             sound, csd = self.filter_effect(answer, Q)
         
@@ -187,6 +190,7 @@ class Filter(TestCode):
             return self.less_choices(request)
     
     def filter_effect(self, freq, Q):
+        self.FX = ['bandpass.inc']
         effectParameterSet = cs.getEffectParameterSet(self.FX, md.systemfiles)
         effectParameterValues = cs.getEffectParameterValues(effectParameterSet)
 
@@ -194,6 +198,145 @@ class Filter(TestCode):
         effectParameterValues[self.FX[0]]['kBW'] = Q
 
         return self.process(effectParameterValues)
+
+class BandpassNoise(BandpassMusic):
+
+    name = 'Bandpass Noise'
+    tags = 'frequency, filter'
+
+    def process(self, effectParameterValues):
+        print 'effectParameterValues', effectParameterValues
+        inputSound = 'noise'
+        csoundFilename = str(uuid.uuid4()) + '.csd'
+
+        # Store which effects are being used
+        for effect in effectParameterValues.keys():
+            History.objects.get_or_create(user = self.user, effect = effect)
+
+        cs.writeCsoundFile(csoundFilename, effectParameterValues, md.systemfiles, md.userfiles, inputSound)
+
+        retcode = subprocess.call(['csound', '-d', md.userfiles + '/' + csoundFilename])
+        print retcode
+        if retcode == 0:
+            # Change the normalize CSD file.
+            userfile = md.userfiles + '/' + csoundFilename
+            subprocess.call('sed s,test,%s, ' % userfile + md.modular + '/normalize.csd >' + md.userfiles + '/normalize.%s' % csoundFilename, shell=True)
+            retcode = subprocess.call(['csound', md.userfiles + '/normalize.%s' % csoundFilename ])
+            print '******************************'
+            print 'source sound:', inputSound
+            print effectParameterValues
+
+        else:
+            print 'csound error'
+
+        return inputSound.rsplit('/')[-1], csoundFilename
+
+
+class SineFrequency(BandpassMusic):
+
+    name = 'Sine'
+    tags = 'frequency'
+
+    def process(self, effectParameterValues):
+        print 'effectParameterValues', effectParameterValues
+        inputSound = 'sine'
+        csoundFilename = str(uuid.uuid4()) + '.csd'
+
+        # Store which effects are being used
+        for effect in effectParameterValues.keys():
+            History.objects.get_or_create(user = self.user, effect = effect)
+
+        cs.writeCsoundFile(csoundFilename, effectParameterValues, md.systemfiles, md.userfiles, inputSound)
+
+        retcode = subprocess.call(['csound', '-d', md.userfiles + '/' + csoundFilename])
+        print retcode
+        if retcode == 0:
+            # Change the normalize CSD file.
+            userfile = md.userfiles + '/' + csoundFilename
+            subprocess.call('sed s,test,%s, ' % userfile + md.modular + '/normalize.csd >' + md.userfiles + '/normalize.%s' % csoundFilename, shell=True)
+            retcode = subprocess.call(['csound', md.userfiles + '/normalize.%s' % csoundFilename ])
+            print '******************************'
+            print 'source sound:', inputSound
+            print effectParameterValues
+
+        else:
+            print 'csound error'
+
+        return inputSound.rsplit('/')[-1], csoundFilename
+
+class ReverbTimeAndMix(TestCode):
+
+    name = 'Reverb Time and Mix'
+    tags = 'reverb'
+
+    def __init__(self, level, FX, user):
+        if level == 'Hard':
+            self.level = self.hard
+        if level == 'Easy':
+            self.level = self.easy
+
+        self.FX = ['freeverb_time.inc']
+	self.parameters = [(2.5, 0.7)] # alternatives for time and mix
+        self.user = user
+
+    # Easy and hard returns a [time, mixrando] parameter set, and the scaling factor (in each direction).
+    def easy(self):
+	self.parameters = [(0.9, 0.8), (1.8, 0.5), (2.5, 0.4), (4.0, 0.3)]
+	scaling = 0.5
+        return scaling
+
+    def hard(self):	
+	self.parameters = [(0.7, 0.9), (0.9, 0.8), (1.2, 0.5), 
+                           (1.3, 0.45), (1.6, 0.4), (1.9, 0.4), 
+                           (2.2, 0.4), (2.5, 0.4), (3.0, 0.35), 
+                           (3.5, 0.2), (4.0, 0.15)]        
+	scaling = 0.2
+	return scaling
+
+    def shuffle_fxs(self, parms, scaling):
+	time1 = round(parms[0]*(1-scaling),1)
+	if time1 < 0.6: time1 = 0.6
+	mix1 = round(parms[1]*(1-scaling),1)
+	if mix1 < 0.1: mix1 = 0.1
+	time3 = round(parms[0]*(1+scaling),1)
+	if time3 > 8.0: time3 = 8.0
+	mix3 =round(parms[1]*(1+scaling),1)
+	if mix3 > 1.0: mix3 = 1.0
+        fxs = [ (time1, mix1), 
+                parms, 
+                (time3,mix3) ]
+        return fxs, fxs[random.randrange(3)]
+
+    def first(self):
+        scaling = self.level()
+	parms = random.choice(self.parameters)
+        fxs, answer = self.shuffle_fxs(parms, scaling)
+        sound, csd = self.reverb_effect(answer)
+	print 'reverb_first', answer, fxs, sound, csd
+        return answer, fxs, sound, csd
+
+    def check(self, request, correct):
+        if correct:
+	    parms = random.choice(self.parameters)
+            scaling = self.level()
+            fxs, answer = self.shuffle_fxs(parms, scaling)
+            sound, csd = self.reverb_effect(answer)
+        
+            return answer, fxs, sound, csd
+        else:
+            return self.less_choices(request)
+    
+    def reverb_effect(self, answer):        
+	effectParameterSet = cs.getEffectParameterSet(self.FX, md.systemfiles)
+        effectParameterValues = cs.getEffectParameterValues(effectParameterSet)
+	print 'effectParameterValues', effectParameterValues
+        effectParameterValues[self.FX[0]]['kRevTime'] = answer[0]
+        effectParameterValues[self.FX[0]]['kmix'] = answer[1]
+        effectParameterValues[self.FX[0]]['kHFDamp'] = 0.5
+	print 'effectParameterValues', effectParameterValues
+
+        return self.process(effectParameterValues)
+
 
 class Combinations(TestCode):
 
