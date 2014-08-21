@@ -9,6 +9,7 @@ core/migrations
 
 # We don't want the world to know our database settings and secret key.
 gdsp/settings_prod.py
+gdsp/urls.py
 
 # We don't need to keep a bunch of test data in SCM.
 db.sqlite

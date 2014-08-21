@@ -12,15 +12,20 @@ ADMINS = (
 MANAGERS = ADMINS
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'db.sqlite',
+   'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'gdsp',
+        'USER': 'gdsp',
+        'PASSWORD': 'Gode10der',
+        'HOST': '',  # Empty for localhost through domain sockets or
+                     # '127.0.0.1' for localhost through TCP.
+        'PORT': '',  # Set to empty string for default.
     }
 }
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'gdsp.hf.ntnu.no']
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -33,7 +38,7 @@ TIME_ZONE = 'Europe/Oslo'
 LANGUAGE_CODE = 'en-us'
 
 # Must correspond to setting in django_site
-SITE_ID = 1
+SITE_ID = 2
 
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
@@ -83,7 +88,7 @@ STATICFILES_FINDERS = (
 )
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = 'override_this_in_production'
+SECRET_KEY = '(=p0=*#_il6)0m1#2981c_v!2%^ut8l+(a50&!*5ze4mtpd135'
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
