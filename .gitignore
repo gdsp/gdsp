@@ -6,6 +6,10 @@
 .sass-cache/
 data/user/
 core/migrations
+*.*~
+
+# URL settings must, sadly, be hard coded for each system
+gdsp/urls.py
 
 # We don't want the world to know our database settings and secret key.
 gdsp/settings_prod.py
