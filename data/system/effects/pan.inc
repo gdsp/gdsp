@@ -5,6 +5,6 @@
 */
 
 ; (square root) equal power panning
-	a2		= a1 * sqrt(iPan)
-	a1		= a1 * sqrt(1-iPan)
+	a2		= a1 * sqrt(kPan)
+	a1		= a1 * sqrt(1-kPan)
 
