@@ -18,7 +18,6 @@ from multiple import MultiSelectField
 
 from south.modelsinspector import add_introspection_rules
 add_introspection_rules([], ["^core\.multiple\.MultiSelectField"])
-current_site = Site.objects.get_current()
 
 class BaseTopicElement(models.Model):
     """
@@ -215,6 +214,7 @@ class TestElement(BaseTopicElement):
         super(TestElement, self).save(*args, **kwargs)
 
     def to_html(self):
+        current_site = Site.objects.get_current()
         return u'<h2>{description}</h2><iframe src="http://{domain}/tutor/{test}/{difficulty}/{FX}" frameborder="0" scrolling="no" width="100%" height=300"></iframe>'.format(domain=current_site.domain,
                                                                                                                                                   description=self.description, test=self.test, difficulty = self.difficulty, FX=str(' '.join(self.effect_files)))
 
@@ -233,6 +233,7 @@ class ResultsElement(BaseTopicElement):
         super(ResultsElement, self).save(*args, **kwargs)
 
     def to_html(self):
+        current_site = Site.objects.get_current()
         return u'<h2>{description}</h2><iframe src="http://{domain}/tutor/results" frameborder="0" scrolling="no" width="100%" height=500;"></iframe>'.format(domain=current_site.domain, description=self.description)
 
     class Meta:
