@@ -3,13 +3,13 @@
 .DS_Store
 *.pyc
 *.bak
+*.*~
 .sass-cache/
 data/user/
-accounts/migrations
-core/migrations
-tutor/migrations
-pages/migrations
-*.*~
+accounts/migrations/
+core/migrations/
+tutor/migrations/
+pages/migrations/
 
 # We don't want the world to know our database settings and secret key.
 gdsp/settings_prod.py
