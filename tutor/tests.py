@@ -5,6 +5,7 @@ import random, copy, subprocess, pdb
 import time, inspect, sys, uuid
 
 from tutor.models import Result, History
+from os import path
 import modular_path as md
 import csdWriter as cs
 
@@ -73,22 +74,24 @@ class TestCode(object):
         raise NotImplementedError
 
     def process(self, effectParameterValues):
-        inputSound = md.systemfiles + '/samples/' + random.choice(cs.getWavefileNames(md.systemfiles))
+        inputSound = path.join(md.systemfiles, 'samples', random.choice(cs.getWavefileNames(md.systemfiles)))
         csoundFilename = str(uuid.uuid4()) + '.csd'
+        csoundNormFilename = 'normalize.' + csoundFilename
+
+        csoundFilepath = path.join(md.userfiles, csoundFilename)
+        csoundNormFilepath = path.join(md.userfiles, csoundNormFilename)
 
         # Store which effects are being used
         for effect in effectParameterValues.keys():
             History.objects.get_or_create(user = self.user, effect = effect)
             
-        cs.writeCsoundFile(csoundFilename, effectParameterValues, md.systemfiles, md.userfiles, inputSound)
-
-        retcode = subprocess.call(['csound', '-d', md.userfiles + '/' + csoundFilename])
-        print retcode
+        cs.writeCsoundFile(csoundFilename, effectParameterValues, md.systemfiles, md.userfiles, inputSound.replace('\\','/'))       
+        retcode = subprocess.call(['csound', '-d', csoundFilepath])
         if retcode == 0:
             # Change the normalize CSD file.
-            userfile = md.userfiles + '/' + csoundFilename
-            subprocess.call('sed s,test,%s, ' % userfile + md.modular + '/normalize.csd >' + md.userfiles + '/normalize.%s' % csoundFilename, shell=True)
-            retcode = subprocess.call(['csound', md.userfiles + '/normalize.%s' % csoundFilename ])
+            normalizeFile = path.join(md.modular, 'normalize.csd')
+            subprocess.call('sed s,test,%s, ' % csoundFilepath.replace('\\','/') + normalizeFile + ' > ' + csoundNormFilepath, shell=True)
+            retcode = subprocess.call(['csound', csoundNormFilepath])
             print '******************************'
             print 'source sound:', inputSound
             print effectParameterValues
@@ -96,7 +99,7 @@ class TestCode(object):
         else:
             print 'csound error'
 
-        return inputSound.rsplit('/')[-1], csoundFilename
+        return path.basename(inputSound), csoundFilename
 
     def diminish_choices(self, request):
         fxs = []
@@ -207,7 +210,11 @@ class BandpassNoise(BandpassMusic):
     def process(self, effectParameterValues):
         print 'effectParameterValues', effectParameterValues
         inputSound = 'noise'
+        
         csoundFilename = str(uuid.uuid4()) + '.csd'
+        csoundNormFilename = 'normalize.' + csoundFilename
+        csoundFilepath = path.join(md.userfiles, csoundFilename)
+        csoundNormFilepath = path.join(md.userfiles, csoundNormFilename)
 
         # Store which effects are being used
         for effect in effectParameterValues.keys():
@@ -215,13 +222,13 @@ class BandpassNoise(BandpassMusic):
 
         cs.writeCsoundFile(csoundFilename, effectParameterValues, md.systemfiles, md.userfiles, inputSound)
 
-        retcode = subprocess.call(['csound', '-d', md.userfiles + '/' + csoundFilename])
+        retcode = subprocess.call(['csound', '-d', csoundFilepath])
         print retcode
         if retcode == 0:
             # Change the normalize CSD file.
-            userfile = md.userfiles + '/' + csoundFilename
-            subprocess.call('sed s,test,%s, ' % userfile + md.modular + '/normalize.csd >' + md.userfiles + '/normalize.%s' % csoundFilename, shell=True)
-            retcode = subprocess.call(['csound', md.userfiles + '/normalize.%s' % csoundFilename ])
+            normalizeFile = path.join(md.modular, 'normalize.csd')
+            subprocess.call('sed s,test,%s, ' % csoundFilepath.replace('\\','/') + normalizeFile + ' > ' + csoundNormFilepath, shell=True)
+            retcode = subprocess.call(['csound', csoundNormFilepath])
             print '******************************'
             print 'source sound:', inputSound
             print effectParameterValues
@@ -229,7 +236,7 @@ class BandpassNoise(BandpassMusic):
         else:
             print 'csound error'
 
-        return inputSound.rsplit('/')[-1], csoundFilename
+        return path.basename(inputSound), csoundFilename
 
 
 class SineFrequency(BandpassMusic):
@@ -240,7 +247,11 @@ class SineFrequency(BandpassMusic):
     def process(self, effectParameterValues):
         print 'effectParameterValues', effectParameterValues
         inputSound = 'sine'
+
         csoundFilename = str(uuid.uuid4()) + '.csd'
+        csoundNormFilename = 'normalize.' + csoundFilename
+        csoundFilepath = path.join(md.userfiles, csoundFilename)
+        csoundNormFilepath = path.join(md.userfiles, csoundNormFilename)
 
         # Store which effects are being used
         for effect in effectParameterValues.keys():
@@ -248,13 +259,13 @@ class SineFrequency(BandpassMusic):
 
         cs.writeCsoundFile(csoundFilename, effectParameterValues, md.systemfiles, md.userfiles, inputSound)
 
-        retcode = subprocess.call(['csound', '-d', md.userfiles + '/' + csoundFilename])
+        retcode = subprocess.call(['csound', '-d', csoundFilepath])
         print retcode
         if retcode == 0:
             # Change the normalize CSD file.
-            userfile = md.userfiles + '/' + csoundFilename
-            subprocess.call('sed s,test,%s, ' % userfile + md.modular + '/normalize.csd >' + md.userfiles + '/normalize.%s' % csoundFilename, shell=True)
-            retcode = subprocess.call(['csound', md.userfiles + '/normalize.%s' % csoundFilename ])
+            normalizeFile = path.join(md.modular, 'normalize.csd')
+            subprocess.call('sed s,test,%s, ' % csoundFilepath.replace('\\','/') + normalizeFile + ' > ' + csoundNormFilepath, shell=True)
+            retcode = subprocess.call(['csound', csoundNormFilepath])
             print '******************************'
             print 'source sound:', inputSound
             print effectParameterValues
@@ -262,7 +273,7 @@ class SineFrequency(BandpassMusic):
         else:
             print 'csound error'
 
-        return inputSound.rsplit('/')[-1], csoundFilename
+        return path.basename(inputSound), csoundFilename
 
 class ReverbTimeAndMix(TestCode):
 
@@ -409,7 +420,7 @@ class Combinations(TestCode):
         random.shuffle(self.FX)
 
         exclude = {}
-        execfile(md.systemfiles + '/effects_combination_rules.txt', exclude)
+        execfile(path.join(md.systemfiles, 'effects_combination_rules.txt'), exclude)
         for e in exclude:
             if '__' not in e: # We exclude __builtins__ and __doc__
                 try:

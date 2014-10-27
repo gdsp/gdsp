@@ -26,7 +26,7 @@ def getEffects(path):
     @param self: The object pointer.
     @return: A list of files in the directory
     """
-    files = os.listdir(path + '/effects')
+    files = os.listdir(os.path.join(path,'effects'))
     incfiles = []
     # check that they are valid include file names
     for f in files:
@@ -41,7 +41,7 @@ def getWavefileNames(path):
     @param self: The object pointer.
     @return: A list of files in the directory
     """
-    files = os.listdir(path + '/samples')
+    files = os.listdir(os.path.join(path, 'samples'))
     wavfiles = []
     # check that they are valid wave file names
     for f in files:
@@ -55,7 +55,7 @@ def getEffectParameterSet(FX, path):
     numParameters = 0
     # the following get a more robust implementation (regex?), allowing for extra whitespace and other typo variations
     for effect in FX:
-        inc = open(path + '/effects/'+effect, 'r')
+        inc = open(os.path.join(path,'effects',effect), 'r')
         capture = 0
         parameters = OrderedDict()
         for line in inc:
@@ -137,11 +137,11 @@ def writeCsoundFile(filename, effectParameterValues, systemfiles, userfiles, inp
     # create a file object
     outfilename = filename
     print 'outfilename', outfilename
-    f = open(userfiles + '/' + outfilename, 'w')
+    f = open(os.path.join(userfiles, outfilename), 'w')
     print 'opened file', outfilename
     #options = '-otest.wav -f'#'-odac -b1024 -B2048'
     # This is done so files with unique names can be created.
-    options = '-o%s/%s.wav -f' % (userfiles, filename) #'-odac -b1024 -B2048'
+    options = '-o%s.wav -f' % os.path.join(userfiles, filename).replace('\\','/') #'-odac -b1024 -B2048'
     
     # write top tags and options
     f.write('''<CsoundSynthesizer>\n<CsOptions>\n%s\n</CsOptions>\n<CsInstruments>'''%options)
@@ -181,9 +181,9 @@ def writeCsoundFile(filename, effectParameterValues, systemfiles, userfiles, inp
     currentSignalType = 'mono'
     
     # send signal on chn
-    inc = open(systemfiles + '/general/chn_send_mono.inc', 'r')
+    inc = open(os.path.join(systemfiles, 'general','chn_send_mono.inc'), 'r')
     if currentSignalType == 'stereo':
-        inc = open(systemfiles + '/general/chn_send_stereo.inc', 'r')
+        inc = open(os.path.join(systemfiles, 'general','chn_send_stereo.inc'), 'r')
     for line in inc:
         f.write(line)
     f.write('\n')
@@ -196,9 +196,9 @@ def writeCsoundFile(filename, effectParameterValues, systemfiles, userfiles, inp
     f.write('\tiamp \t\t= 1 \n\n')
     
     # read audio on chn channel(s)
-    inc = open(systemfiles + '/general/chn_read_mono.inc', 'r')
+    inc = open(os.path.join(systemfiles, 'general','chn_read_mono.inc'), 'r')
     if currentSignalType == 'stereo':
-        inc = open(systemfiles + '/general/chn_send_stereo.inc', 'r')
+        inc = open(os.path.join(systemfiles, 'general','chn_send_stereo.inc'), 'r')
     for line in inc:
         f.write(line)
     f.write('\n')
@@ -220,7 +220,7 @@ def writeCsoundFile(filename, effectParameterValues, systemfiles, userfiles, inp
         if 'mono' in currentSignalType:
             if audioInput == 'stereo':
                 f.write('\ta2 \t\t= a1\n')  #split mono input into two identical signals
-            inc = open(systemfiles + '/effects/'+effect, 'r')
+            inc = open(os.path.join(systemfiles, 'effects',effect), 'r')
             capture = 0 # skip writing the first parts of include files (meta information)
             for line in inc:
                 if capture == 1:
@@ -236,7 +236,7 @@ def writeCsoundFile(filename, effectParameterValues, systemfiles, userfiles, inp
             # dual mono
             if ('mono' in audioInput) and ('mono' in audioOutput):
                 # process first signal channel and write it temporarily to a1out
-                inc = open(systemfiles + '/effects/'+effect, 'r')
+                inc = open(os.path.join(systemfiles, 'effects',effect), 'r')
                 capture = 0 # skip writing the first parts of include files (meta information)
                 for line in inc:
                     if capture == 1:
@@ -248,7 +248,7 @@ def writeCsoundFile(filename, effectParameterValues, systemfiles, userfiles, inp
                 f.write('\ta1out \t\t= a1\n')  #save output to temporary signal a1out
                 # process second signal 
                 f.write('\ta1 \t\t= a2\n')  #read the second signal
-                inc = open(systemfiles + '/effects/'+effect, 'r')
+                inc = open(os.path.join(systemfiles, 'effects',effect), 'r')
                 capture = 0 # skip writing the first parts of include files (meta information)
                 for line in inc:
                     if capture == 1:
@@ -266,7 +266,7 @@ def writeCsoundFile(filename, effectParameterValues, systemfiles, userfiles, inp
             if ('mono' in audioInput) and ('stereo' in audioOutput):
                 f.write('\ta2in \t\t= a2\n')  #save input on second channel temporarily to a2in
                 # process first channel
-                inc = open(systemfiles + '/effects/'+effect, 'r')
+                inc = open(os.path.join(systemfiles, 'effects',effect), 'r')
                 capture = 0 # skip writing the first parts of include files (meta information)
                 for line in inc:
                     if capture == 1:
@@ -279,7 +279,7 @@ def writeCsoundFile(filename, effectParameterValues, systemfiles, userfiles, inp
                 f.write('\ta2_1 \t\t= a2\n')  #save output from second channel to a2_1
                 # process second channel
                 f.write('\ta1 \t\t= a2in\n')  #restore input on second channel from temporary storage in a2in
-                inc = open(systemfiles + '/effects/'+effect, 'r')
+                inc = open(os.path.join(systemfiles, 'effects',effect), 'r')
                 capture = 0 # skip writing the first parts of include files (meta information)
                 for line in inc:
                     if capture == 1:
@@ -294,7 +294,7 @@ def writeCsoundFile(filename, effectParameterValues, systemfiles, userfiles, inp
                 
             # normal stereo effect
             if ('stereo' in audioInput) and ('stereo' in audioOutput):
-                inc = open(systemfiles + '/effects/'+effect, 'r')
+                inc = open(os.path.join(systemfiles, 'effects',effect), 'r')
                 capture = 0 # skip writing the first parts of include files (meta information)
                 for line in inc:
                     if capture == 1:
@@ -310,7 +310,7 @@ def writeCsoundFile(filename, effectParameterValues, systemfiles, userfiles, inp
     if currentSignalType == 'stereo':
         incfile = 'out_stereo.inc'
     print 'output is', currentSignalType
-    inc = open(systemfiles + '/general/'+incfile, 'r')
+    inc = open(os.path.join(systemfiles, 'general',incfile), 'r')
     for line in inc:
         f.write(line)
     f.write('\n')
@@ -366,7 +366,7 @@ if __name__ == '__main__':
     effectParameterSet = getEffectParameterSet(effects, path) # get list of effect parameters for the chosen effects
     effectParameterValues = getEffectParameterValues(effectParameterSet) #get values for the effect parameters
     
-    inputsound = path + '/samples/' + random.choice(getWavefileNames(path))
+    inputsound = os.path.join(path,'samples',random.choice(getWavefileNames(path)))
     retCode = writeCsoundFile(csoundFilename,effectParameterValues, path, inputsound)
     print '*******************'
     print effectParameterSet
