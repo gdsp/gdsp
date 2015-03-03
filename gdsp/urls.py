@@ -6,8 +6,6 @@ from os import environ
 from django.contrib import admin
 admin.autodiscover()
 
-from settings_path import DATA_ROOT
-
 from pages.views import HomeView, AboutView, PnaclView
 
 urlpatterns = patterns('',
@@ -27,7 +25,7 @@ urlpatterns = patterns('',
     # The automatic tutor app:
     url(r'^tutor/', include('tutor.urls')),
     (r'^site_media/(?P<path>.*)$', 'django.views.static.serve',
-     {'document_root': DATA_ROOT, 'show_indexes': True}),
+     {'document_root': settings.DATA_ROOT, 'show_indexes': True}),
                        
     # Static pages such as the home page, 'About' etc.:
     url(r'^$', HomeView.as_view(), name='home'),
