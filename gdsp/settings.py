@@ -1,31 +1,13 @@
 # Django settings for gdsp project.
 
 from os import path, environ
-
-DEBUG = True
-TEMPLATE_DEBUG = DEBUG
+from settings_prod import *
 
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
 )
 
 MANAGERS = ADMINS
-
-DATABASES = {
-   'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'gdsp',
-        'USER': 'gdsp',
-        'PASSWORD': 'Gode10der',
-        'HOST': '',  # Empty for localhost through domain sockets or
-                     # '127.0.0.1' for localhost through TCP.
-        'PORT': '',  # Set to empty string for default.
-    }
-}
-
-# Hosts/domain names that are valid for this site; required if DEBUG is False
-# See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'gdsp.hf.ntnu.no']
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -36,9 +18,6 @@ TIME_ZONE = 'Europe/Oslo'
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
 LANGUAGE_CODE = 'en-us'
-
-# Must correspond to setting in django_site
-SITE_ID = 2
 
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
@@ -86,9 +65,6 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
-
-# Make this unique, and don't share it with anybody.
-SECRET_KEY = '(=p0=*#_il6)0m1#2981c_v!2%^ut8l+(a50&!*5ze4mtpd135'
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
@@ -143,9 +119,3 @@ if not environ.get('DJANGO_PRODUCTION', None):
     DEBUG_TOOLBAR_CONFIG = {
             'INTERCEPT_REDIRECTS': False,
     }
-
-# In production, make sure that the settings_prod.py file is present
-# and that the DJANGO_PRODUCTION environment variable is set.
-if environ.get('DJANGO_PRODUCTION', None):
-    from settings_prod import *
-
