@@ -1,12 +1,12 @@
 from django.conf import settings
 from django.conf.urls import patterns, include, url, static
-from os import path, environ
 
-PROJECT_DIRECTORY = path.abspath(path.join(path.dirname(__file__), '..'))
-DOCUMENT_ROOT = path.join(PROJECT_DIRECTORY, 'data/')
+from os import environ
 
 from django.contrib import admin
 admin.autodiscover()
+
+from settings_path import DATA_ROOT
 
 from pages.views import HomeView, AboutView, PnaclView
 
@@ -27,7 +27,7 @@ urlpatterns = patterns('',
     # The automatic tutor app:
     url(r'^tutor/', include('tutor.urls')),
     (r'^site_media/(?P<path>.*)$', 'django.views.static.serve',
-     {'document_root': DOCUMENT_ROOT, 'show_indexes': True}),
+     {'document_root': DATA_ROOT, 'show_indexes': True}),
                        
     # Static pages such as the home page, 'About' etc.:
     url(r'^$', HomeView.as_view(), name='home'),
