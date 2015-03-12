@@ -343,6 +343,7 @@ class Lesson(models.Model):
     """
 
     title = models.CharField(max_length=255)
+    image = models.ImageField(upload_to='images', default = 'no-img.jpg')
     course = models.ForeignKey('Course', related_name='lessons')
     topics = models.ManyToManyField(Topic, through='LessonTopicRelation')
     objects = LessonManager()

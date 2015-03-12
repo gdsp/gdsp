@@ -7,10 +7,16 @@
 
 <h1>{% trans 'Lessons' %}</h1>
 
-<ul>
+<ul class="lessons">
   {% for lesson in lessons %}
-    <li>
-      <a href="{% url 'core:lesson' lesson.id %}">{{ lesson.title }}</a>
+	<li>
+	<img src="{{ lesson.image.url }}">
+      	<a href="{% url 'core:lesson' lesson.id %}">{{ lesson.title }}</a>
+      	<ul class="lesson-sub-list"> <!-- Lagt til liste med sub-topics. Sjekk om dette blir rendra riktig!! -->
+        	{% for topic in lesson.topics.all %}
+            <li>{{ topic.display_title }}</li>
+            {% endfor %}
+        </ul>
     </li>
   {% endfor %}
 </ul>
