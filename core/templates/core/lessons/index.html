@@ -7,10 +7,15 @@
 
 <h1>{% trans 'Lessons' %}</h1>
 
-<ul>
+<ul class="lessons"> <!-- Lagt til ID -->
   {% for lesson in lessons %}
-    <li>
-      <a href="{% url 'core:lesson' lesson.id %}">{{ lesson.title }}</a>
+    <li class="l{% lesson.id %}"> <!-- Lagt til ID. Sjekk om ID blir rendra riktig!! -->
+      	<a href="{% url 'core:lesson' lesson.id %}">{{ lesson.title }}</a>
+      	<ul class="lesson-sub-list"> <!-- Lagt til liste med sub-topics. Sjekk om dette blir rendra riktig!! -->
+        	{% for topic in lesson.topics.all %}
+            <li>{{ topic.display_title }}</li>
+            {% endfor %}
+        </ul>
     </li>
   {% endfor %}
 </ul>
