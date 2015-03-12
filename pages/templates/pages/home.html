@@ -1,17 +1,90 @@
 {% extends 'base.html' %}
 {% load staticfiles %}
+{% load i18n %} <!-- LAGT TIL - Usikker på om denne skal være her ??? -->
 
 {% block content %}
 
-<img src="{% static 'images/clipping.svg' %}"
-     title="Illustration by David Batley. Licensed under CC BY-SA.">
+</div> <!-- LAGT TIL - Avslutte første content wrapper -->
 
-<br>
-<p> Welcome to the gDSP course. It is an online course for learning digital signal processing of audio signals. The course is focused on learning by hearing, and can be thought of as the DSP equivalent to traditional ear training in music. Many musicians and music producers rely on digital signal processing in their daily work routines, and it can be useful to have additional insight into how these processing techniques modify our music signals. Moreover, if you can imagine a sound that you would need in one of your productions, the aim of this course is that you also should be able to reproduce it. By recognizing typical signal processing techniques in sound examples you take the first step on the path to recreating those sounds by using those same processing techniques on your own sounds.
-</p>
-<p>
-The course contains explanations of many DSP techniques, sound examples, music production examples, listening tests specific to each lesson, and also an automatic listening test generator creating new listening tests tailored to each student's level of experience.
-</p>
-
+<div id="lp-banner-wrap">
+    <div id="lp-banner">
+    	<div id="lp-intro-text">
+          	<h1>Welcome to the gDSP Course</h1>
+            <p><strong>This is an online course for learning digital signal processing of audio signals. The course is focused on learning by hearing, 
+            and can be thought of as the DSP equivalent to traditional ear training in music.</strong></p>
+            
+            <p>Many musicians and music producers rely on digital signal processing in their daily work routines, and it can be useful to have 
+            additional insight into how these processing techniques modify our music signals. Moreover, if you can imagine a sound that you 
+            would need in one of your productions, the aim of this course is that you also should be able to reproduce it.</p>
+            
+            <p>By recognizing typical signal processing techniques in sound examples you take the first step on the path to recreating those 
+            sounds by using those same processing techniques on your own sounds.</p>
+            
+            <p>The course contains explanations of many DSP techniques, sound examples, music production examples, listening tests specific to 
+            each lesson, and also an automatic listening test generator creating new listening tests tailored to each student's level of experience.</p>
+        </div><!-- END #lp-intro-text -->
+        
+        <div id="lp-login-box">
+        
+            <div id="tabs-container">
+                <ul class="tabs-menu">
+                    <li class="current"><a href="#tab-1">Login</a></li>
+                    <li><a href="#tab-2">Register</a></li>
+                </ul>
+                
+                <div class="tab">
+                    <div id="tab-1" class="tab-content">
+                    
+                        {% if form.errors %}
+                          <p>
+                            {% blocktrans %}
+                              Your username and password didn't match. Please try again.
+                            {% endblocktrans %}
+                          </p>
+                        {% endif %}
+                    
+                        <form method="post" action="{% url 'accounts:login' %}">
+                            {% csrf_token %}
+                            {{ form.username.label_tag }}
+                            {{ form.username }}
+                            {{ form.password.label_tag }}
+                            {{ form.password }}
+                        	<br />
+                            <input type="submit" value="{% trans 'Log in' %}">
+                            <input type="hidden" name="next" value="{% url 'home' %}">
+                        </form>
+                    </div>
+                    <div id="tab-2" class="tab-content">
+                        <form method="post" action="{% url 'accounts:register' %}">
+                            {% csrf_token %}
+  							{{ form.non_field_errors }}
+                            
+                            {{ form.username.label_tag }}
+                            {{ form.username }}
+                            {% if form.username.errors %}
+                              	{{ form.username.errors }}
+                            {% endif %}
+                            
+                            {{ form.password1.label_tag }}
+                            {{ form.password1 }}
+                            {% if form.password1.errors %}
+                              	{{ form.password1.errors }}
+                            {% endif %}
+                            
+                            {{ form.password2.label_tag }}
+                  			{{ form.password2 }}
+                    		{% if form.password2.errors %}
+                      			{{ form.password2.errors }}
+                    		{% endif %}
+                            <br />
+                            <input type="submit" value="{% trans 'Register' %}">
+                        </form>
+                    </div>
+                </div><!-- END .tab -->
+            </div><!-- END #tabs-container -->
+        </div><!-- END #lp-login-box -->
+        <div class="clear"></div>
+    </div><!-- END #lp-banner -->
+</div><!-- END #lp-banner-wrap -->
 
 {% endblock %}
