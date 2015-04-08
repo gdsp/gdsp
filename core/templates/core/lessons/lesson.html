@@ -1,9 +1,45 @@
 {% extends 'core/lessons/base.html' %}
 {% load staticfiles i18n %}
 
+{% block header %}
+<nav id="lesson-sidebar">
+  <ul>
+    {% for lesson in lessons %}
+		{% if lesson == lesson_topic.lesson %} <!-- FLYTTA - for å få Active class på parent item... -->
+        <li class="active">
+            <a href="{% url 'core:lesson' pk=lesson.id %}">
+              {{ lesson.title }}
+            </a>
+        </li>
+        <ul>
+          {% for topic in lesson.topics.all %}
+            <li class="{% if topic == lesson_topic.topic %}active{% endif %}">
+              <a href="{% url 'core:lesson' pk=lesson.id topic=topic.id %}">
+                {{ topic.display_title }}
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+        
+        {% else %}
+      
+        <li>
+            <a href="{% url 'core:lesson' pk=lesson.id %}">
+              {{ lesson.title }}
+            </a>
+        </li>
+        
+        {% endif %}
+    {% endfor %}
+  </ul>
+</nav>
+{% endblock %}
+
 {% block title %}{{ block.super }} | {{ lesson.title }}{% endblock %}
 
 {% block content %}
+
+<div class="lesson-content">
 
 {% for element in lesson_topic.topic_elements %}
   {{ element.to_html | safe }}
@@ -26,5 +62,11 @@
 
   {% endwith %}
 </nav>
+
+<div class="clear">
+</div>
+</div>
+<div class="clear">
+</div>
 
 {% endblock %}

@@ -232,7 +232,6 @@ ul.lessons  {
 }
 div#content-wrapper ul.lessons li a { text-decoration:none !important; }
 ul.lessons li {
-	padding-top:115px;
 	background-repeat: no-repeat;
 	background-position: center top;
 	margin-right:20px;

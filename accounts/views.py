@@ -6,7 +6,7 @@ from django.shortcuts import render
 from django.views.generic.base import TemplateView
 
 class RegisterView(TemplateView):
-    template_name = 'accounts/register.html'
+    template_name = 'pages/register.html'
 
     def dispatch(self, request, *args, **kwargs):
         super(RegisterView, self).dispatch(request, *args, **kwargs)

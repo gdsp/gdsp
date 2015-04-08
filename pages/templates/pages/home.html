@@ -24,66 +24,6 @@
             each lesson, and also an automatic listening test generator creating new listening tests tailored to each student's level of experience.</p>
         </div><!-- END #lp-intro-text -->
         
-        <div id="lp-login-box">
-        
-            <div id="tabs-container">
-                <ul class="tabs-menu">
-                    <li class="current"><a href="#tab-1">Login</a></li>
-                    <li><a href="#tab-2">Register</a></li>
-                </ul>
-                
-                <div class="tab">
-                    <div id="tab-1" class="tab-content">
-                    
-                        {% if form.errors %}
-                          <p>
-                            {% blocktrans %}
-                              Your username and password didn't match. Please try again.
-                            {% endblocktrans %}
-                          </p>
-                        {% endif %}
-                    
-                        <form method="post" action="{% url 'accounts:login' %}">
-                            {% csrf_token %}
-                            {{ form.username.label_tag }}
-                            {{ form.username }}
-                            {{ form.password.label_tag }}
-                            {{ form.password }}
-                        	<br />
-                            <input type="submit" value="{% trans 'Log in' %}">
-                            <input type="hidden" name="next" value="{% url 'home' %}">
-                        </form>
-                    </div>
-                    <div id="tab-2" class="tab-content">
-                        <form method="post" action="{% url 'accounts:register' %}">
-                            {% csrf_token %}
-  							{{ form.non_field_errors }}
-                            
-                            {{ form.username.label_tag }}
-                            {{ form.username }}
-                            {% if form.username.errors %}
-                              	{{ form.username.errors }}
-                            {% endif %}
-                            
-                            {{ form.password1.label_tag }}
-                            {{ form.password1 }}
-                            {% if form.password1.errors %}
-                              	{{ form.password1.errors }}
-                            {% endif %}
-                            
-                            {{ form.password2.label_tag }}
-                  			{{ form.password2 }}
-                    		{% if form.password2.errors %}
-                      			{{ form.password2.errors }}
-                    		{% endif %}
-                            <br />
-                            <input type="submit" value="{% trans 'Register' %}">
-                        </form>
-                    </div>
-                </div><!-- END .tab -->
-            </div><!-- END #tabs-container -->
-        </div><!-- END #lp-login-box -->
-        <div class="clear"></div>
     </div><!-- END #lp-banner -->
 </div><!-- END #lp-banner-wrap -->
 
