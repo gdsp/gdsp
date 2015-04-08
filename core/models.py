@@ -140,11 +140,14 @@ class ImageElement(BaseTopicElement):
         super(ImageElement, self).save(*args, **kwargs)
 
     def to_html(self):
-        html = u'<figure class="image-element">'
-        html += u'<img src="{}">'.format(self.image.url)
+        if self.description == 'Lesson top':
+            html = u'<img class="lesson-intro-img" src="{}">'.format(self.image.url)            
+        else:
+            html = u'<figure class="image-element">'
+            html += u'<img src="{}">'.format(self.image.url)
         if self.caption:
             html += u'<figcaption>{}</figcaption>'.format(self.caption)
-        html += u'</figure>'
+        html += u'</figure>' 
         return html
 
     class Meta:
