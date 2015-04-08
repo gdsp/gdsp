@@ -237,20 +237,11 @@ ul.lessons li {
 	margin-right:20px;
 	width:215px;
 	float:left;
-	height:210px;
+	height:450px;
 	list-style:none !important;
 	text-indent:0 !important;
 	line-height:120%;
 }
-
-ul.lessons li.l2 { background-image: url('/static/images/c1.jpg'); }
-ul.lessons li.l1 { background-image: url('/static/images/c2.jpg'); }
-ul.lessons li.l14 { background-image: url('/static/images/c3.jpg'); }
-ul.lessons li.l3 { background-image: url('/static/images/c4.jpg'); }
-ul.lessons li.l6 { background-image: url('/static/images/c5.jpg'); }
-ul.lessons li.l10 { background-image: url('/static/images/c6.jpg'); }
-ul.lessons li.l16 { background-image: url('/static/images/c7.jpg'); }
-ul.lessons li.l17 { background-image: url('/static/images/c8.jpg'); }
 
 img.lesson-intro-img { width:679px; height:150px; margin: -30px 0 30px -20px; }
 
