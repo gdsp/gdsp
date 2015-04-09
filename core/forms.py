@@ -47,4 +47,4 @@ class TopicInlineForm(forms.ModelForm):
 
     class Meta:
         model = Lesson.topics.through
-        fields = ['topic_ordinal', 'topic', 'excluded_content']
+        fields = ['topic_ordinal', 'topic', 'visible', 'excluded_content']

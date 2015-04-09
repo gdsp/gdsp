@@ -13,8 +13,10 @@
 	<img src="{{ lesson.image.url }}">
       	<a href="{% url 'core:lesson' lesson.id %}">{{ lesson.title }}</a>
       	<ul class="lesson-sub-list"> <!-- Lagt til liste med sub-topics. Sjekk om dette blir rendra riktig!! -->
-        	{% for topic in lesson.topics.all %}
-            <li>{{ topic.display_title }}</li>
+        	{% for relation in lesson.lessontopicrelation_set.all %}
+		  {% if relation.visible %}
+            <li>{{ relation.topic.display_title }}</li>
+		  {% endif %}
             {% endfor %}
         </ul>
     </li>

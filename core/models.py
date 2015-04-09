@@ -133,6 +133,7 @@ class ImageElement(BaseTopicElement):
 
     caption = models.CharField(max_length=255, blank=True)
     image = models.ImageField(upload_to='images')
+    max_width = models.IntegerField(default=100)
 
     def save(self, *args, **kwargs):
         if not self.pk:
@@ -144,7 +145,7 @@ class ImageElement(BaseTopicElement):
             html = u'<img class="lesson-intro-img" src="{}">'.format(self.image.url)            
         else:
             html = u'<figure class="image-element">'
-            html += u'<img style="max-width: 100%" src="{}">'.format(self.image.url)
+                )
         if self.caption:
             html += u'<figcaption>{}</figcaption>'.format(self.caption)
         html += u'</figure>' 
@@ -366,6 +367,7 @@ class Lesson(models.Model):
 class LessonTopicRelation(models.Model):
     topic = models.ForeignKey(Topic)
     lesson = models.ForeignKey(Lesson)
+    visible = models.BooleanField(default=True)
     topic_ordinal = models.PositiveIntegerField()
     # excluded_content is a comma-separated list of topic element types
     # which should not be displayed in this lesson, e.g. 'code, audio':
