@@ -145,6 +145,9 @@ class ImageElement(BaseTopicElement):
             html = u'<img class="lesson-intro-img" src="{}">'.format(self.image.url)            
         else:
             html = u'<figure class="image-element">'
+            html += u'<img style="max-width: {width}%" src="{url}">'.format(
+                width=self.max_width,
+                url=self.image.url,
                 )
         if self.caption:
             html += u'<figcaption>{}</figcaption>'.format(self.caption)
