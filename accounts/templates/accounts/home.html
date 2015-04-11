@@ -45,6 +45,8 @@
                     
                         <form method="post" action="{% url 'accounts:login' %}">
                             {% csrf_token %}
+						
+					 {{ login_form.as_p }}
                             {{ form.username.label_tag }}
                             {{ form.username }}
                             {{ form.password.label_tag }}
@@ -57,7 +59,9 @@
                     <div id="tab-2" class="tab-content">
                         <form method="post" action="{% url 'accounts:register' %}">
                             {% csrf_token %}
-  							{{ form.non_field_errors }}
+
+					 {{ register_form.as_p }}
+  					{{ form.non_field_errors }}
                             
                             {{ form.username.label_tag }}
                             {{ form.username }}

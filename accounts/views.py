@@ -1,12 +1,19 @@
 from django.contrib.auth import authenticate, login
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.views.generic.base import TemplateView
 
+
+def home_logon(request, template):
+    login_form = AuthenticationForm()
+    register_form = UserCreationForm()
+    return render(request, template, {"login_form": login_form,
+                                      "register_form": register_form})
+
 class RegisterView(TemplateView):
-    template_name = 'pages/register.html'
+    template_name = 'accounts/home.html'
 
     def dispatch(self, request, *args, **kwargs):
         super(RegisterView, self).dispatch(request, *args, **kwargs)

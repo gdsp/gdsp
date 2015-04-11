@@ -18,8 +18,7 @@
     <div id="body-wrapper">
       <nav id="main-navigation">
         <ul>
-          <li id="gdsp-logo-home"><a href="{% url 'core:lessons' %}"></a></li> <!-- Lagt til ID og fjerna tekst -->
-          <!-- <li><a href="{% url 'pnacl' %}">Test pnacl</a></li> --> <!-- FJERNA -->
+          <li id="gdsp-logo-home"><a href="{% url 'home' %}"></a></li> <!-- Lagt til ID og fjerna tekst -->
           {% if user.is_authenticated %}
             <li id="logout">
               <a href="{% url 'accounts:logout' %}">
@@ -30,7 +29,7 @@
             </li>
           {% else %}
             <li id="login">
-              <a href="{% url 'accounts:login' %}">{% trans 'Log in' %}</a>
+              <a href="{% url 'home' %}">{% trans 'Log in' %}</a>
             </li>
           {% endif %}
           <li><a href="{% url 'about' %}">About</a></li> <!-- ENDRA REKKEFØLGE -->

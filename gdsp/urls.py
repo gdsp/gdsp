@@ -28,9 +28,9 @@ urlpatterns = patterns('',
      {'document_root': settings.DATA_ROOT, 'show_indexes': True}),
                        
     # Static pages such as the home page, 'About' etc.:
-    url(r'^$', HomeView.as_view(), name='home'),
     url(r'^about/$', AboutView.as_view(), name='about'),
-    url(r'^pnacl/$', PnaclView.as_view(), name='pnacl'),
+    url(r'^$', 'accounts.views.home_logon',
+        {'template': 'accounts/home.html'}, name='home'),
 )
 
 if not environ.get('DJANGO_PRODUCTION', None):
