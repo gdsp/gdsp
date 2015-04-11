@@ -1,32 +1,12 @@
-{% extends 'base.html' %}
+{% extends 'pages/home.html' %}
 {% load staticfiles %}
 {% load i18n %} <!-- LAGT TIL - Usikker på om denne skal være her ??? -->
 
-{% block content %}
+{% block login %}
 
-</div> <!-- LAGT TIL - Avslutte første content wrapper -->
+	<div id="lp-login-box">       
+     		<div id="tabs-container">
 
-<div id="lp-banner-wrap">
-    <div id="lp-banner">
-    	<div id="lp-intro-text">
-          	<h1>Welcome to the gDSP Course</h1>
-            <p><strong>This is an online course for learning digital signal processing of audio signals. The course is focused on learning by hearing, 
-            and can be thought of as the DSP equivalent to traditional ear training in music.</strong></p>
-            
-            <p>Many musicians and music producers rely on digital signal processing in their daily work routines, and it can be useful to have 
-            additional insight into how these processing techniques modify our music signals. Moreover, if you can imagine a sound that you 
-            would need in one of your productions, the aim of this course is that you also should be able to reproduce it.</p>
-            
-            <p>By recognizing typical signal processing techniques in sound examples you take the first step on the path to recreating those 
-            sounds by using those same processing techniques on your own sounds.</p>
-            
-            <p>The course contains explanations of many DSP techniques, sound examples, music production examples, listening tests specific to 
-            each lesson, and also an automatic listening test generator creating new listening tests tailored to each student's level of experience.</p>
-        </div><!-- END #lp-intro-text -->
-        
-        <div id="lp-login-box">
-        
-            <div id="tabs-container">
                 <ul class="tabs-menu">
                     <li class="current"><a href="#tab-1">Login</a></li>
                     <li><a href="#tab-2">Register</a></li>
@@ -43,7 +23,7 @@
                           </p>
                         {% endif %}
                     
-                        <form method="post" action="{% url 'accounts:login' %}">
+                        <form method="post" action="{% url 'accounts:login_return' %}">
                             {% csrf_token %}
 						
 					 {{ login_form.as_p }}
@@ -87,9 +67,6 @@
                 </div><!-- END .tab -->
             </div><!-- END #tabs-container -->
         </div><!-- END #lp-login-box -->
-        <div class="clear"></div>
-    </div><!-- END #lp-banner -->
-</div><!-- END #lp-banner-wrap -->
 
 {% endblock %}
 

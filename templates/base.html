@@ -29,7 +29,7 @@
             </li>
           {% else %}
             <li id="login">
-              <a href="{% url 'home' %}">{% trans 'Log in' %}</a>
+              <a href="{% url 'accounts:login' %}">{% trans 'Log in' %}</a>
             </li>
           {% endif %}
           <li><a href="{% url 'about' %}">About</a></li> <!-- ENDRA REKKEFØLGE -->

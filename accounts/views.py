@@ -6,7 +6,7 @@ from django.shortcuts import render
 from django.views.generic.base import TemplateView
 
 
-def home_logon(request, template):
+def home_login(request, template):
     login_form = AuthenticationForm()
     register_form = UserCreationForm()
     return render(request, template, {"login_form": login_form,
