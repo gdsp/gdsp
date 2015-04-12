@@ -6,7 +6,8 @@ from os import environ
 from django.contrib import admin
 admin.autodiscover()
 
-from pages.views import HomeView, AboutView
+from pages.views import AboutView
+from core.views import HomeView
 
 urlpatterns = patterns('',
     # Account handling (login, logout, registration, ...):

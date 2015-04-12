@@ -6,6 +6,12 @@ from django.views.generic import ListView, DetailView
 from models import (Lesson, Topic, LessonTopicRelation, BaseTopicElement,
                     LowerCaseTag)
 
+class HomeView(ListView):
+    model = Lesson
+    template_name = 'core/home.html'
+    queryset = Lesson.objects.have_topics()
+    context_object_name = 'lessons'
+
 class TopicsListView(ListView):
     model = Topic
     template_name = 'core/topics/index.html'
