@@ -13,7 +13,7 @@ def home_login(request, template):
                                       "register_form": register_form})
 
 class RegisterView(TemplateView):
-    template_name = 'accounts/home.html'
+    template_name = 'accounts/login.html'
 
     def dispatch(self, request, *args, **kwargs):
         super(RegisterView, self).dispatch(request, *args, **kwargs)
