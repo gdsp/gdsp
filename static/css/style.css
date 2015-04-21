@@ -284,6 +284,24 @@ line-height: 100% !important;
 margin: 20px 0 !important;
 font-family: 'Montserrat', sans-serif;
 text-decoration:none !important;
+max-width: 45%;
+}
+div#content-wrapper nav#next-and-prev a.next { text-align: right; }
+
+audio {
+	display:block;
+	padding:5px 0 !important;
+}
+.answer-hover {
+	color:#ccc;
+	background-color:#ccc;
+	padding:5px 20px;
+	font-weight:bold;
+	float:right
+}
+.answer-hover:hover {
+	color:#000;
+	background-color:#fff;
 }
 
 /** ------------------------ END Lessons ------------------------ **/
@@ -291,11 +309,11 @@ text-decoration:none !important;
 
 /** ------------------------ Lessons Sidebar ------------------------ **/
 nav#lesson-sidebar {
-	position:relative !important;
+	position:relative;
 	margin: -30px -19px 0 0;
-	top:0 !important;
+	top:0;
 	float:right;
-	width: 280px !important;
+	width: 280px;
 }
 nav#lesson-sidebar ul {
 	background-color: #f5f5f2 !important;
