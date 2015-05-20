@@ -168,8 +168,12 @@ class AudioElement(BaseTopicElement):
     """
 
     title = models.CharField(
-            max_length=128,
+            max_length=128, blank=True,
             help_text=_('The title of the track as displayed to the student.'),
+    )
+    hover = models.CharField(
+            max_length=128, blank=True,
+            help_text=_('A text that appears only when hovering over the field.'),
     )
     file = models.FileField(upload_to='audio')
 
@@ -179,10 +183,14 @@ class AudioElement(BaseTopicElement):
         super(AudioElement, self).save(*args, **kwargs)
 
     def to_html(self):
-        return u'<a class="audio-element" href="{url}">{title}</a>'.format(
-                url=self.file.url,
-                title=self.title,
-        )
+        html = u'<p>'
+        if self.title:
+            html += u'{}'.format(self.title,)
+        if self.hover:
+            html += u'<br><span class="answer-hover">{}</span>'.format(self.hover,)
+        html += u'<audio controls><source src="{}" type="audio/wav">Your browser does not support the audio element.</audio></p>'.format(
+                self.file.url,)
+        return html
 
     class Meta:
         verbose_name = _('audio element')
