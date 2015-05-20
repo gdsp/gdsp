@@ -185,9 +185,9 @@ class AudioElement(BaseTopicElement):
     def to_html(self):
         html = u'<p>'
         if self.title:
-            html += u'{}'.format(self.title,)
+            html += u'{}<br>'.format(self.title,)
         if self.hover:
-            html += u'<br><span class="answer-hover">{}</span>'.format(self.hover,)
+            html += u'<span class="answer-hover">{}</span>'.format(self.hover,)
         html += u'<audio controls><source src="{}" type="audio/wav">Your browser does not support the audio element.</audio></p>'.format(
                 self.file.url,)
         return html
