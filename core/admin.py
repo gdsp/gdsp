@@ -45,9 +45,11 @@ class TestElementInline(admin.StackedInline):
     model = TestElement
     extra = 0
 
+
 class ResultsElementInline(admin.StackedInline):
     model = ResultsElement
     extra = 0
+
 
 class TopicAdmin(admin.ModelAdmin):
     inlines = [

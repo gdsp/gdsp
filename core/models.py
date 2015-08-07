@@ -8,6 +8,7 @@ import taggit.models
 from django.db import models
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.sites.models import Site
 
 from managers import LessonManager, LessonTopicManager, LowerCaseTaggableManager
 
@@ -17,6 +18,7 @@ from multiple import MultiSelectField
 
 from south.modelsinspector import add_introspection_rules
 add_introspection_rules([], ["^core\.multiple\.MultiSelectField"])
+current_site = Site.objects.get_current()
 
 class BaseTopicElement(models.Model):
     """
@@ -203,23 +205,27 @@ class TestElement(BaseTopicElement):
     """
     
     test = models.CharField(max_length=256,choices=test_choices())
-    difficulty = models.CharField(max_length=256,choices=(('Easy', 'Easy'), ('Hard', 'Hard')))
+    difficulty = models.CharField(max_length=256,choices=(('Easy', 'Easy'), ('Medium', 'Medium'), ('Hard', 'Hard'), ('Adaptive', 'Adaptive')))
     effect_files = MultiSelectField(default='NULL.inc', max_length=10000,
                                     choices=tuple([ (fx,fx) for fx in find_inc_files() + ['ALL FX', 'Effects the student has seen so far' ]]))
+
+    feedback_bad = models.TextField(
+            help_text=_('Feedback for a badly performing student. He/she should be practicing more, perhaps?'),
+    )
+    feecback_ok =  models.TextField(
+            help_text=_('Feedback for a student that is doing OK.'),
+    )
+    feecback_good =  models.TextField(
+            help_text=_('Feedback for a student that is doing very good, maybe he/she should be encouraged to move on to the next lesson?'),
+    )
 
     def save(self, *args, **kwargs):
         if not self.pk:
             self.element_type = BaseTopicElement.TEST
         super(TestElement, self).save(*args, **kwargs)
 
-    """"
     def to_html(self):
-        return u'<h2>{description}</h2><iframe src="{url}/{test}/{difficulty}/{FX}" frameborder="0" scrolling="yes" width="100%" onload="javascript:resizeIframe(this);"></iframe>'.format(url='http://gdsp.hf.ntnu.no/tutor/',
-                                                                                                                                                  description=self.description, test=self.test, difficulty = self.difficulty, FX=str(' '.join(self.effect_files)))
-
-    """
-    def to_html(self):
-        return u'<h2>{description}</h2><iframe src="{url}/{test}/{difficulty}/{FX}" frameborder="0" scrolling="no" width="100%" height=300"></iframe>'.format(url='http://gdsp.hf.ntnu.no/tutor/',
+        return u'<h2>{description}</h2><iframe src="http://{domain}/tutor/{test}/{difficulty}/{FX}" frameborder="0" scrolling="no" width="100%" height=300"></iframe>'.format(domain=current_site.domain,
                                                                                                                                                   description=self.description, test=self.test, difficulty = self.difficulty, FX=str(' '.join(self.effect_files)))
 
     class Meta:
@@ -228,7 +234,7 @@ class TestElement(BaseTopicElement):
 
 class ResultsElement(BaseTopicElement):
     """"
-    Displays the aggregated results for the student.
+    Displays the results for the student. Can be both aggregated and lesson-based.
     """
 
     def save(self, *args, **kwargs):
@@ -236,17 +242,18 @@ class ResultsElement(BaseTopicElement):
             self.element_type = BaseTopicElement.RESULTS
         super(ResultsElement, self).save(*args, **kwargs)
 
-    """"
-    def to_html(self):
-        return u'<h2>{description}</h2><iframe src="http://gdsp.hf.ntnu.no/tutor/results" frameborder="0" scrolling="yes" width="100%" onload="javascript:resizeIframe(this);"></iframe>'.format(description=self.description)
+    scope = models.CharField(max_length=256,choices=(('Lesson', 'Lesson'), ('Aggregated', 'Aggregated')))
 
-    """
     def to_html(self):
-        return u'<h2>{description}</h2><iframe src="http://gdsp.hf.ntnu.no/tutor/results" frameborder="0" scrolling="no" width="100%" height=500;"></iframe>'.format(description=self.description)
+        if self.scope == 'Lesson':
+            return u'<h2>{description}</h2><iframe src="http://{domain}/tutor/lesson_results" frameborder="0" scrolling="yes" width="100%" height=500;"></iframe>'.format(domain=current_site.domain, description=self.description)
+        if self.scope == 'Aggregated':
+            return u'<h2>{description}</h2><iframe src="http://{domain}/tutor/results" frameborder="0" scrolling="yes" width="100%" height=500;"></iframe>'.format(domain=current_site.domain, description=self.description)
 
     class Meta:
         verbose_name = _('results element')
         verbose_name_plural = _('results elements')
+
 
 class MathElement(BaseTopicElement):
     """

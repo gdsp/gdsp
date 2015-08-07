@@ -22,9 +22,12 @@
 </head>
 <body>
 
-{% for task, correct, total, ratio, day_groups, all in context.results %}
+{% for task, correct, total, ratio, day_groups,  all, time_spent, feedback in context.results %}
 
-Task <B>"{{ task }}"</B>: {{ correct }} out of {{ total }}. {{ ratio|floatformat }}% 
+Task <B>"{{ task }}"</B>: {{ correct }} out of {{ total }}. {{ ratio|floatformat }}% correct. You have spent 
+{% if time_spent.hours %}{{ time_spent.hours }}h{% endif %}
+{% if time_spent.minutes %}{{ time_spent.minutes }}m{% endif %}
+{{ time_spent.seconds }}s on this task. {{ feedback }}
 
 <br>
 History:

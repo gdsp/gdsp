@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import datetime
+from south.utils import datetime_utils as datetime
 from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
@@ -20,10 +20,21 @@ class Migration(SchemaMigration):
         ))
         db.send_create_signal(u'tutor', ['Result'])
 
+        # Adding model 'History'
+        db.create_table(u'tutor_history', (
+            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('user', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'])),
+            ('effect', self.gf('django.db.models.fields.CharField')(max_length=256)),
+        ))
+        db.send_create_signal(u'tutor', ['History'])
+
 
     def backwards(self, orm):
         # Deleting model 'Result'
         db.delete_table(u'tutor_result')
+
+        # Deleting model 'History'
+        db.delete_table(u'tutor_history')
 
 
     models = {
@@ -62,6 +73,12 @@ class Migration(SchemaMigration):
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
+        },
+        u'tutor.history': {
+            'Meta': {'object_name': 'History'},
+            'effect': ('django.db.models.fields.CharField', [], {'max_length': '256'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'user': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']"})
         },
         u'tutor.result': {
             'Meta': {'object_name': 'Result'},

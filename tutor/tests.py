@@ -38,8 +38,8 @@ class TestCode(object):
     """ The base class for writing tests. All tests must subclass this
     class, since the system searches subclasses of this class and
     loads them dynamically. Every subclass must implement first(), check(),
-    easy() and hard(), which describes the initial parameter setting.
-    The GuessEffect class is a good starting point."""
+    easy(), medium(), hard() and adaptive(), which describes the initial 
+    parameter setting. The GuessEffect class is a good starting point."""
 
     level = None
     FX = None
@@ -48,8 +48,12 @@ class TestCode(object):
     def __init__(self, level, FX, user):
         if level == 'Hard':
             self.level = self.hard
+        if level == 'Medium':
+            self.level = self.medium
         if level == 'Easy':
             self.level = self.easy
+        if level == 'Adaptive':
+            self.level = self.adaptive
 
         if FX == 'ALL FX':
             self.FX = cs.getEffects(md.systemfiles)
@@ -69,8 +73,36 @@ class TestCode(object):
     def hard(self):
         raise NotImplementedError
 
+    def medium(self):
+        raise NotImplementedError
+
     def easy(self):
         raise NotImplementedError
+
+    def adaptive(self):
+        raise NotImplementedError
+
+    def _history(self):
+        return [ result.correct for result in Result.objects.filter(test = self.name).filter(user = self.user).order_by('pk') ]
+
+    def _consecutive(self, n):
+        """ Returns a list, e.g. [-1, 1, 0, 1], which says whether the difficulty should increase or decrease, depending on the n consecutive 
+        correct/wrong answers. """
+        grouped = zip(*[iter(self._history())]*n)
+        results = [0]*len(grouped)
+        for i, group in enumerate(grouped):
+            if list(group) == [1]*n:
+                results[i] = 1
+            if list(group) == [0]*n:
+                results[i] = -1
+        return results
+
+    def _calculate_integer_level(self, n_consecutive, lowest, highest):
+        trend = self._consecutive(n_consecutive)
+        level = lowest
+        for t in trend:
+            level = max(lowest, min(highest, level+t))
+        return level
 
     def process(self, effectParameterValues):
         inputSound = md.systemfiles + '/samples/' + random.choice(cs.getWavefileNames(md.systemfiles))
@@ -115,8 +147,9 @@ class TestCode(object):
         return request.POST['answer'], self.diminish_choices(request), request.POST['sound'], request.POST['csd']
 
     def store_result(self, request):
+        print '\n\n STORE RESULT LESSON_ID {} \n\n'.format(request.COOKIES['lesson_id'])
         correct = request.POST['answer'] == request.POST['choice']
-        result = Result(test = self.name, correct = correct, user = request.user, csd = request.POST['csd'],
+        result = Result(lesson = request.COOKIES['lesson_id'], test = self.name, correct = correct, user = request.user, csd = request.POST['csd'],
                         cheated = request.POST['cheated'] == 'True')
         result.save()
         return correct
@@ -130,10 +163,19 @@ class GuessEffect(TestCode):
     tags = 'general'
 
     def easy(self):
-        return 3
+        return 2
+
+    def medium(self):
+        return 4
 
     def hard(self):
         return 6
+
+    def adaptive(self):
+        """ We examine the entire history of this effect, and look at the trend of corrects. Two corrects in a row yields and increase, 
+        two wrongs a decrease. A mix is no change. In the worst case, a student will have done this a couple of thousand times, which 
+        should pose no problem to the Django engine. """
+        return self._calculate_integer_level(2, self.easy(), self.hard())
 
     def first(self):
 
@@ -161,8 +203,20 @@ class Filter(TestCode):
     def easy(self):
         return random.randrange(1000, 2000), .75, .609
 
+    def medium(self):
+        return random.randrange(800, 3000), .5, .609
+
     def hard(self):
         return random.randrange(500, 8000), .25, .609
+
+    def adaptive(self):
+        trend = self._consecutive(2)
+        level = [1000, 2000, .75, .609]
+        for t in trend:
+            level[0] = min(1000, max(500, level[0]-t*50)) # 10 steps
+            level[1] = max(2000, min(8000, level[1]+t*600))
+            level[2] = min(.75, max(.25, level[2]-t*.05))
+        return random.randrange(level[0], level[1]), level[2], level[3]
 
     def shuffle_fxs(self, freq, scaling):
         fxs = [ int(freq*(1-scaling)), freq, int(freq*(1+scaling)) ]
@@ -203,8 +257,14 @@ class Combinations(TestCode):
     def easy(self):
         return 2
 
+    def medium(self):
+        return 3
+
     def hard(self):
         return 4
+
+    def adaptive(self):
+        return self._calculate_integer_level(3, self.easy(), self.hard())
     
     def fx(self, num_fx):
         random.shuffle(self.FX)
