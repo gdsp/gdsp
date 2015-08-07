@@ -4,18 +4,21 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>{% block title %}gDSP{% endblock %}</title>
+    <title>{% block title %}gDSP - Online Course{% endblock %}</title> <!-- ENDRA -->
     <link rel="stylesheet" href="{% static 'css/application.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}"> <!-- LAGT TIL -->
+    <link href='http://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'> <!-- LAGT TIL -->
+    <link rel="shortcut icon" href="{% static 'images/gdsp-favicon.ico' %}" /> <!-- LAGT TIL -->
+    <script src="{% static 'javascript/jquery-1.11.1.min.js' %}"></script><!-- LAGT TIL Include jQuery ?? -->
+    <script src="{% static 'javascript/arnes.js' %}"></script><!-- LAGT TIL -->
+    
     {% block head %} {% endblock %}  {# for including JS, CSS etc. #}
   </head>
   <body>
     <div id="body-wrapper">
-      <nav>
+      <nav id="main-navigation">
         <ul>
-          <li><a href="{% url 'home' %}">{% trans 'gDSP' %}</a></li>
-          <li><a href="{% url 'core:lessons' %}">{% trans 'Lessons' %}</a></li>
-          <li><a href="{% url 'about' %}">About</a></li>
-          <li><a href="{% url 'pnacl' %}">Test pnacl</a></li>
+          <li id="gdsp-logo-home"><a href="{% url 'home' %}"></a></li> <!-- Lagt til ID og fjerna tekst -->
           {% if user.is_authenticated %}
             <li id="logout">
               <a href="{% url 'accounts:logout' %}">
@@ -29,16 +32,27 @@
               <a href="{% url 'accounts:login' %}">{% trans 'Log in' %}</a>
             </li>
           {% endif %}
+          <li><a href="{% url 'about' %}">About</a></li> <!-- ENDRA REKKEFØLGE -->
+          <li><a href="{% url 'core:lessons' %}">{% trans 'Lessons' %}</a></li> <!-- ENDRA REKKEFØLGE -->
         </ul>
       </nav>
-      {# Submenus etc.: #}
-      {% block header %} {% endblock %}
       <div id="content-wrapper">
+        {# Submenus etc.: #}
+        {% block header %} {% endblock %}
+      
         {# The main content of the page: #}
         {% block content %} {% endblock %}
       </div>
       {# JS and other resources that should load after the main content: #}
       {% block footer %} {% endblock %}
+		<div class="footer-wrap"><div class="footer-copyright">Copyright © 2014 NTNU, Department of Music, Music Technology.</div></div> <!-- LAGT TIL -->
+    <div class="clear"></div> <!-- LAGT TIL -->
     </div>
+  <div class="clear"></div> <!-- LAGT TIL -->
+  
+<script type="text/javascript">
+$("#lesson-sidebar").stick_in_parent({offset_top: 30, bottoming:false})
+</script>
+  
   </body>
 </html>

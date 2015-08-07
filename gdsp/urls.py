@@ -1,11 +1,13 @@
 from django.conf import settings
 from django.conf.urls import patterns, include, url, static
+
 from os import environ
 
 from django.contrib import admin
 admin.autodiscover()
 
-from pages.views import HomeView, AboutView, PnaclView
+from pages.views import AboutView
+from core.views import HomeView
 
 urlpatterns = patterns('',
     # Account handling (login, logout, registration, ...):
@@ -24,13 +26,10 @@ urlpatterns = patterns('',
     # The automatic tutor app:
     url(r'^tutor/', include('tutor.urls')),
     (r'^site_media/(?P<path>.*)$', 'django.views.static.serve',
-#     {'document_root': '/srv/www/gdsp.hf.ntnu.no/data/', 'show_indexes': True}),
-     {'document_root': '/Users/tidemann/Documents/NTNU/gdsp/data/', 'show_indexes': True}),
-
+     {'document_root': settings.DATA_ROOT, 'show_indexes': True}),
     # Static pages such as the home page, 'About' etc.:
     url(r'^$', HomeView.as_view(), name='home'),
     url(r'^about/$', AboutView.as_view(), name='about'),
-    url(r'^pnacl/$', PnaclView.as_view(), name='pnacl'),
 )
 
 if not environ.get('DJANGO_PRODUCTION', None):

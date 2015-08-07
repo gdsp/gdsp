@@ -1,0 +1,390 @@
+/* CSS Document */
+/*
+Theme Name: gDSP v1
+*/
+
+/** ------------------------ Standard styles ------------------------ **/
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video { margin: 0; padding: 0; border: 0; font-size: 100%; vertical-align: baseline; }
+sub { vertical-align: sub; font-size: smaller; }
+body { overflow-y:scroll; }
+html, body { background-color: #e5e5e3 !important; }
+.clear { clear:both; }
+hr { border: 0; height: 0; border-top: 1px solid #e5e5e3; margin: 30px 0; }
+hr.no-margin { margin: 0; }
+/** ------------------------ END Standard styles ------------------------ **/
+
+/** ------------------------Styles for handling library header --------------------------------- **/
+.library-table { font-size: 10px; line-height: 13px }
+.library-table th { font-weight: bold; text-transform: uppercase; padding-bottom: 10px }
+.library-table tr td { padding-bottom: 10px; padding-right:10px; } 
+.library-footnotes { font-size: 10px; font-style: italic }
+
+div#content-wrapper code, div#content-wrapper div.highlight {
+width: 900px;
+white-space: pre-wrap;
+white-space: -moz-pre-wrap;
+white-space: -pre-wrap;
+white-space: -o-pre-wrap;
+word-wrap: break-word;
+font-size:12px;
+}
+
+/** ------------------------ Navigation ------------------------ **/
+nav#main-navigation {
+	background-color:#f5f5f2;
+	font-family: 'Montserrat', sans-serif;
+	text-transform:uppercase;
+	height:50px;
+	border-bottom:1px solid #c8c9c7;
+}
+nav#main-navigation ul li#gdsp-logo-home {
+	float:left;
+	width:70px;
+	height:50px;
+	background: transparent url('/static/images/gdsp-logo-home.png') no-repeat center center;
+	margin:0 !important;
+}
+nav#main-navigation ul li#gdsp-logo-home a {
+	width:70px;
+	height:50px;
+	padding:0 !important;
+}
+nav#main-navigation ul {
+	background-color:transparent !important;
+	width:960px;
+	margin:0 auto;
+	height:50px;
+}
+nav#main-navigation ul li { margin:0 0 0 40px !important;}
+nav#main-navigation ul li,
+nav#main-navigation ul li a {
+	color:#53565a;
+	font-size:12px;
+	font-weight:bold;
+	line-height:50px;
+	height:50px;
+	display:inline-block;
+	float:right;
+}
+nav#main-navigation ul li:hover,
+nav#main-navigation ul li a:hover {
+	color:#00b2a9;
+	background-color:transparent;
+}
+/** ------------------------ END Navigation ------------------------ **/
+
+/** ------------------------ Content Wrapper ------------------------ **/
+#content-wrapper {
+	width:920px !important;
+	padding:30px 20px;
+	background-color:#fff;
+	border:1px solid #c8c9c7;
+	margin:30px auto 20px !important;
+}
+
+div#content-wrapper a {
+	color: #00b2a9 !important;
+	font-weight:bold;
+	text-decoration: underline !important;
+	border-bottom: none !important;
+}
+div#content-wrapper a:hover {
+	color: #0096a7 !important;
+	background-color:transparent !important;
+}
+/** ------------------------ END Content Wrapper ------------------------ **/
+
+
+/** ------------------------ Typography ------------------------ **/
+body {
+	color: #31454e !important;
+	font-size:14px;
+	line-height:20px;
+	letter-spacing:normal;
+}
+div#lp-banner-wrap h1 { font-size: 30px; }
+div#content-wrapper h1 { font-size: 20px !important; }
+
+div#lp-banner-wrap h1,
+div#content-wrapper h1 {
+	line-height:100% !important;
+	text-transform:uppercase;
+	font-family: 'Montserrat', sans-serif;
+	margin-bottom:30px !important;
+	font-weight: bold;
+}
+div#content-wrapper h2 {
+	line-height:100% !important;
+	text-transform:uppercase;
+	font-family: 'Montserrat', sans-serif;
+}
+/** ------------------------ END Typography ------------------------ **/
+
+/** ------------------------ Landing Page ------------------------ **/
+div#lp-banner-wrap {
+	margin:-110px 0 0;
+	padding:0;
+	width:100%;
+	background: #000 url('/static/images/img-home-bg4.jpg') no-repeat center center;
+	background-size: cover;
+	min-height:450px;
+}
+div#lp-banner {
+	width:960px;
+	margin:0 auto;
+	padding:30px 0;
+}
+div#lp-intro-text {
+	width:600px;
+	padding:0 20px;
+	float:left;
+	color:#fff;
+}
+div#lp-login-box {
+	width:255px;
+	padding:0;
+	float:right;
+	background:#fff;
+}
+
+div#lp-login-box input[type="text"], 
+div#lp-login-box input[type="password"], 
+div#lp-login-box input[type="email"], 
+div#lp-login-box input[type="date"], 
+div#lp-login-box input[type="number"], 
+div#lp-login-box textarea, 
+div#lp-login-box select {
+	border: 1px solid #ccc;
+	padding: 6px 4px;
+	outline: none;
+	color: #75787b;
+	margin: 0;
+	width: 95%;
+	max-width: 100%;
+	display: block;
+	margin-bottom: 15px;
+	background: #fff;
+	-moz-border-radius: 0;
+	-webkit-border-radius: 0;
+	border-radius: 0;
+	-webkit-appearance: none;
+}
+div#lp-login-box label, div#lp-login-box legend {
+	display: block;
+	padding-bottom: 5px;
+}
+div#lp-login-box input[type='button'], div#lp-login-box input[type='submit'] {
+	background-color: #00b2a9;
+	border: 0;
+	color: #fff;
+	height: 40px;
+	line-height: 40px;
+	display: block;
+	width: 100%;
+	text-align: center;
+	margin-top: 5px;
+	-moz-border-radius: 0;
+	-webkit-border-radius: 0;
+	border-radius: 0;
+	-webkit-appearance: none;
+	font-size: 12px;
+	font-weight:bold;
+	text-transform:uppercase;
+	font-family: 'Montserrat', sans-serif;
+}
+div#lp-login-box .button:hover, div#lp-login-box button:hover, div#lp-login-box input[type='button']:hover, div#lp-login-box input[type='submit']:hover {
+	cursor: pointer;
+	background-color: #0096a7;
+}
+
+div#lp-banner p {
+	margin-bottom:14px;
+}
+div#lp-banner strong {
+	font-weight:bold;
+}
+
+			/** ------------------------ Landing Page Tabs ------------------------ **/
+				.tabs-menu { height: 40px; clear: both; }
+				.tabs-menu li {
+					height: 40px;
+					line-height: 40px;
+					float: left;
+					background-color: #c8c9c7;
+					list-style:none;
+					width:50%;
+					text-align:center;
+					font-weight:bold;
+				}
+				.tabs-menu li.current {
+					position: relative;
+					background-color: transparent;
+					z-index: 5;
+				}
+				.tabs-menu li a {
+					padding: 10px;
+					color: #53565a;
+					text-decoration: none; 
+					text-transform:uppercase;
+					font-family: 'Montserrat', sans-serif;
+					font-size:12px;					
+				}
+				.tab-content { padding: 25px 20px 30px; display: none; }
+				#tab-1 { display: block; }
+			/** ------------------------ END Landing Page Tabs ------------------------ **/
+/** ------------------------ END Landing Page ------------------------ **/
+
+
+/** ------------------------ Lessons ------------------------ **/
+ul.lessons-lp { margin-top:30px; }
+ul.lessons-lp li .course-title { font-weight:bold; font-family: 'Montserrat', sans-serif; font-size:14px; }
+ul.lessons li ul.lesson-sub-list li { margin-left:15px; font-size:12px; list-style:disc !important; height:1em !important; padding-top:5px !important; }
+ul.lesson-sub-list { margin-top:10px; }
+ul.lessons  {
+	margin-right:-22px;
+}
+div#content-wrapper ul.lessons li a { text-decoration:none !important; }
+ul.lessons li {
+	background-repeat: no-repeat;
+	background-position: center top;
+	margin-right:20px;
+	width:215px;
+	float:left;
+	height:300px;
+	list-style:none !important;
+	text-indent:0 !important;
+	line-height:120%;
+}
+
+img.lesson-intro-img { width:679px; height:150px; margin: -30px 0 30px -20px; }
+
+.lesson-content {
+	width:620px;
+	float:left;
+	position:relative;
+}
+
+div#content-wrapper nav#next-and-prev {
+	bottom: 0;
+	height: 1em;
+	width: inherit;
+	margin-left: inherit;
+	margin-bottom: 0 !important;
+	position: relative !important;
+	left: 0;
+	right: 0;
+	border-top: 1px solid #c8c9c7;
+	margin-top:30px;
+	clear:both;
+}
+
+div#content-wrapper nav#next-and-prev a {
+font-size: 14px !important;
+line-height: 100% !important;
+margin: 20px 0 !important;
+font-family: 'Montserrat', sans-serif;
+text-decoration:none !important;
+max-width: 45%;
+}
+div#content-wrapper nav#next-and-prev a.next { text-align: right; }
+
+audio {
+	display:block;
+	padding:5px 0 !important;
+}
+.answer-hover {
+	color:#ccc;
+	background-color:#ccc;
+	padding:5px 20px;
+	font-weight:bold;
+	float:right
+}
+.answer-hover:hover {
+	color:#000;
+	background-color:#fff;
+}
+
+/** ------------------------ END Lessons ------------------------ **/
+
+
+/** ------------------------ Lessons Sidebar ------------------------ **/
+nav#lesson-sidebar {
+	position:relative;
+	margin: -30px -19px 0 0;
+	top:0;
+	float:right;
+	width: 280px;
+}
+nav#lesson-sidebar ul {
+	background-color: #f5f5f2 !important;
+	border-top: 0 !important;
+	border-right: 0 !important;
+	border-left: 1px solid #c8c9c7 !important;
+	border-bottom: 0 !important;
+	-moz-border-radius-topright: 0 !important;
+	-webkit-border-top-right-radius: 0 !important;
+	border-top-right-radius: 0 !important;
+	-moz-border-radius-bottomright: 0 !important;
+	-webkit-border-bottom-right-radius: 0 !important;
+	border-bottom-right-radius: 0 !important;
+}
+div#content-wrapper nav#lesson-sidebar ul li {
+	list-style-type: none !important;
+	border-bottom: 1px solid #c8c9c7;
+	padding-left:0 !important;
+	text-indent:0 !important;
+	width: auto !important;
+	margin: 0 !important;
+	padding:10px !important;
+	font-family: 'Montserrat', sans-serif;
+	font-size:13px;
+	line-height:100%;
+}
+nav#lesson-sidebar ul ul {
+	background-color: transparent !important;
+	border: 0 !important;
+	border-right: 0 !important;
+	border-left: 0 !important;
+	border-bottom: 1px solid #c8c9c7 !important;
+	-moz-border-radius-topright: 0 !important;
+	-webkit-border-top-right-radius: 0 !important;
+	border-top-right-radius: 0 !important;
+	-moz-border-radius-bottomright: 0 !important;
+	-webkit-border-bottom-right-radius: 0 !important;
+	border-bottom-right-radius: 0 !important;
+	margin-bottom:0 !important;
+	padding:15px 0;
+	font-size:13px;
+	background-color:#ededeb !important;
+}
+div#content-wrapper nav#lesson-sidebar ul ul li {
+	border-bottom: 0;
+	padding:3px 0 3px 25px !important;
+	font-family: Helvetica, Arial, sans-serif;
+}
+div#content-wrapper ul ul li.active a {
+	color:#000 !important;
+}
+div#content-wrapper nav#lesson-sidebar ul a {
+	text-decoration: none !important; font-weight:normal !important;
+}
+div#content-wrapper nav#lesson-sidebar ul li a {
+	padding:0 !important;
+}
+/** ------------------------ END Lessons Sidebar ------------------------ **/
+
+
+/** ------------------------ Footer ------------------------ **/
+.footer-wrap {
+	width:960px;
+	margin:0 auto;
+	padding-bottom:50px;
+}
+
+.footer-copyright {
+	color: #75787B;
+	font-size:12px;
+	clear:both;
+}
+/** ------------------------ END Footer ------------------------ **/
+

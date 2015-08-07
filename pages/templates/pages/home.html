@@ -1,17 +1,38 @@
 {% extends 'base.html' %}
 {% load staticfiles %}
+{% load i18n %} <!-- LAGT TIL - Usikker på om denne skal være her ??? -->
 
 {% block content %}
 
-<img src="{% static 'images/clipping.svg' %}"
-     title="Illustration by David Batley. Licensed under CC BY-SA.">
+</div> <!-- LAGT TIL - Avslutte første content wrapper -->
 
-<br>
-<p> Welcome to the gDSP course. It is an online course for learning digital signal processing of audio signals. The course is focused on learning by hearing, and can be thought of as the DSP equivalent to traditional ear training in music. Many musicians and music producers rely on digital signal processing in their daily work routines, and it can be useful to have additional insight into how these processing techniques modify our music signals. Moreover, if you can imagine a sound that you would need in one of your productions, the aim of this course is that you also should be able to reproduce it. By recognizing typical signal processing techniques in sound examples you take the first step on the path to recreating those sounds by using those same processing techniques on your own sounds.
-</p>
-<p>
-The course contains explanations of many DSP techniques, sound examples, music production examples, listening tests specific to each lesson, and also an automatic listening test generator creating new listening tests tailored to each student's level of experience.
-</p>
+<div id="lp-banner-wrap">
+    <div id="lp-banner">
+    	<div id="lp-intro-text">
+          	<h1>Welcome to the gDSP Course</h1>
+            <p><strong>This is an online course for learning digital signal processing of audio signals. The course is focused on learning by hearing, 
+            and can be thought of as the DSP equivalent to traditional ear training in music.</strong></p>
+            
+            <p>Many musicians and music producers rely on digital signal processing in their daily work routines, and it can be useful to have 
+            additional insight into how these processing techniques modify our music signals. Moreover, if you can imagine a sound that you 
+            would need in one of your productions, the aim of this course is that you also should be able to reproduce it.</p>
+            
+            <p>By recognizing typical signal processing techniques in sound examples you take the first step on the path to recreating those 
+            sounds by using those same processing techniques on your own sounds.</p>
+            
+            <p>The course contains explanations of many DSP techniques, sound examples, music production examples, listening tests specific to 
+            each lesson, and also an automatic listening test generator creating new listening tests tailored to each student's level of experience.</p>
+        </div><!-- END #lp-intro-text -->
 
+        {# Optional login block: #}
+        {% block login %} {% endblock %}
+
+        <div class="clear"></div>
+    </div><!-- END #lp-banner -->
+</div><!-- END #lp-banner-wrap -->
+
+{# Optional overview block for home page: #}
+{% block overview %} {% endblock %}
 
 {% endblock %}
+

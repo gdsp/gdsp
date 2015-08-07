@@ -134,6 +134,7 @@ class ImageElement(BaseTopicElement):
 
     caption = models.CharField(max_length=255, blank=True)
     image = models.ImageField(upload_to='images')
+    max_width = models.IntegerField(default=100)
 
     def save(self, *args, **kwargs):
         if not self.pk:
@@ -141,11 +142,17 @@ class ImageElement(BaseTopicElement):
         super(ImageElement, self).save(*args, **kwargs)
 
     def to_html(self):
-        html = u'<figure class="image-element">'
-        html += u'<img src="{}">'.format(self.image.url)
+        if self.description == 'Lesson top':
+            html = u'<img class="lesson-intro-img" src="{}">'.format(self.image.url)            
+        else:
+            html = u'<figure class="image-element">'
+            html += u'<img style="max-width: {width}%" src="{url}">'.format(
+                width=self.max_width,
+                url=self.image.url,
+                )
         if self.caption:
             html += u'<figcaption>{}</figcaption>'.format(self.caption)
-        html += u'</figure>'
+        html += u'</figure>' 
         return html
 
     class Meta:
@@ -162,8 +169,12 @@ class AudioElement(BaseTopicElement):
     """
 
     title = models.CharField(
-            max_length=128,
+            max_length=128, blank=True,
             help_text=_('The title of the track as displayed to the student.'),
+    )
+    hover = models.CharField(
+            max_length=128, blank=True,
+            help_text=_('A text that appears only when hovering over the field.'),
     )
     file = models.FileField(upload_to='audio')
 
@@ -173,10 +184,14 @@ class AudioElement(BaseTopicElement):
         super(AudioElement, self).save(*args, **kwargs)
 
     def to_html(self):
-        return u'<a class="audio-element" href="{url}">{title}</a>'.format(
-                url=self.file.url,
-                title=self.title,
-        )
+        html = u''
+        if self.title:
+            html += u'<br>{}<br>'.format(self.title,)
+        if self.hover:
+            html += u'<span class="answer-hover">{}</span>'.format(self.hover,)
+        html += u'<audio controls><source src="{}" type="audio/wav">Your browser does not support the audio element.</audio>'.format(
+                self.file.url,)
+        return html
 
     class Meta:
         verbose_name = _('audio element')
@@ -225,8 +240,8 @@ class TestElement(BaseTopicElement):
         super(TestElement, self).save(*args, **kwargs)
 
     def to_html(self):
-        return u'<h2>{description}</h2><iframe src="http://{domain}/tutor/{test}/{difficulty}/{FX}" frameborder="0" scrolling="no" width="100%" height=300"></iframe>'.format(domain=current_site.domain,
-                                                                                                                                                  description=self.description, test=self.test, difficulty = self.difficulty, FX=str(' '.join(self.effect_files)))
+        current_site = Site.objects.get_current()
+        return u'<h2>{description}</h2><iframe src="http://{domain}/tutor/{test}/{difficulty}/{FX}" frameborder="0" scrolling="no" width="100%" height=300"></iframe>'.format(domain=current_site.domain, description=self.description, test=self.test, difficulty = self.difficulty, FX=str(' '.join(self.effect_files)))
 
     class Meta:
         verbose_name = _('test element')
@@ -242,6 +257,7 @@ class ResultsElement(BaseTopicElement):
             self.element_type = BaseTopicElement.RESULTS
         super(ResultsElement, self).save(*args, **kwargs)
 
+<<<<<<< HEAD
     scope = models.CharField(max_length=256,choices=(('Lesson', 'Lesson'), ('Aggregated', 'Aggregated')))
 
     def to_html(self):
@@ -249,6 +265,11 @@ class ResultsElement(BaseTopicElement):
             return u'<h2>{description}</h2><iframe src="http://{domain}/tutor/lesson_results" frameborder="0" scrolling="yes" width="100%" height=500;"></iframe>'.format(domain=current_site.domain, description=self.description)
         if self.scope == 'Aggregated':
             return u'<h2>{description}</h2><iframe src="http://{domain}/tutor/results" frameborder="0" scrolling="yes" width="100%" height=500;"></iframe>'.format(domain=current_site.domain, description=self.description)
+=======
+    def to_html(self):
+        current_site = Site.objects.get_current()
+        return u'<h2>{description}</h2><iframe src="http://{domain}/tutor/results" frameborder="0" scrolling="no" width="100%" height=500;"></iframe>'.format(domain=current_site.domain, description=self.description)
+>>>>>>> 3e83e213fda774df7e5a30751aa7b2cdf929dfdf
 
     class Meta:
         verbose_name = _('results element')
@@ -358,6 +379,7 @@ class Lesson(models.Model):
     """
 
     title = models.CharField(max_length=255)
+    image = models.ImageField(upload_to='images', default = 'no-img.jpg')
     course = models.ForeignKey('Course', related_name='lessons')
     topics = models.ManyToManyField(Topic, through='LessonTopicRelation')
     objects = LessonManager()
@@ -377,6 +399,7 @@ class Lesson(models.Model):
 class LessonTopicRelation(models.Model):
     topic = models.ForeignKey(Topic)
     lesson = models.ForeignKey(Lesson)
+    visible = models.BooleanField(default=True)
     topic_ordinal = models.PositiveIntegerField()
     # excluded_content is a comma-separated list of topic element types
     # which should not be displayed in this lesson, e.g. 'code, audio':

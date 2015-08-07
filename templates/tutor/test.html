@@ -1,3 +1,4 @@
+<!doctype html>
 <html>
 <head><title>Test</title>
 <link rel="stylesheet" href="/static/css/application.css">
@@ -8,23 +9,38 @@
 
 <B>{{ context.msg }}</B> <P>
 
+<span>
 Original:
-<EMBED
-SRC="/site_media/system/samples/{{ context.sound }}"
-HEIGHT="16"
-WIDTH="150"
-AUTOPLAY="false" CONTROLLER="true" LOOP="false"
-PLUGINSPAGE="http://www.apple.com/quicktime/download/">
+<audio controls class="a-c-original" style="width:190px;height:35px">
+  <source src="/site_media/system/samples/{{ context.sound }}" type="audio/wav">
+  <object>
+  <EMBED
+  SRC="/site_media/system/samples/{{ context.sound }}"
+  HEIGHT="30"
+  WIDTH="150"
+  AUTOPLAY="false" CONTROLLER="true" LOOP="false"
+  PLUGINSPAGE="http://www.apple.com/quicktime/download/">
+  </object>
+</audio>
+</span>
 
+<span style="display:inline-block;">
 Processed:
-<EMBED
-SRC="/site_media/user/{{ context.csd }}_normalized.wav"
-HEIGHT="16"
-WIDTH="150"
-AUTOPLAY="false" CONTROLLER="true" LOOP="false"
-PLUGINSPAGE="http://www.apple.com/quicktime/download/">
+<audio controls class="a-c-processed" style="width:190px;height:35px">
+  <source src="/site_media/user/{{ context.csd }}_normalized.wav" type="audio/wav">
+  <object>
+  <EMBED
+  SRC="/site_media/user/{{ context.csd }}_normalized.wav"
+  HEIGHT="30"
+  WIDTH="150"
+  AUTOPLAY="false" CONTROLLER="true" LOOP="false"
+  PLUGINSPAGE="http://www.apple.com/quicktime/download/">
+  </object>
+</audio>
+</span>
 
-<form action="/tutor/{{ context.test_name }}/{{ context.level }}/{{ context.FX }}" method="post">
+
+<form class="test-form-wrapper" action="/tutor/{{ context.test_name }}/{{ context.level }}/{{ context.FX }}" method="post">
 {% csrf_token %}
 
 {% for choice in context.choices %}

@@ -1,0 +1,28 @@
+{% extends 'pages/home.html' %}
+{% load staticfiles %}
+{% load i18n %} <!-- LAGT TIL - Usikker på om denne skal være her ??? -->
+
+{% block overview %}
+
+<div id="content-wrapper">
+	<h1>Lessons</h1>
+    The gDSP course offers the following lessons:
+
+	<ul class="lessons lessons-lp">
+	  {% for lesson in lessons %}
+		<li> 
+		<img src="{{ lesson.image.url }}"><span class="course-title">{{ lesson.title }}</span>
+      	<ul class="lesson-sub-list"> <!-- Lagt til liste med sub-topics. Sjekk om dette blir rendra riktig!! -->
+        	{% for relation in lesson.lessontopicrelation_set.all %}
+			{% if relation.visible %}
+           		<li>{{ relation.topic.display_title }}</li>
+			{% endif %}
+           {% endfor %}
+        </ul>
+    </li>
+  {% endfor %}
+</ul>
+<div class="clear"></div>
+
+{% endblock %}
+

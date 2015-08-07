@@ -5,6 +5,7 @@ import random, copy, subprocess, pdb
 import time, inspect, sys, uuid
 
 from tutor.models import Result, History
+from os import path
 import modular_path as md
 import csdWriter as cs
 
@@ -105,22 +106,24 @@ class TestCode(object):
         return level
 
     def process(self, effectParameterValues):
-        inputSound = md.systemfiles + '/samples/' + random.choice(cs.getWavefileNames(md.systemfiles))
+        inputSound = path.join(md.systemfiles, 'samples', random.choice(cs.getWavefileNames(md.systemfiles)))
         csoundFilename = str(uuid.uuid4()) + '.csd'
+        csoundNormFilename = 'normalize.' + csoundFilename
+
+        csoundFilepath = path.join(md.userfiles, csoundFilename)
+        csoundNormFilepath = path.join(md.userfiles, csoundNormFilename)
 
         # Store which effects are being used
         for effect in effectParameterValues.keys():
             History.objects.get_or_create(user = self.user, effect = effect)
-
-        cs.writeCsoundFile(csoundFilename, effectParameterValues, md.systemfiles, md.userfiles, inputSound)
-
-        retcode = subprocess.call(['csound', '-d', md.userfiles + '/' + csoundFilename])
-        print retcode
+            
+        cs.writeCsoundFile(csoundFilename, effectParameterValues, md.systemfiles, md.userfiles, inputSound.replace('\\','/'))       
+        retcode = subprocess.call(['csound', '-d', csoundFilepath])
         if retcode == 0:
             # Change the normalize CSD file.
-            userfile = md.userfiles + '/' + csoundFilename
-            subprocess.call('sed s,test,%s, ' % userfile + md.modular + '/normalize.csd >' + md.userfiles + '/normalize.%s' % csoundFilename, shell=True)
-            retcode = subprocess.call(['csound', md.userfiles + '/normalize.%s' % csoundFilename ])
+            normalizeFile = path.join(md.modular, 'normalize.csd')
+            subprocess.call('sed s,test,%s, ' % csoundFilepath.replace('\\','/') + normalizeFile + ' > ' + csoundNormFilepath, shell=True)
+            retcode = subprocess.call(['csound', csoundNormFilepath])
             print '******************************'
             print 'source sound:', inputSound
             print effectParameterValues
@@ -128,7 +131,7 @@ class TestCode(object):
         else:
             print 'csound error'
 
-        return inputSound.rsplit('/')[-1], csoundFilename
+        return path.basename(inputSound), csoundFilename
 
     def diminish_choices(self, request):
         fxs = []
@@ -194,10 +197,10 @@ class GuessEffect(TestCode):
     def check(self, request, correct):
         return self.first() if correct else self.less_choices(request)
 
-class Filter(TestCode):
+class BandpassMusic(TestCode):
 
-    name = 'General filter'
-    tags = 'filter'
+    name = 'Bandpass music'
+    tags = 'frequency, filter'
 
     # Easy and hard returns a random starting frequency, the scaling factor (in each direction) and Q.
     def easy(self):
@@ -219,20 +222,23 @@ class Filter(TestCode):
         return random.randrange(level[0], level[1]), level[2], level[3]
 
     def shuffle_fxs(self, freq, scaling):
-        fxs = [ int(freq*(1-scaling)), freq, int(freq*(1+scaling)) ]
+        fxs = [ int(freq*(1/(1+scaling))), freq, int(freq*(1+scaling)) ]
         return fxs, fxs[random.randrange(3)]
 
     def first(self):
         freq, scaling, Q = self.level()
         fxs, answer = self.shuffle_fxs(freq, scaling)
         sound, csd = self.filter_effect(answer, Q)
+	print 'first', answer, fxs, sound, csd
         return answer, fxs, sound, csd
 
     def check(self, request, correct):
         if correct:
-            # Simple solution: walk 50% in each direction, randomly.
-            freq = int(int(request.POST['answer'])*random.choice([0.5, 1.5]))
-            _, scaling, Q = self.level()
+            # Simple solution: walk up to 50% in each direction, randomly.
+            freq = int(int(request.POST['answer'])*random.choice([0.67, 0.71, 0.77, 1.3, 1.4, 1.5]))
+            x, scaling, Q = self.level()
+            if (freq > 12000) or (freq < 50):
+                freq = x # reset to randrange if out of range
             fxs, answer = self.shuffle_fxs(freq, scaling)
             sound, csd = self.filter_effect(answer, Q)
         
@@ -241,12 +247,216 @@ class Filter(TestCode):
             return self.less_choices(request)
     
     def filter_effect(self, freq, Q):
+        self.FX = ['bandpass.inc']
         effectParameterSet = cs.getEffectParameterSet(self.FX, md.systemfiles)
         effectParameterValues = cs.getEffectParameterValues(effectParameterSet)
 
         effectParameterValues[self.FX[0]]['kCutoff'] = freq
         effectParameterValues[self.FX[0]]['kBW'] = Q
 
+        return self.process(effectParameterValues)
+
+class BandpassNoise(BandpassMusic):
+
+    name = 'Bandpass Noise'
+    tags = 'frequency, filter'
+
+    def process(self, effectParameterValues):
+        print 'effectParameterValues', effectParameterValues
+        inputSound = 'noise'
+        
+        csoundFilename = str(uuid.uuid4()) + '.csd'
+        csoundNormFilename = 'normalize.' + csoundFilename
+        csoundFilepath = path.join(md.userfiles, csoundFilename)
+        csoundNormFilepath = path.join(md.userfiles, csoundNormFilename)
+
+        # Store which effects are being used
+        for effect in effectParameterValues.keys():
+            History.objects.get_or_create(user = self.user, effect = effect)
+
+        cs.writeCsoundFile(csoundFilename, effectParameterValues, md.systemfiles, md.userfiles, inputSound)
+
+        retcode = subprocess.call(['csound', '-d', csoundFilepath])
+        print retcode
+        if retcode == 0:
+            # Change the normalize CSD file.
+            normalizeFile = path.join(md.modular, 'normalize.csd')
+            subprocess.call('sed s,test,%s, ' % csoundFilepath.replace('\\','/') + normalizeFile + ' > ' + csoundNormFilepath, shell=True)
+            retcode = subprocess.call(['csound', csoundNormFilepath])
+            print '******************************'
+            print 'source sound:', inputSound
+            print effectParameterValues
+
+        else:
+            print 'csound error'
+
+        return path.basename(inputSound), csoundFilename
+
+
+class SineFrequency(BandpassMusic):
+
+    name = 'Sine'
+    tags = 'frequency'
+
+    def process(self, effectParameterValues):
+        print 'effectParameterValues', effectParameterValues
+        inputSound = 'sine'
+
+        csoundFilename = str(uuid.uuid4()) + '.csd'
+        csoundNormFilename = 'normalize.' + csoundFilename
+        csoundFilepath = path.join(md.userfiles, csoundFilename)
+        csoundNormFilepath = path.join(md.userfiles, csoundNormFilename)
+
+        # Store which effects are being used
+        for effect in effectParameterValues.keys():
+            History.objects.get_or_create(user = self.user, effect = effect)
+
+        cs.writeCsoundFile(csoundFilename, effectParameterValues, md.systemfiles, md.userfiles, inputSound)
+
+        retcode = subprocess.call(['csound', '-d', csoundFilepath])
+        print retcode
+        if retcode == 0:
+            # Change the normalize CSD file.
+            normalizeFile = path.join(md.modular, 'normalize.csd')
+            subprocess.call('sed s,test,%s, ' % csoundFilepath.replace('\\','/') + normalizeFile + ' > ' + csoundNormFilepath, shell=True)
+            retcode = subprocess.call(['csound', csoundNormFilepath])
+            print '******************************'
+            print 'source sound:', inputSound
+            print effectParameterValues
+
+        else:
+            print 'csound error'
+
+        return path.basename(inputSound), csoundFilename
+
+class ReverbTimeAndMix(TestCode):
+
+    name = 'Reverb Time and Mix'
+    tags = 'reverb'
+
+    def __init__(self, level, FX, user):
+        if level == 'Hard':
+            self.level = self.hard
+        if level == 'Easy':
+            self.level = self.easy
+
+        self.FX = ['freeverb_time.inc']
+	self.parameters = [(2.5, 0.7)] # alternatives for time and mix
+        self.user = user
+
+    # Easy and hard returns a [time, mixrando] parameter set, and the scaling factor (in each direction).
+    def easy(self):
+	self.parameters = [(0.9, 0.8), (1.8, 0.5), (2.5, 0.4), (4.0, 0.3)]
+	scaling = 0.5
+        return scaling
+
+    def hard(self):	
+	self.parameters = [(0.7, 0.9), (0.9, 0.8), (1.2, 0.5), 
+                           (1.3, 0.45), (1.6, 0.4), (1.9, 0.4), 
+                           (2.2, 0.4), (2.5, 0.4), (3.0, 0.35), 
+                           (3.5, 0.2), (4.0, 0.15)]        
+	scaling = 0.2
+	return scaling
+
+    def shuffle_fxs(self, parms, scaling):
+	time1 = round(parms[0]*(1-scaling),1)
+	if time1 < 0.6: time1 = 0.6
+	mix1 = round(parms[1]*(1-scaling),1)
+	if mix1 < 0.1: mix1 = 0.1
+	time3 = round(parms[0]*(1+scaling),1)
+	if time3 > 8.0: time3 = 8.0
+	mix3 =round(parms[1]*(1+scaling),1)
+	if mix3 > 1.0: mix3 = 1.0
+        fxs = [ (time1, mix1), 
+                parms, 
+                (time3,mix3) ]
+        return fxs, fxs[random.randrange(3)]
+
+    def first(self):
+        scaling = self.level()
+	parms = random.choice(self.parameters)
+        fxs, answer = self.shuffle_fxs(parms, scaling)
+        sound, csd = self.reverb_effect(answer)
+	print 'reverb_first', answer, fxs, sound, csd
+        return answer, fxs, sound, csd
+
+    def check(self, request, correct):
+        if correct:
+	    parms = random.choice(self.parameters)
+            scaling = self.level()
+            fxs, answer = self.shuffle_fxs(parms, scaling)
+            sound, csd = self.reverb_effect(answer)
+        
+            return answer, fxs, sound, csd
+        else:
+            return self.less_choices(request)
+    
+    def reverb_effect(self, answer):        
+	effectParameterSet = cs.getEffectParameterSet(self.FX, md.systemfiles)
+        effectParameterValues = cs.getEffectParameterValues(effectParameterSet)
+	print 'effectParameterValues', effectParameterValues
+        effectParameterValues[self.FX[0]]['kRevTime'] = answer[0]
+        effectParameterValues[self.FX[0]]['kmix'] = answer[1]
+        effectParameterValues[self.FX[0]]['kHFDamp'] = 0.5
+	print 'effectParameterValues', effectParameterValues
+
+        return self.process(effectParameterValues)
+
+class Pan(TestCode):
+
+    name = 'Stereo pan'
+    tags = 'pan'
+
+    def __init__(self, level, FX, user):
+        if level == 'Hard':
+            self.level = self.hard
+        if level == 'Easy':
+            self.level = self.easy
+
+        self.FX = ['pan.inc']
+	self.parameters = [0.5] # init
+        self.user = user
+
+    # Easy and hard returns a set of possible parameter values, and the scaling factor (in each direction).
+    def easy(self):
+	self.parameters = [0.25, 0.5, 0.75] #not including the extremes, because an offset alternative is added
+	offset = 0.25 # ...so e.g. the alternative is 0.75 +/- 0.25 = [0.5, 0.75, 1.0]
+        return offset
+
+    def hard(self):	
+	self.parameters = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9] # not including the extremes (see easy())
+	offset = 0.1
+	return offset
+
+    def shuffle_fxs(self, parms, offset):
+	fxs = [ parms-offset, parms, parms+offset]
+        return fxs, fxs[random.randrange(3)]
+
+    def first(self):
+        offset = self.level()
+	parms = random.choice(self.parameters)
+        fxs, answer = self.shuffle_fxs(parms, offset)
+        sound, csd = self.pan_effect(answer)
+        return answer, fxs, sound, csd
+
+    def check(self, request, correct):
+        if correct:
+	    parms = random.choice(self.parameters)
+            offset = self.level()
+            fxs, answer = self.shuffle_fxs(parms, offset)
+            sound, csd = self.pan_effect(answer)
+            return answer, fxs, sound, csd
+        else:
+            return self.less_choices(request)
+    
+    def pan_effect(self, answer):        
+	effectParameterSet = cs.getEffectParameterSet(self.FX, md.systemfiles)
+        effectParameterValues = cs.getEffectParameterValues(effectParameterSet)
+	print 'effectParameterValues', effectParameterValues
+	print 'one', self.FX, answer
+        effectParameterValues[self.FX[0]]['kPan'] = answer
+	print 'effectParameterValues', effectParameterValues
+	print 'two'
         return self.process(effectParameterValues)
 
 class Combinations(TestCode):
@@ -270,7 +480,7 @@ class Combinations(TestCode):
         random.shuffle(self.FX)
 
         exclude = {}
-        execfile(md.systemfiles + '/effects_combination_rules.txt', exclude)
+        execfile(path.join(md.systemfiles, 'effects_combination_rules.txt'), exclude)
         for e in exclude:
             if '__' not in e: # We exclude __builtins__ and __doc__
                 try:
