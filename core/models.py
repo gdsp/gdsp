@@ -338,7 +338,7 @@ class Topic(models.Model):
     """
 
     title = models.CharField(max_length=255)
-    caption = models.CharField(max_length=255, null=True,
+    caption = models.CharField(max_length=255, blank=True,
                                   default='',
                                   help_text=_('The title that will be displayed '
                         '(use if different from title)'),)
