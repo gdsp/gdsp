@@ -257,7 +257,6 @@ class ResultsElement(BaseTopicElement):
             self.element_type = BaseTopicElement.RESULTS
         super(ResultsElement, self).save(*args, **kwargs)
 
-<<<<<<< HEAD
     scope = models.CharField(max_length=256,choices=(('Lesson', 'Lesson'), ('Aggregated', 'Aggregated')))
 
     def to_html(self):
@@ -265,11 +264,6 @@ class ResultsElement(BaseTopicElement):
             return u'<h2>{description}</h2><iframe src="http://{domain}/tutor/lesson_results" frameborder="0" scrolling="yes" width="100%" height=500;"></iframe>'.format(domain=current_site.domain, description=self.description)
         if self.scope == 'Aggregated':
             return u'<h2>{description}</h2><iframe src="http://{domain}/tutor/results" frameborder="0" scrolling="yes" width="100%" height=500;"></iframe>'.format(domain=current_site.domain, description=self.description)
-=======
-    def to_html(self):
-        current_site = Site.objects.get_current()
-        return u'<h2>{description}</h2><iframe src="http://{domain}/tutor/results" frameborder="0" scrolling="no" width="100%" height=500;"></iframe>'.format(domain=current_site.domain, description=self.description)
->>>>>>> 3e83e213fda774df7e5a30751aa7b2cdf929dfdf
 
     class Meta:
         verbose_name = _('results element')
