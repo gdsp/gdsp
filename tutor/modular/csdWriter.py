@@ -329,16 +329,76 @@ def writeCsoundFile(filename, effectParameterValues, systemfiles, userfiles, inp
     f.close
     return 0
 
+
+def writeCsoundFileInteractiveParameters(filename, effectParameterValues, systemfiles, userfiles, inputsound):
+    # create a file object
+    outfilename = filename
+    print 'outfilename', outfilename
+    f = open(os.path.join(userfiles, outfilename), 'w')
+    print 'opened file', outfilename
+    currentSignalType = 'mono'
+    instrumentNumber = 10;
+    
+    ###########################
+    # autogenerate DSP code
+    ###########################
+
+    # effects
+    for effect in effectParameterValues.keys():
+        f.write('\ninstr  {} \n'.format(instrumentNumber))
+        instrumentNumber += 1
+
+        f.write('\n;**************** effect: %s ********************************\n'%effect[:-4])
+        f.write('\n\ta1 chnget "target_effect_left\"\n')
+        f.write('\ta2 chnget "target_effect_right\"\n\n')
+
+        # read parameter values and audio routing
+        for key, value in effectParameterValues[effect].items():
+            if key == 'input':
+                audioInput = value
+            elif key == 'output':
+                audioOutput = value
+            else:
+                s = '\t'+key+'     \t= '+ str(value) + '\n'
+                f.write(s)
+
+        # insert effect code
+        if 'mono' in currentSignalType:
+            inc = open(os.path.join(systemfiles, 'effects', effect), 'r')
+
+            capture = 0 # skip writing the first parts of include files (meta information)
+            for line in inc:
+                print line
+                if capture == 1:
+                    f.write(line)
+                if '*/' in line:
+                    capture = 1
+
+            f.write('\n\tchnmix a1, \"masterL\"\n')
+            f.write('\tchnmix a2, \"masterR\"\n')
+            f.write('\tchnclear \"target_effect_left\"\n')
+            f.write('\tchnclear \"target_effect_right\"\n')
+
+            f.write('\nendin \n')
+
+            inc.close()
+
+            #currentSignalType = audioOutput
+    
+    f.close
+    return 0
+
 ###########################
 # autogenerate test
 
 if __name__ == '__main__':
     path = sys.argv[1]
     print path
-    csoundFilename = 'temp.csd'
-    effectprocessors = getEffects(path) # list of available effects
+    csoundFilename = 'target_effect.inc'
+    effectprocessors = getEffects(path) # list of available effects    
+    #effectprocessors = ['reverbsc.inc', 'freeverb.inc'] # Temporarily only using reverbsc
 
-    numEffects = 3 # adjust difficulty: number of simultaneous effects (only used for random selection, not used if we specify a list of effects)
+    numEffects = 2 # adjust difficulty: number of simultaneous effects (only used for random selection, not used if we specify a list of effects)
     effects = [] # list to hold the effects we will use in this test (empty list will be filled with randomly chosen effects)
     try: 
         effectArg = sys.argv[2] # try to get effects list (or number of random effects) from command line input
@@ -354,7 +414,6 @@ if __name__ == '__main__':
         else: pass
     except: 
         pass
-    print effects
     if effects == []:
         i = 0
         while i < numEffects:
@@ -365,17 +424,22 @@ if __name__ == '__main__':
 
     effectParameterSet = getEffectParameterSet(effects, path) # get list of effect parameters for the chosen effects
     effectParameterValues = getEffectParameterValues(effectParameterSet) #get values for the effect parameters
-    
     inputsound = os.path.join(path,'samples',random.choice(getWavefileNames(path)))
-    retCode = writeCsoundFile(csoundFilename,effectParameterValues, path, inputsound)
+    retCode = writeCsoundFileInteractiveParameters(csoundFilename, effectParameterValues, path, path, inputsound)
+    
+    '''
     print '*******************'
     print effectParameterSet
     print '*******************'
     print effectParameterValues
     print '*******************'
-        
+    
+    print "RETCODE:"
+    print retCode
+    
     import subprocess
     retcode = subprocess.call(['csound', csoundFilename])
+    print "RETCODE:"
     print retcode
     if retcode == 0:
         retcode = subprocess.call(['csound', 'normalize.csd'])
@@ -385,3 +449,5 @@ if __name__ == '__main__':
         print 'effects used:', effects
     else:
         print 'csound error'
+    '''
+
