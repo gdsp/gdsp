@@ -197,6 +197,43 @@ class GuessEffect(TestCode):
     def check(self, request, correct):
         return self.first() if correct else self.less_choices(request)
 
+class InteractiveTest(TestCode):
+
+    name = 'Interactive test'
+    tags = 'general'
+
+    def easy(self):
+        return 2
+
+    def medium(self):
+        return 4
+
+    def hard(self):
+        return 6
+
+    def adaptive(self):
+        """ We examine the entire history of this effect, and look at the trend of corrects. Two corrects in a row yields and increase, 
+        two wrongs a decrease. A mix is no change. In the worst case, a student will have done this a couple of thousand times, which 
+        should pose no problem to the Django engine. """
+        return self._calculate_integer_level(2, self.easy(), self.hard())
+
+    def first(self):
+
+        random.shuffle(self.FX)
+        self.FX = self.FX[0:self.level()]
+
+        effects = [ random.choice(self.FX) ]
+
+        effectParameterSet = cs.getEffectParameterSet(effects, md.systemfiles)
+        effectParameterValues = cs.getEffectParameterValues(effectParameterSet)
+
+        sound, csd = self.process(effectParameterValues)
+
+        return effects[0], self.FX, sound, csd
+
+    def check(self, request, correct):
+        return self.first() if correct else self.less_choices(request)
+
 class BandpassMusic(TestCode):
 
     name = 'Bandpass music'
