@@ -225,13 +225,13 @@ class TestElement(BaseTopicElement):
                                     choices=tuple([ (fx,fx) for fx in find_inc_files() + ['ALL FX', 'Effects the student has seen so far' ]]))
 
     feedback_bad = models.TextField(
-            help_text=_('Feedback for a badly performing student. He/she should be practicing more, perhaps?'), default=''
+            help_text=_('Feedback for a badly performing student. He/she should be practicing more, perhaps?'), default='Keep on working!'
     )
     feecback_ok =  models.TextField(
-            help_text=_('Feedback for a student that is doing OK.'), default=''
+            help_text=_('Feedback for a student that is doing OK.'), default='Well done!'
     )
     feecback_good =  models.TextField(
-            help_text=_('Feedback for a student that is doing very good, maybe he/she should be encouraged to move on to the next lesson?'), default=''
+            help_text=_('Feedback for a student that is doing very good, maybe he/she should be encouraged to move on to the next lesson?'), default='Brilliant. You can move on!'
     )
 
     def save(self, *args, **kwargs):
