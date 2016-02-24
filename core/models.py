@@ -220,6 +220,7 @@ class TestElement(BaseTopicElement):
     """
     
     test = models.CharField(max_length=256,choices=test_choices())
+    #test = "dette er selveste test name"
     difficulty = models.CharField(max_length=256,choices=(('Easy', 'Easy'), ('Medium', 'Medium'), ('Hard', 'Hard'), ('Adaptive', 'Adaptive')))
     effect_files = MultiSelectField(default='NULL.inc', max_length=10000,
                                     choices=tuple([ (fx,fx) for fx in find_inc_files() + ['ALL FX', 'Effects the student has seen so far' ]]))
@@ -241,8 +242,14 @@ class TestElement(BaseTopicElement):
 
     def to_html(self):
         current_site = Site.objects.get_current()
+        print("Current site.domain: ", current_site.domain)
+        #return u'<h2>{description}</h2><iframe src="http://127.0.0.1:8000/tutor/{test}/{difficulty}/{FX}" frameborder="0" scrolling="no" width="100%" height=300"></iframe>'.format( description=self.description, test="Guess the effect", difficulty = self.difficulty, FX=str(' '.join(self.effect_files)))
         #return u'<h2>{description}</h2><iframe src="http://{domain}/tutor/{test}/{difficulty}/{FX}" frameborder="0" scrolling="no" width="100%" height=300"></iframe>'.format(domain=current_site.domain, description=self.description, test=self.test, difficulty = self.difficulty, FX=str(' '.join(self.effect_files)))
-        return u'<h2>{description}</h2><iframe src="http://folk.ntnu.no/mortengk/csound" frameborder="0" scrolling="yes" width="100%" height=600"></iframe>'
+        #return u'<h2>{description}</h2><iframe src="http://gdsp.hf.ntnu.no/tutor/{test}/{difficulty}/{FX}" frameborder="0" scrolling="no" width="100%" height=300"></iframe>'.format(domain=current_site.domain, description=self.description, test=self.test, difficulty = self.difficulty, FX=str(' '.join(self.effect_files)))
+
+        return u'<h2>lollol</h2><iframe src="http://127.0.0.1:8000/tutor/test_interactive/{test}/{level}/{FX}" frameborder="0" scrolling="yes" width="100%" height=500;"></iframe>'.format(test=self.test, level="Easy", FX="lol")
+
+        #return u'<h2>{description}</h2><iframe src="http://folk.ntnu.no/mortengk/csound" frameborder="0" scrolling="yes" width="100%" height=600"></iframe>'
 
     class Meta:
         verbose_name = _('test element')

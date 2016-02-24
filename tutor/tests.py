@@ -47,6 +47,7 @@ class TestCode(object):
     user = None
 
     def __init__(self, level, FX, user):
+        print("FX: ", FX)
         if level == 'Hard':
             self.level = self.hard
         if level == 'Medium':
@@ -105,32 +106,48 @@ class TestCode(object):
             level = max(lowest, min(highest, level+t))
         return level
 
-    def process(self, effectParameterValues):
-        inputSound = path.join(md.systemfiles, 'samples', random.choice(cs.getWavefileNames(md.systemfiles)))
-        csoundFilename = str(uuid.uuid4()) + '.csd'
-        csoundNormFilename = 'normalize.' + csoundFilename
-
-        csoundFilepath = path.join(md.userfiles, csoundFilename)
-        csoundNormFilepath = path.join(md.userfiles, csoundNormFilename)
-
-        # Store which effects are being used
-        for effect in effectParameterValues.keys():
-            History.objects.get_or_create(user = self.user, effect = effect)
+    def process(self, effectParameterValues, isInteractive):
+        print "processing..."
+        if isInteractive:
+            inputSound = path.join(md.systemfiles, 'samples', random.choice(cs.getWavefileNames(md.systemfiles)))
             
-        cs.writeCsoundFile(csoundFilename, effectParameterValues, md.systemfiles, md.userfiles, inputSound.replace('\\','/'))       
-        retcode = subprocess.call(['csound', '-d', csoundFilepath])
-        if retcode == 0:
-            # Change the normalize CSD file.
-            normalizeFile = path.join(md.modular, 'normalize.csd')
-            subprocess.call('sed s,test,%s, ' % csoundFilepath.replace('\\','/') + normalizeFile + ' > ' + csoundNormFilepath, shell=True)
-            retcode = subprocess.call(['csound', csoundNormFilepath])
-            print '******************************'
-            print 'source sound:', inputSound
-            print effectParameterValues
+            csoundFilename = str(uuid.uuid4()) + '.csd'    
+            csoundFilepath = path.join(md.userfiles, csoundFilename)
+
+            # Store which effects are being used
+            for effect in effectParameterValues.keys():
+                History.objects.get_or_create(user = self.user, effect = effect)
+
+            csoundFilename = 'target_effect.inc'
+
+            cs.writeCsoundFileInteractiveParameters(csoundFilename, effectParameterValues, md.systemfiles, md.userfiles, inputSound.replace('\\','/'))   
+            retcode = subprocess.call(['csound', '-d', csoundFilepath])
 
         else:
-            print 'csound error'
-
+            inputSound = path.join(md.systemfiles, 'samples', random.choice(cs.getWavefileNames(md.systemfiles)))
+            csoundFilename = str(uuid.uuid4()) + '.csd'
+            csoundNormFilename = 'normalize.' + csoundFilename
+    
+            csoundFilepath = path.join(md.userfiles, csoundFilename)
+            csoundNormFilepath = path.join(md.userfiles, csoundNormFilename)
+    
+            # Store which effects are being used
+            for effect in effectParameterValues.keys():
+                History.objects.get_or_create(user = self.user, effect = effect)
+                
+            cs.writeCsoundFile(csoundFilename, effectParameterValues, md.systemfiles, md.userfiles, inputSound.replace('\\','/'))       
+            retcode = subprocess.call(['csound', '-d', csoundFilepath])
+            if retcode == 0:
+                # Change the normalize CSD file.
+                normalizeFile = path.join(md.modular, 'normalize.csd')
+                subprocess.call('sed s,test,%s, ' % csoundFilepath.replace('\\','/') + normalizeFile + ' > ' + csoundNormFilepath, shell=True)
+                retcode = subprocess.call(['csound', csoundNormFilepath])
+                print '******************************'
+                print 'source sound:', inputSound
+                print effectParameterValues
+    
+            else:
+                print 'csound error'
         return path.basename(inputSound), csoundFilename
 
     def diminish_choices(self, request):
@@ -199,6 +216,10 @@ class GuessEffect(TestCode):
 
 class InteractiveTest(TestCode):
 
+    print("****************************************************************")
+    print("inside interactive test")
+    print("****************************************************************")
+    
     name = 'Interactive test'
     tags = 'general'
 
@@ -218,7 +239,6 @@ class InteractiveTest(TestCode):
         return self._calculate_integer_level(2, self.easy(), self.hard())
 
     def first(self):
-
         random.shuffle(self.FX)
         self.FX = self.FX[0:self.level()]
 
@@ -227,7 +247,7 @@ class InteractiveTest(TestCode):
         effectParameterSet = cs.getEffectParameterSet(effects, md.systemfiles)
         effectParameterValues = cs.getEffectParameterValues(effectParameterSet)
 
-        sound, csd = self.process(effectParameterValues)
+        sound, csd = self.process(effectParameterValues, isInteractive = True)
 
         return effects[0], self.FX, sound, csd
 
