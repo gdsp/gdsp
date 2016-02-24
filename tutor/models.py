@@ -58,7 +58,7 @@ class ResultManager(models.Manager):
         return result
 
 class Result(models.Model):
-    lesson = models.CharField(max_length = 256) # This is the Lesson primary key.
+    lesson = models.CharField(max_length = 256, default='dummy') # This is the Lesson primary key.
     test = models.CharField(max_length = 256)
     correct = models.IntegerField()
     timestamp = models.DateTimeField(auto_now = True)
