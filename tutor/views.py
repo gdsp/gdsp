@@ -14,7 +14,7 @@ import modular_path as md
 from core.models import TestElement
 
 def test(request, test_name, level, FX):
-    path = request.META['HTTP_REFERER'] # No elegant way to extract Lesson ID, we must find it by regexing this.
+    path = request.META.get('HTTP_REFERER', '') # No elegant way to extract Lesson ID, we must find it by regexing this.
     key = 'lessons/' # If the URLs themselves change, this is where to correct it. Hairy.
     
     if key in path:
