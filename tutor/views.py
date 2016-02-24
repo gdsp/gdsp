@@ -6,7 +6,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
-from django.conf.urls.defaults import patterns, include, url
+from django.conf.urls import patterns, include, url
 
 from tutor.models import Result
 import tests
@@ -14,7 +14,7 @@ import modular_path as md
 from core.models import TestElement
 
 def test(request, test_name, level, FX):
-    path = request.META['HTTP_REFERER'] # No elegant way to extract Lesson ID, we must find it by regexing this.
+    path = request.META.get('HTTP_REFERER', '') # No elegant way to extract Lesson ID, we must find it by regexing this.
     key = 'lessons/' # If the URLs themselves change, this is where to correct it. Hairy.
     
     if key in path:
@@ -22,6 +22,7 @@ def test(request, test_name, level, FX):
         lesson_id = path[:path.find('/')]
         request.COOKIES['lesson_id'] = lesson_id
 
+    print("request.COOKIES['lesson_id']: ", request.COOKIES['lesson_id'])
     context = {}
     context['test_name'] = test_name
     context['level'] = level
@@ -29,12 +30,12 @@ def test(request, test_name, level, FX):
 
     test = tests.find(test_name, level, FX, request.user)
 
-    correct = test.store_result(request) if request.method == 'POST' else False
+    correct = test.store_result(request) if request.method == 'POST' else False    
     answer, fxs, sound, csd = test.check(request, correct) if request.method == 'POST' else test.first()
 
     context['choices'] = fxs
     context['answer'] = answer 
-    context['sound'] = sound 
+    context['sound'] = sound
     context['csd'] = csd
     try:
         context['last_csd'] = Result.objects.filter(user = request.user).filter(correct = 1).latest('timestamp').csd
@@ -50,6 +51,31 @@ def test(request, test_name, level, FX):
 
     if key in request.META['HTTP_REFERER']:
         response.set_cookie('lesson_id', lesson_id)
+    return response
+
+def test_interactive(request, test_name, level, FX):
+
+    test = tests.find(test_name, level, FX, request.user)
+    #correct = test.store_result(request) if request.method == 'POST' else False  
+
+    print("****************************************************************")
+    print("inside test_interactive in views.py")
+    print test
+    print("****************************************************************")
+    
+    #answer, fxs, sound, csd = test.check(request, correct) if request.method == 'POST' else test.first()
+
+    queryset = TestElement.objects.all()
+    queryset.default_factory = None
+
+    context = {
+        'test_elements': queryset,
+        'test_name': test_name,
+        'level': level,
+        'FX': FX,
+    }
+
+    response = render_to_response('tutor/test_interactive.html', { 'context': context }, context_instance=RequestContext(request))
     return response
 
 def lesson_results(request):

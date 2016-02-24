@@ -1,71 +1,10 @@
-<!doctype html>
-<html>
-<head><title>Test</title>
-<link rel="stylesheet" href="/static/css/application.css">
-</head>
-<body>
+      
+<p>Test elements: {{ context.test_elements }}</p>
+<p>Test name: {{ context.test_name }}</p>
+<p>Level: {{ context.level }}</p>
+<p>FX: {{ FX.level }}</p>
 
-{% load dict_key_lookup %}
-
-<B>{{ context.msg }}</B> <P>
-
-<span>
-Original:
-<audio controls class="a-c-original" style="width:190px;height:35px">
-  <source src="/site_media/system/samples/{{ context.sound }}" type="audio/wav">
-  <object>
-  <EMBED
-  SRC="/site_media/system/samples/{{ context.sound }}"
-  HEIGHT="30"
-  WIDTH="150"
-  AUTOPLAY="false" CONTROLLER="true" LOOP="false"
-  PLUGINSPAGE="http://www.apple.com/quicktime/download/">
-  </object>
-</audio>
-</span>
-
-<span style="display:inline-block;">
-Processed:
-<audio controls class="a-c-processed" style="width:190px;height:35px">
-  <source src="/site_media/user/{{ context.csd }}_normalized.wav" type="audio/wav">
-  <object>
-  <EMBED
-  SRC="/site_media/user/{{ context.csd }}_normalized.wav"
-  HEIGHT="30"
-  WIDTH="150"
-  AUTOPLAY="false" CONTROLLER="true" LOOP="false"
-  PLUGINSPAGE="http://www.apple.com/quicktime/download/">
-  </object>
-</audio>
-</span>
-
-
-<form class="test-form-wrapper" action="/tutor/{{ context.test_name }}/{{ context.level }}/{{ context.FX }}" method="post">
-{% csrf_token %}
-
-{% for choice in context.choices %}
-
-    <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice }}" />
-    <label for="choice{{ forloop.counter }}">{% dictKeyLookup context.effectsDict choice %}</label><br />
-    <input type="hidden" name="alternative{{ forloop.counter }}" value="{{ choice }}">
-
+{% for test_element in context.test_elements %}
+	<p>{{ test_element }}</p>
+	<input class="slider" type="range" min="100" max="500" step="10" />
 {% endfor %}
-
-<input type="hidden" name="answer" value="{{ context.answer }}">
-<input type="hidden" name="sound" value="{{ context.sound }}">
-<input type="hidden" name="csd" value="{{ context.csd }}">
-<input type="hidden" id="cheated" name="cheated" value="False">
-<input type="submit" value="Submit" />
-<br><br>
-The <a href = "/site_media/user/{{ context.csd }}"
-onclick="document.getElementById('cheated').value='True';"> CSD file</a> used to generate the sound. If you open it, the
-result will not count (you cheated!)
-
-<br><br>
-The <a href = "/site_media/user/{{ context.last_csd }}"> CSD file</a>
-of the previous test where you answered correctly.
-
-</form>
-
-</body>
-</html>
