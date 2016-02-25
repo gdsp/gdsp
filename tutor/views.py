@@ -58,12 +58,12 @@ def test_interactive(request, test_name, level, FX):
     test = tests.find(test_name, level, FX, request.user)
     #correct = test.store_result(request) if request.method == 'POST' else False  
 
-    print("****************************************************************")
-    print("inside test_interactive in views.py")
-    print test
-    print("****************************************************************")
-    
-    #answer, fxs, sound, csd = test.check(request, correct) if request.method == 'POST' else test.first()
+    effects = test.first()
+
+    # Remove input and output keys from the dictionary. 
+    for key, val in effects.iteritems():
+        del val['input']
+        del val['output']
 
     queryset = TestElement.objects.all()
     queryset.default_factory = None
@@ -72,7 +72,7 @@ def test_interactive(request, test_name, level, FX):
         'test_elements': queryset,
         'test_name': test_name,
         'level': level,
-        'FX': FX,
+        'FX': effects,
     }
 
     response = render_to_response('tutor/test_interactive.html', { 'context': context }, context_instance=RequestContext(request))

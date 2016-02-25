@@ -247,9 +247,14 @@ class InteractiveTest(TestCode):
         effectParameterSet = cs.getEffectParameterSet(effects, md.systemfiles)
         effectParameterValues = cs.getEffectParameterValues(effectParameterSet)
 
-        sound, csd = self.process(effectParameterValues, isInteractive = True)
+        # print("****************************************************************")
+        # print("inside first()")
+        # print effectParameterValues
+        # print("****************************************************************")
 
-        return effects[0], self.FX, sound, csd
+        #sound, csd = self.process(effectParameterValues, isInteractive = True)
+
+        return effectParameterSet
 
     def check(self, request, correct):
         return self.first() if correct else self.less_choices(request)
