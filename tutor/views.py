@@ -58,10 +58,15 @@ def test_interactive(request, test_name, level, FX):
     test = tests.find(test_name, level, FX, request.user)
     #correct = test.store_result(request) if request.method == 'POST' else False  
 
-    effects = test.first()
+    effect_set, effect_values = test.first()
 
     # Remove input and output keys from the dictionary. 
-    for key, val in effects.iteritems():
+    # TODO: Change this in csdWriter.py
+    for key, val in effect_set.iteritems():
+        del val['input']
+        del val['output']
+
+    for key, val in effect_values.iteritems():
         del val['input']
         del val['output']
 
@@ -72,8 +77,9 @@ def test_interactive(request, test_name, level, FX):
         'test_elements': queryset,
         'test_name': test_name,
         'level': level,
-        'FX': effects,
-    }
+        'effect_set': effect_set,
+        'effect_values': effect_values,
+    }   
 
     response = render_to_response('tutor/test_interactive.html', { 'context': context }, context_instance=RequestContext(request))
     return response

@@ -2,7 +2,7 @@
 # -*- coding: latin-1 -*-
 
 import random, copy, subprocess, pdb
-import time, inspect, sys, uuid
+import time, inspect, sys, uuid, copy
 
 from tutor.models import Result, History
 from os import path
@@ -241,20 +241,21 @@ class InteractiveTest(TestCode):
     def first(self):
         random.shuffle(self.FX)
         self.FX = self.FX[0:self.level()]
-
         effects = [ random.choice(self.FX) ]
-
         effectParameterSet = cs.getEffectParameterSet(effects, md.systemfiles)
-        effectParameterValues = cs.getEffectParameterValues(effectParameterSet)
 
-        # print("****************************************************************")
-        # print("inside first()")
-        # print effectParameterValues
-        # print("****************************************************************")
+        # Making a deep copy of the dictionary, because getEffectParameterValues() for some reason is changing it
+        effectParameterSetCopy = copy.deepcopy(effectParameterSet)
+        effectParameterValues = cs.getEffectParameterValues(effectParameterSetCopy)
+
+        print("****************************************************************")
+        print("inside first()")
+        print effectParameterSet
+        print("****************************************************************")
 
         #sound, csd = self.process(effectParameterValues, isInteractive = True)
 
-        return effectParameterSet
+        return effectParameterSet, effectParameterValues
 
     def check(self, request, correct):
         return self.first() if correct else self.less_choices(request)
@@ -476,27 +477,27 @@ class Pan(TestCode):
             self.level = self.easy
 
         self.FX = ['pan.inc']
-	self.parameters = [0.5] # init
+        self.parameters = [0.5] # init
         self.user = user
 
     # Easy and hard returns a set of possible parameter values, and the scaling factor (in each direction).
     def easy(self):
-	self.parameters = [0.25, 0.5, 0.75] #not including the extremes, because an offset alternative is added
-	offset = 0.25 # ...so e.g. the alternative is 0.75 +/- 0.25 = [0.5, 0.75, 1.0]
+        self.parameters = [0.25, 0.5, 0.75] #not including the extremes, because an offset alternative is added
+        offset = 0.25 # ...so e.g. the alternative is 0.75 +/- 0.25 = [0.5, 0.75, 1.0]
         return offset
 
     def hard(self):	
-	self.parameters = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9] # not including the extremes (see easy())
-	offset = 0.1
-	return offset
+        self.parameters = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9] # not including the extremes (see easy())
+        offset = 0.1
+        return offset
 
     def shuffle_fxs(self, parms, offset):
-	fxs = [ parms-offset, parms, parms+offset]
+        fxs = [ parms-offset, parms, parms+offset]
         return fxs, fxs[random.randrange(3)]
 
     def first(self):
         offset = self.level()
-	parms = random.choice(self.parameters)
+        parms = random.choice(self.parameters)
         fxs, answer = self.shuffle_fxs(parms, offset)
         sound, csd = self.pan_effect(answer)
         return answer, fxs, sound, csd
@@ -511,14 +512,14 @@ class Pan(TestCode):
         else:
             return self.less_choices(request)
     
-    def pan_effect(self, answer):        
-	effectParameterSet = cs.getEffectParameterSet(self.FX, md.systemfiles)
+    def pan_effect(self, answer):
+        effectParameterSet = cs.getEffectParameterSet(self.FX, md.systemfiles)
         effectParameterValues = cs.getEffectParameterValues(effectParameterSet)
-	print 'effectParameterValues', effectParameterValues
-	print 'one', self.FX, answer
+        print 'effectParameterValues', effectParameterValues
+        print 'one', self.FX, answer
         effectParameterValues[self.FX[0]]['kPan'] = answer
-	print 'effectParameterValues', effectParameterValues
-	print 'two'
+        print 'effectParameterValues', effectParameterValues
+        print 'two'
         return self.process(effectParameterValues)
 
 class Combinations(TestCode):

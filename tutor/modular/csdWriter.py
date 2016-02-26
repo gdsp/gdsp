@@ -93,6 +93,9 @@ def getEffectParameterSet(FX, path):
     print len(FX), 'effects'
     print numParameters, 'parameters'
 
+    print("****************************************************************")
+    print(effectParameterSet)
+    print("****************************************************************") 
     return effectParameterSet
 
 def getEffectParameterValues(effectParameterSet):

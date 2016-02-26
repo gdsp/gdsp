@@ -1,8 +1,9 @@
       
 <p>Test name: {{ context.test_name }}</p>
-<p>FX: {{ context.FX }}</p>
+<p>FX set: {{ context.effect_set }}</p>
+<p>FX values: {{ context.effect_values }}</p>
 
-{% for key, values in context.FX.items %}
+{% for key, values in context.effect_values.items %}
 	<h3>{{ key }}</h3>
 	{% for key, value in values.items %}
 		<p>{{ key }}: <input class="slider" type="range" min="0" max="1" value="{{ value }}" step="0.001" /> </p>
