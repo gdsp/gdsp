@@ -70,6 +70,13 @@ def test_interactive(request, test_name, level, FX):
         del val['input']
         del val['output']
 
+    # Add random generated values to effect_set
+    for effect_set_key, effect_set_value in effect_set.iteritems():
+        effect_value_key = effect_values[key]
+        for key in effect_set_value:
+            # Add at 0th position
+            effect_set_value[key].insert(0, effect_value_key[key])
+
     queryset = TestElement.objects.all()
     queryset.default_factory = None
 
@@ -78,7 +85,6 @@ def test_interactive(request, test_name, level, FX):
         'test_name': test_name,
         'level': level,
         'effect_set': effect_set,
-        'effect_values': effect_values,
     }   
 
     response = render_to_response('tutor/test_interactive.html', { 'context': context }, context_instance=RequestContext(request))
