@@ -1,5 +1,6 @@
 
 isPlaying = false;
+userInstanceIsPlaying = false;
 
 $(document).ready(function() {
     $('#body').show();
@@ -12,6 +13,7 @@ function moduleDidLoad() {
 
 function attachListeners() {
     document.getElementById("playPauseButton").addEventListener("click", play);
+    document.getElementById("switchInstanceButton").addEventListener("click", mute);
 }
 
 // function handleMessage(message) {
@@ -45,4 +47,13 @@ function play() {
 }
 
 function mute() {
+    if(userInstanceIsPlaying) {
+        csound.SetChannel("targetAmplitude", 0.0);
+        csound.SetChannel("userAmplitude", 1.0);
+    } else {
+        csound.SetChannel("targetAmplitude", 1.0);
+        csound.SetChannel("userAmplitude", 0.0);
+    }
+    userInstanceIsPlaying = !userInstanceIsPlaying;
+    console.log(userInstanceIsPlaying);
 }

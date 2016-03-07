@@ -1,4 +1,6 @@
 
+{% load i18n staticfiles %}
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -18,7 +20,8 @@
 	{% endfor %}
 {% endfor %}
 
-<input type="image" id="playPauseButton" src="/static/images/play.png" style="outline: none;" />
+<input type="image" id="playPauseButton" src="{% static 'images/play.png' %}" style="outline: none;" />
+<input type="button" id="switchInstanceButton" value="A/B">
 
 <!-- <audio controls>
 <source src="/static/samples/keys.WAV" type="audio/wav">
