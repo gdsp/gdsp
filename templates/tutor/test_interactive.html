@@ -2,9 +2,12 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
     <script type="text/javascript" src="/static/javascript/csound.js"></script>
+    <script type="text/javascript" src="/static/javascript/interactive_csound.js"></script>
 </head>
 
+<body>
 <p>Test name: {{ context.test_name }}</p>
 <p>FX set: {{ context.effect_set }}</p>
 
@@ -14,3 +17,14 @@
 		<p>{{ parameter }}: <input class="slider" type="range" min={{ values.1.0 }} max={{ values.1.1 }} value="{{ values.0 }}" step="0.001" /> </p>
 	{% endfor %}
 {% endfor %}
+
+<input type="image" id="playPauseButton" src="/static/images/play.png" style="outline: none;" />
+
+<!-- csound message field -->
+<div id="csound_message"> </div>
+
+<!--pNaCl csound module -->
+<div id="engine"></div>
+
+</body>
+</html>
