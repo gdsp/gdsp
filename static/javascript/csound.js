@@ -27,7 +27,6 @@ var csound = (function() {
    */
   function createModule() {
     var model = document.createElement('embed');
-    console.log("dat csound");
     model.setAttribute('name', 'csound_module');
     model.setAttribute('id', 'csound_module');
     model.setAttribute('path', '/static/pnacl');
