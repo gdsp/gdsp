@@ -5,8 +5,7 @@
 <html>
 <head>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
-    <script type="text/javascript" src="/static/javascript/csound.js"></script>
-    <script type="text/javascript" src="/static/javascript/interactive_csound.js"></script>
+    <script src="{% static 'javascript/csound.js' %}"></script>
 </head>
 
 <body>
@@ -14,24 +13,28 @@
 <p>FX set: {{ context.effect_set }}</p>
 
 {% for effect_name, effect_parameter_set in context.effect_set.items %}
+
 	<h3>{{ effect_name }}</h3>
 	{% for parameter, values in effect_parameter_set.items %}
 		<p>{{ parameter }}: <input class="slider" type="range" min={{ values.1.0 }} max={{ values.1.1 }} value="{{ values.0 }}" step="0.001" /> </p>
 	{% endfor %}
+
 {% endfor %}
 
 <input type="image" id="playPauseButton" src="{% static 'images/play.png' %}" style="outline: none;" />
 <input type="button" id="switchInstanceButton" value="A/B">
 
-<!-- <audio controls>
-<source src="/static/samples/keys.WAV" type="audio/wav">
-</audio> -->
+<audio controls>
+<source src="{% static 'samples/keys.WAV' %}" type="audio/wav">
+</audio>
 
-<!-- csound message field -->
+  <!-- csound message field -->
 <div id="csound_message"> </div>
 
 <!--pNaCl csound module -->
 <div id="engine"></div>
+
+<script src="{% static 'javascript/interactive_csound.js' %}"></script>
 
 </body>
 </html>

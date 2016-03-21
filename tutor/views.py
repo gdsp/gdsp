@@ -80,6 +80,15 @@ def test_interactive(request, test_name, level, FX):
     queryset = TestElement.objects.all()
     queryset.default_factory = None
 
+    # # Get audio file
+    # files = os.listdir(os.path.join(path,'effects'))
+    # file = files[0]
+
+    # print("****************************************************************")
+    # print("audio file")
+    # print("****************************************************************")
+    # print(file)
+
     context = {
         'test_elements': queryset,
         'test_name': test_name,

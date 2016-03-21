@@ -46,7 +46,8 @@ MEDIA_URL = '/media/'
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/var/www/example.com/static/"
-STATIC_ROOT = path.join(PROJECT_DIRECTORY, 'collected_static_files')
+#STATIC_ROOT = path.join(PROJECT_DIRECTORY, 'collected_static_files')
+STATIC_ROOT = '/Users/Morten/Sites/mysite.com/static/'  
 
 # Absolute path to the data directory (used by the tutor)
 DATA_ROOT = path.join(PROJECT_DIRECTORY, 'data/')

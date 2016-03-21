@@ -27,10 +27,13 @@ var csound = (function() {
    */
   function createModule() {
     var model = document.createElement('embed');
+    console.log("dat csound");
     model.setAttribute('name', 'csound_module');
     model.setAttribute('id', 'csound_module');
     model.setAttribute('path', '/static/pnacl');
     model.setAttribute('src', '/static/pnacl/csound.nmf');
+    // model.setAttribute('path', 'http://folk.ntnu.no/mortengk/csound/pnacl/Release/');
+    // model.setAttribute('src', 'http://folk.ntnu.no/mortengk/csound/pnacl/Release/csound.nmf');
     var mimetype = 'application/x-pnacl';
     model.setAttribute('type', mimetype);
     var csoundhook = document.getElementById('engine');
@@ -504,6 +507,7 @@ document.addEventListener('DOMContentLoaded', function() {
         csound.updateStatus('loading csound module');
         csound.attachDefaultListeners();
         csound.createModule();
+        console.log("Csound module created")
     } else {
       csound.updateStatus('not ready');
     }

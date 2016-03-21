@@ -1,17 +1,21 @@
 
 isPlaying = false;
 userInstanceIsPlaying = false;
+console.log("interactive_csound");
 
 $(document).ready(function() {
     $('#body').show();
 });
 
 function moduleDidLoad() {
+    console.log("Inside module did load");
+
     // Sound generation with Csound
     //csound.PlayCsd("http/effects.csd");
 }
 
 function attachListeners() {
+    console.log("Attach listeners...");
     document.getElementById("playPauseButton").addEventListener("click", play);
     document.getElementById("switchInstanceButton").addEventListener("click", mute);
 }
