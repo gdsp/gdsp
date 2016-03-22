@@ -29,7 +29,9 @@ function moduleDidLoad() {
     // Start csound
     csound.PlayCsd("local/test.csd");
 
-
+    // Set levels to hear only the target sound
+    csound.SetChannel("targetAmplitude", 1.0);
+    csound.SetChannel("userAmplitude", 0.0);
 }
 
 function attachListeners() {
@@ -84,7 +86,7 @@ function play() {
 }
 
 function mute() {
-    if(userInstanceIsPlaying) {
+    if(!userInstanceIsPlaying) {
         csound.SetChannel("targetAmplitude", 0.0);
         csound.SetChannel("userAmplitude", 1.0);
     } else {
