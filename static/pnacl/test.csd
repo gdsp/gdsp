@@ -1,6 +1,6 @@
 <CsoundSynthesizer>
 <CsOptions>
--odac -W -d
+-odac -W -d -b1024 -B2048
 </CsOptions>
 <CsInstruments>
 sr     = 44100
@@ -14,7 +14,7 @@ instr 1
 	; File management
 	Sfile = "./local/soundfile"
 	iNumChannels filenchnls Sfile
-	iAmplitudeScaling = 0.4
+	iAmplitudeScaling = 1.0
 
 	prints "NUMBER OF CHANNELS: "
 	print iNumChannels
@@ -29,6 +29,10 @@ instr 1
 		aDryL, aDryR diskin2 Sfile, 1, 0, 1
 	endif
 
+	aDeclickEnv madsr 0.001, 0, 1, 0.005
+
+	aDryL *= aDeclickEnv
+	aDryR *= aDeclickEnv
 	aDryL *= kAmp
 	aDryR *= kAmp
 	aDryL *= iAmplitudeScaling
@@ -44,7 +48,7 @@ instr 2
 	; File management
 	Sfile = "./local/soundfile"
 	iNumChannels filenchnls Sfile
-	iAmplitudeScaling = 0.4
+	iAmplitudeScaling = 1.0
 
 	prints "NUMBER OF CHANNELS: "
 	print iNumChannels
@@ -61,6 +65,10 @@ instr 2
 		aDryL, aDryR diskin2 Sfile, 1, 0, 1
 	endif
 	
+	aDeclickEnv madsr 0.001, 0, 1, 0.005
+
+	aDryL *= aDeclickEnv
+	aDryR *= aDeclickEnv
 	aDryL *= kAmp
 	aDryR *= kAmp
 	aDryL *= iAmplitudeScaling

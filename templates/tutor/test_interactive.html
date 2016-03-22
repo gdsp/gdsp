@@ -30,6 +30,22 @@
 <p>Predelay: <input class="slider" id="knob3" type="range" min=0.0 max=250.0 value=0.0 step="0.001" /></p>
 <p>Wet/dry: <input class="slider" id="knob4" type="range" min=0.0 max=1.0 value=0.5 step="0.001" /></p>
 
+<script type="text/javascript">
+    $("#knob1").on("input change", function() {
+        csound.SetChannel("param1", this.value);
+    });
+    $("#knob2").on("input change", function() {
+        csound.SetChannel("param2", this.value);
+    });
+    $("#knob3").on("input change", function() {
+        csound.SetChannel("param3", this.value);
+    });
+    $("#knob4").on("input change", function() {
+        csound.SetChannel("param4", this.value);
+    });	
+</script>
+
+
 <input type="image" id="playPauseButton" src="{% static 'images/play.png' %}" style="outline: none;" />
 <input type="button" id="switchInstanceButton" value="A/B">
 

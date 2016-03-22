@@ -32,27 +32,18 @@ function moduleDidLoad() {
     // Set levels to hear only the target sound
     csound.SetChannel("targetAmplitude", 1.0);
     csound.SetChannel("userAmplitude", 0.0);
+
+    // Initialize parameters
+    csound.SetChannel("param1", 0.5);
+    csound.SetChannel("param2", 5000);
+    csound.SetChannel("param3", 10);
+    csound.SetChannel("param4", 0.5);
 }
 
 function attachListeners() {
     console.log("Attach listeners...");
     document.getElementById("playPauseButton").addEventListener("click", play);
     document.getElementById("switchInstanceButton").addEventListener("click", mute);
-
-    $("#knob1").on("input change", function() {
-        csound.SetChannel("param1", this.value);
-        console.log(this.value);
-    });
-    $("#knob2").on("input change", function() {
-        csound.SetChannel("param2", this.value);
-
-    });
-    $("#knob3").on("input change", function() {
-        csound.SetChannel("param3", this.value);
-    });
-    $("#knob4").on("input change", function() {
-        csound.SetChannel("param4", this.value);
-    });
 }
 
 function handleMessage(message) {
