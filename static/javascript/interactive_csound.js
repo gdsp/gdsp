@@ -2,21 +2,34 @@
 var isPlaying = false;
 var userInstanceIsPlaying = false;
 var audioBuffer = 0;
+var audioContext;
 
 $(document).ready(function() {
     $('#body').show();
+    try {
+        // the AudioContext is the primary container for all audio  objects
+        audioContext = new AudioContext();
+    }
+    catch(e) {
+        alert('Web Audio API is not supported in this browser');
+    }
 });
 
 function moduleDidLoad() {
-    // localStorage.clear();
-    // var csd_url = "/static/pnacl/test.csd";
-    // var csd_name = "test3.csd";
-    // csound.CopyUrlToLocal(csd_url, csd_name);
-    // console.log(csd_url);
-    // csound.CopyUrlToLocal("/static/samples/keys.WAV", "soundfile");
-    // csound.PlayCsd("local/test3.csd");
+    localStorage.clear();
 
-    
+    // Load initial csd file
+    var csd_url = "/static/pnacl/test.csd";
+    var csd_name = "test4.csd";
+    csound.CopyUrlToLocal(csd_url, csd_name);
+
+    // Load initial audio file
+    loadAudio("/static/samples/keys.WAV");
+
+    // Start csound
+    csound.PlayCsd("local/test4.csd");
+
+
 }
 
 function attachListeners() {
@@ -83,4 +96,8 @@ function loadAudio(url) {
         }, onError);
     }
     request.send();
+}
+
+function onError(e) {
+    console.log(e);
 }

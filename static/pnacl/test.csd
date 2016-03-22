@@ -10,9 +10,21 @@ nchnls = 2
 
 instr 1
 
-aOut 	oscili 0.2, 220
+; File management
+Sfile = "./local/soundfile"
+iNumChannels filenchnls Sfile
 
-outs aOut, aOut
+prints "NUMBER OF CHANNELS: "
+print iNumChannels
+
+if iNumChannels == 1 then
+	aDryL diskin2 Sfile, 1, 0, 1
+	aDryR = aDryL
+elseif iNumChannels == 2 then
+	aDryL, aDryR diskin2 Sfile, 1, 0, 1
+endif
+
+outs aDryL, aDryR
 
 endin
 
