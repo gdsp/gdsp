@@ -9,6 +9,7 @@
 </head>
 
 <body>
+
 <p>Test name: {{ context.test_name }}</p>
 <p>FX set: {{ context.effect_set }}</p>
 
@@ -25,7 +26,7 @@
 <input type="button" id="switchInstanceButton" value="A/B">
 
 <audio controls>
-<source src="{% static 'samples/keys.WAV' %}" type="audio/wav">
+<source src="/static/samples/keys.WAV" type="audio/wav">
 </audio>
 
   <!-- csound message field -->
@@ -34,7 +35,15 @@
 <!--pNaCl csound module -->
 <div id="engine"></div>
 
+
+<script>
+    var url = "http/static/pnacl/test.png";
+    console.log(url);
+</script>
+
+
 <script src="{% static 'javascript/interactive_csound.js' %}"></script>
+
 
 </body>
 </html>

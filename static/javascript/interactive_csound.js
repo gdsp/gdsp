@@ -8,10 +8,19 @@ $(document).ready(function() {
 });
 
 function moduleDidLoad() {
+
+
     console.log("Inside module did load");
 
-    // Sound generation with Csound
-    //csound.PlayCsd("http/effects.csd");
+    //csd_url = "http://folk.ntnu.no/mortengk/csound/assets/test.csd";
+    csd_url = "/static/pnacl/test.csd";
+    csd_name = "test.csd"; 
+    csound.CopyUrlToLocal(csd_url, csd_name);
+
+    // //csound.RequestFileFromLocal("test.csd");
+
+    // // Sound generation with Csound
+    csound.PlayCsd("local/test.csd");
 }
 
 function attachListeners() {
@@ -20,22 +29,22 @@ function attachListeners() {
     document.getElementById("switchInstanceButton").addEventListener("click", mute);
 }
 
-// function handleMessage(message) {
-//     var mess = message.data;
-//     if(mess == "finished render"){
-//         ReadFile();
-//         return;
-//     } else if(mess == "Complete"){
-//     //saveFile();
-//     //scrollTo(0, messField.scrollHeight);
-//     return;
-// }
-//     var messField = document.getElementById("csound_message")
-//     if(messField) {
-//         messField.innerText += mess;
-//         scrollTo(0, messField.scrollHeight);
-//     }
-// }
+function handleMessage(message) {
+    var mess = message.data;
+    if(mess == "finished render"){
+        ReadFile();
+        return;
+    } else if(mess == "Complete"){
+    //saveFile();
+    //scrollTo(0, messField.scrollHeight);
+    return;
+}
+    var messField = document.getElementById("csound_message")
+    if(messField) {
+        messField.innerText += mess;
+        scrollTo(0, messField.scrollHeight);
+    }
+}
 
 function play() {
     if (isPlaying) {
