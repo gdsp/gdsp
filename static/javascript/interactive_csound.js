@@ -20,14 +20,14 @@ function moduleDidLoad() {
 
     // Load initial csd file
     var csd_url = "/static/pnacl/test.csd";
-    var csd_name = "test4.csd";
+    var csd_name = "test.csd";
     csound.CopyUrlToLocal(csd_url, csd_name);
 
     // Load initial audio file
     loadAudio("/static/samples/keys.WAV");
 
     // Start csound
-    csound.PlayCsd("local/test4.csd");
+    csound.PlayCsd("local/test.csd");
 
 
 }
@@ -36,6 +36,21 @@ function attachListeners() {
     console.log("Attach listeners...");
     document.getElementById("playPauseButton").addEventListener("click", play);
     document.getElementById("switchInstanceButton").addEventListener("click", mute);
+
+    $("#knob1").on("input change", function() {
+        csound.SetChannel("param1", this.value);
+        console.log(this.value);
+    });
+    $("#knob2").on("input change", function() {
+        csound.SetChannel("param2", this.value);
+
+    });
+    $("#knob3").on("input change", function() {
+        csound.SetChannel("param3", this.value);
+    });
+    $("#knob4").on("input change", function() {
+        csound.SetChannel("param4", this.value);
+    });
 }
 
 function handleMessage(message) {
