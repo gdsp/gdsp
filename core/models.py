@@ -247,7 +247,7 @@ class TestElement(BaseTopicElement):
         #return u'<h2>{description}</h2><iframe src="http://{domain}/tutor/{test}/{difficulty}/{FX}" frameborder="0" scrolling="no" width="100%" height=300"></iframe>'.format(domain=current_site.domain, description=self.description, test=self.test, difficulty = self.difficulty, FX=str(' '.join(self.effect_files)))
         #return u'<h2>{description}</h2><iframe src="http://gdsp.hf.ntnu.no/tutor/{test}/{difficulty}/{FX}" frameborder="0" scrolling="no" width="100%" height=300"></iframe>'.format(domain=current_site.domain, description=self.description, test=self.test, difficulty = self.difficulty, FX=str(' '.join(self.effect_files)))
 
-        return u'<h2>{description}</h2><iframe src="http://127.0.0.1:8002/tutor/test_interactive/{test}/{level}/{FX}" frameborder="0" scrolling="yes" width="100%" height=500;"></iframe>'.format(description=self.description, test=self.test, level=self.difficulty, FX=str(' '.join(self.effect_files)))
+        return u'<h2>{description}</h2><iframe src="http://127.0.0.1:8010/tutor/test_interactive/{test}/{level}/{FX}" frameborder="0" scrolling="yes" width="100%" height=500;"></iframe>'.format(description=self.description, test=self.test, level=self.difficulty, FX=str(' '.join(self.effect_files)))
 
         #return u'<h2>{description}</h2><iframe src="http://folk.ntnu.no/mortengk/csound" frameborder="0" scrolling="yes" width="100%" height=600"></iframe>'
 

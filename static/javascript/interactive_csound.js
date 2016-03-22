@@ -1,26 +1,22 @@
 
-isPlaying = false;
-userInstanceIsPlaying = false;
-console.log("interactive_csound");
+var isPlaying = false;
+var userInstanceIsPlaying = false;
+var audioBuffer = 0;
 
 $(document).ready(function() {
     $('#body').show();
 });
 
 function moduleDidLoad() {
+    // localStorage.clear();
+    // var csd_url = "/static/pnacl/test.csd";
+    // var csd_name = "test3.csd";
+    // csound.CopyUrlToLocal(csd_url, csd_name);
+    // console.log(csd_url);
+    // csound.CopyUrlToLocal("/static/samples/keys.WAV", "soundfile");
+    // csound.PlayCsd("local/test3.csd");
 
-
-    console.log("Inside module did load");
-
-    //csd_url = "http://folk.ntnu.no/mortengk/csound/assets/test.csd";
-    csd_url = "/static/pnacl/test.csd";
-    csd_name = "test.csd"; 
-    csound.CopyUrlToLocal(csd_url, csd_name);
-
-    // //csound.RequestFileFromLocal("test.csd");
-
-    // // Sound generation with Csound
-    csound.PlayCsd("local/test.csd");
+    
 }
 
 function attachListeners() {
@@ -69,4 +65,22 @@ function mute() {
     }
     userInstanceIsPlaying = !userInstanceIsPlaying;
     console.log(userInstanceIsPlaying);
+}
+
+function loadAudio(url) {
+    var request = new XMLHttpRequest();
+    request.open('GET', url, true);
+    request.responseType = 'arraybuffer';
+    // When loaded decode the data and store the audio buffer in memory
+    request.onload = function() {
+        audioContext.decodeAudioData(request.response, function(buffer) {
+            audioBuffer = buffer;
+
+            // Creating a blob to store binary audio data
+            blob = new Blob([request.response], {type: "audio/wav"});
+            var objectURL = window.URL.createObjectURL(blob);
+            csound.CopyUrlToLocal(objectURL, "soundfile");
+        }, onError);
+    }
+    request.send();
 }
