@@ -15,30 +15,30 @@ $(document).ready(function() {
     }
 });
 
-function moduleDidLoad() {
-    localStorage.clear();
+// function moduleDidLoad() {
+//     localStorage.clear();
 
-    // Load initial csd file
-    var csd_url = "/static/pnacl/test.csd";
-    var csd_name = "test.csd";
-    csound.CopyUrlToLocal(csd_url, csd_name);
+//     // Load initial csd file
+//     var csd_url = "/static/pnacl/test.csd";
+//     var csd_name = "test.csd";
+//     csound.CopyUrlToLocal(csd_url, csd_name);
 
-    // Load initial audio file
-    loadAudio("/static/samples/keys.WAV");
+//     // Load initial audio file
+//     loadAudio("/site_media/system/samples/{{ context.sound }}");
 
-    // Start csound
-    csound.PlayCsd("local/test.csd");
+//     // Start csound
+//     csound.PlayCsd("local/test.csd");
 
-    // Set levels to hear only the target sound
-    csound.SetChannel("targetAmplitude", 1.0);
-    csound.SetChannel("userAmplitude", 0.0);
+//     // Set levels to hear only the target sound
+//     csound.SetChannel("targetAmplitude", 1.0);
+//     csound.SetChannel("userAmplitude", 0.0);
 
-    // Initialize parameters
-    csound.SetChannel("param1", 0.5);
-    csound.SetChannel("param2", 5000);
-    csound.SetChannel("param3", 10);
-    csound.SetChannel("param4", 0.5);
-}
+//     // Initialize parameters
+//     csound.SetChannel("param1", 0.5);
+//     csound.SetChannel("param2", 5000);
+//     csound.SetChannel("param3", 10);
+//     csound.SetChannel("param4", 0.5);
+// }
 
 function attachListeners() {
     console.log("Attach listeners...");
