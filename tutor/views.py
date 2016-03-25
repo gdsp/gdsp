@@ -58,7 +58,7 @@ def test_interactive(request, test_name, level, FX):
     test = tests.find(test_name, level, FX, request.user)
     #correct = test.store_result(request) if request.method == 'POST' else False  
 
-    effect_set, effect_values = test.first()
+    effect_set, effect_values, sound, csd = test.first()
 
     # Remove input and output keys from the dictionary. 
     # TODO: Change this in csdWriter.py
@@ -94,6 +94,7 @@ def test_interactive(request, test_name, level, FX):
         'test_name': test_name,
         'level': level,
         'effect_set': effect_set,
+        'sound': sound,
     }
 
     response = render_to_response('tutor/test_interactive.html', { 'context': context }, context_instance=RequestContext(request))

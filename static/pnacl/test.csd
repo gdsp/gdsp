@@ -91,6 +91,7 @@ instr  10
 	kmix     	= 0.807089803209
 ; FDN reverb
 	ar1,ar2 reverbsc a1, a2, kfblvl, kfco
+
 	a1	= (ar1*kmix) + (a1*(1-kmix))
 	a2	= (ar2*kmix) + (a2*(1-kmix))
 

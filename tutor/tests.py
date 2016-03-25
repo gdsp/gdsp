@@ -114,14 +114,14 @@ class TestCode(object):
             csoundFilename = str(uuid.uuid4()) + '.csd'    
             csoundFilepath = path.join(md.userfiles, csoundFilename)
 
-            # Store which effects are being used
-            for effect in effectParameterValues.keys():
-                History.objects.get_or_create(user = self.user, effect = effect)
+            # # Store which effects are being used
+            # for effect in effectParameterValues.keys():
+            #     History.objects.get_or_create(user = self.user, effect = effect)
 
-            csoundFilename = 'target_effect.inc'
+            #csoundFilename = 'target_effect.inc'
 
-            cs.writeCsoundFileInteractiveParameters(csoundFilename, effectParameterValues, md.systemfiles, md.userfiles, inputSound.replace('\\','/'))   
-            retcode = subprocess.call(['csound', '-d', csoundFilepath])
+            #cs.writeCsoundFileInteractiveParameters(csoundFilename, effectParameterValues, md.systemfiles, md.userfiles, inputSound.replace('\\','/'))   
+            #retcode = subprocess.call(['csound', '-d', csoundFilepath])
 
         else:
             inputSound = path.join(md.systemfiles, 'samples', random.choice(cs.getWavefileNames(md.systemfiles)))
@@ -253,9 +253,10 @@ class InteractiveTest(TestCode):
         print effectParameterSet
         print("****************************************************************")
 
-        #sound, csd = self.process(effectParameterValues, isInteractive = True)
+        sound, csd = self.process(effectParameterValues, isInteractive = True)
 
-        return effectParameterSet, effectParameterValues
+        # Return the csd-file as well as the dry sound file
+        return effectParameterSet, effectParameterValues, sound, csd
 
     def check(self, request, correct):
         return self.first() if correct else self.less_choices(request)
