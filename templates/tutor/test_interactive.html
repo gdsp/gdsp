@@ -51,15 +51,15 @@
 	    var csd_url = "/site_media/user/{{ context.csd }}";
 	    var csd_name = "test.csd";
 
-	    setTimeout(function() {
-	    	csound.CopyUrlToLocal(csd_url, csd_name);
-    	}, 1000);
+	    csound.CopyUrlToLocal(csd_url, csd_name);
 
 	    // Load initial audio file
 	    loadAudio("/site_media/system/samples/{{ context.sound }}");
 
 	    // Start csound
-	    csound.PlayCsd("local/test.csd");
+	   	setTimeout(function() {
+	    	csound.PlayCsd("local/test.csd");
+    	}, 500);
 
 	    // Set levels to hear only the target sound
 	    csound.SetChannel("target_amplitude", 1.0);

@@ -1,3 +1,4 @@
+
 ; Sound generating instruments
 instr 1
 
@@ -7,7 +8,6 @@ instr 1
 
 	; Get audio level
 	kAmp chnget "target_amplitude"
-	printk2 kAmp
 
 	if iNumChannels == 1 then
 		aDryL diskin2 Sfile, 1, 0, 1
