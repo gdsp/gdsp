@@ -120,7 +120,7 @@ class TestCode(object):
 
             #csoundFilename = 'target_effect.inc'
 
-            #cs.writeCsoundFileInteractiveParameters(csoundFilename, effectParameterValues, md.systemfiles, md.userfiles, inputSound.replace('\\','/'))   
+            cs.writeCsoundFileInteractiveParameters(csoundFilename, effectParameterValues, md.systemfiles, md.userfiles)   
             #retcode = subprocess.call(['csound', '-d', csoundFilepath])
 
         else:

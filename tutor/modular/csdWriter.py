@@ -333,7 +333,7 @@ def writeCsoundFile(filename, effectParameterValues, systemfiles, userfiles, inp
     return 0
 
 
-def writeCsoundFileInteractiveParameters(filename, effectParameterValues, systemfiles, userfiles, inputsound):
+def writeCsoundFileInteractiveParameters(filename, effectParameterValues, systemfiles, userfiles):
     # create a file object
     outfilename = filename
     print 'outfilename', outfilename
@@ -428,7 +428,7 @@ if __name__ == '__main__':
     effectParameterSet = getEffectParameterSet(effects, path) # get list of effect parameters for the chosen effects
     effectParameterValues = getEffectParameterValues(effectParameterSet) #get values for the effect parameters
     inputsound = os.path.join(path,'samples',random.choice(getWavefileNames(path)))
-    retCode = writeCsoundFileInteractiveParameters(csoundFilename, effectParameterValues, path, path, inputsound)
+    retCode = writeCsoundFileInteractiveParameters(csoundFilename, effectParameterValues, path, path)
     
     '''
     print '*******************'
