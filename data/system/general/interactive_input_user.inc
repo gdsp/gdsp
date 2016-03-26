@@ -7,7 +7,6 @@ instr 2
 
 	; Get audio level
 	kAmp chnget "user_amplitude"
-	printk2 kAmp
 
 	if iNumChannels == 1 then
 		aDryL diskin2 Sfile, 1, 0, 1

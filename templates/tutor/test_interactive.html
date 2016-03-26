@@ -5,44 +5,33 @@
 <html>
 <head>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+    <script src="{% static 'javascript/csound.js' %}"></script>
 </head>
 
 <body>
 
-<script src="{% static 'javascript/csound.js' %}"></script>
 <script src="{% static 'javascript/interactive_csound.js' %}"></script>
 
 <p>Test name: {{ context.test_name }}</p>
 <p>FX set: {{ context.effect_set }}</p>
 <p>csd file: {{ context.csd }}</p>
 
-<!-- {% for effect_name, effect_parameter_set in context.effect_set.items %}
-
-	<h3>{{ effect_name }}</h3>
+{% for effect_name, effect_parameter_set in context.effect_set.items %}
 	{% for parameter, values in effect_parameter_set.items %}
-		<p>{{ parameter }}: <input class="slider" type="range" min={{ values.1.0 }} max={{ values.1.1 }} value="{{ values.0 }}" step="0.001" /> </p>
+		<p>{{ parameter }}: <input class="slider" id="{{ effect_name }}_{{ parameter }}" type="range" min={{ values.1.0 }} max={{ values.1.1 }} value="{{ values.0 }}" step="0.001" /> </p>
 	{% endfor %}
 
-{% endfor %} -->
-
-<p>Feedback: <input class="slider" id="knob1" type="range" min=0.0 max=1.0 value=0.0 step="0.001" /></p>
-<p>Lowpass: <input class="slider" id="knob2" type="range" min=20 max=20000 value=440 step="0.001" /></p>
-<p>Predelay: <input class="slider" id="knob3" type="range" min=0.0 max=250.0 value=0.0 step="0.001" /></p>
-<p>Wet/dry: <input class="slider" id="knob4" type="range" min=0.0 max=1.0 value=0.5 step="0.001" /></p>
+{% endfor %}
 
 <script type="text/javascript">
-    $("#knob1").on("input change", function() {
-        csound.SetChannel("param1", this.value);
-    });
-    $("#knob2").on("input change", function() {
-        csound.SetChannel("param2", this.value);
-    });
-    $("#knob3").on("input change", function() {
-        csound.SetChannel("param3", this.value);
-    });
-    $("#knob4").on("input change", function() {
-        csound.SetChannel("param4", this.value);
-    });	
+
+	{% for effect_name, effect_parameter_set in context.effect_set.items %}
+		{% for parameter, values in effect_parameter_set.items %}
+		    $("#{{ effect_name }}_{{ parameter }}").on("input change", function() {
+		        csound.SetChannel("{{ effect_name }}_{{ parameter }}", this.value);
+		    });
+		{% endfor %}
+	{% endfor %}
 
     function moduleDidLoad() {
 	    localStorage.clear();

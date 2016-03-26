@@ -1,4 +1,4 @@
-import sys, pdb, random, inspect, urllib
+import sys, pdb, random, inspect, urllib, json
 import cPickle as pickle
 
 from django.shortcuts import render_to_response
@@ -70,8 +70,17 @@ def test_interactive(request, test_name, level, FX):
         del val['input']
         del val['output']
 
+    for effect_set_key, effect_set_value in effect_set.iteritems():
+        effect_set[effect_set_key[:-4]] = effect_set.pop(effect_set_key)
+
     # Add random generated values to effect_set
     for effect_set_key, effect_set_value in effect_set.iteritems():
+        print("****************************************************************************************************")
+        print(effect_set_key)
+        print("****************************************************************************************************")
+        # Remove .inc from effect names
+        #effect_set[effect_set_key[:-4]] = effect_set.pop(effect_set_key)
+
         effect_value_key = effect_values[key]
         for key in effect_set_value:
             # Add at 0th position
@@ -80,15 +89,6 @@ def test_interactive(request, test_name, level, FX):
     queryset = TestElement.objects.all()
     queryset.default_factory = None
 
-    # # Get audio file
-    # files = os.listdir(os.path.join(path,'effects'))
-    # file = files[0]
-
-    # print("****************************************************************")
-    # print("audio file")
-    # print("****************************************************************")
-    # print(file)
-
     context = {
         'test_elements': queryset,
         'test_name': test_name,
@@ -96,6 +96,7 @@ def test_interactive(request, test_name, level, FX):
         'effect_set': effect_set,
         'sound': sound,
         'csd': csd,
+        'effect_set_json': json.dumps(effect_set),
     }
 
     response = render_to_response('tutor/test_interactive.html', { 'context': context }, context_instance=RequestContext(request))

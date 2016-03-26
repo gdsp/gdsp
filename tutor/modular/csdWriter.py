@@ -372,7 +372,7 @@ def writeCsoundFileInteractiveParameters(filename, effectParameterValues, system
     # Initialize an empty string which will start all appended instruments in CsScore
     csScore = ""
 
-    # effects
+    # Generate target effect code
     for effect in effectParameterValues.keys():
         
         f.write("\n;******************************** Effect: %s ********************************\n"%effect[:-4])
@@ -418,55 +418,159 @@ def writeCsoundFileInteractiveParameters(filename, effectParameterValues, system
             f.write('\ta2 \t\t= a1\n')  #save output from second channel to a2
             f.write('\ta1 \t\t= a1out\n')  #restore a1 from temporary storage a1out
     
-        # # in a stereo signal chain, using a 'mono-input-to-stereo-output' effect
-        # # we want to preserve the input stereo image so use two separate instances of the effect
-        # # we will pan the (four) outputs equally across the output stereo image
-        # if ('mono' in audioInput) and ('stereo' in audioOutput):
-        #     f.write('\ta2in \t\t= a2\n')  #save input on second channel temporarily to a2in
-        #     # process first channel
-        #     inc = open(os.path.join(systemfiles, 'effects',effect), 'r')
-        #     capture = 0 # skip writing the first parts of include files (meta information)
-        #     for line in inc:
-        #         if capture == 1:
-        #             f.write(line)
-        #         if '*/' in line:
-        #             capture = 1
-        #     inc.close()
-        #     f.write('\n')
-        #     f.write('\ta1_1 \t\t= a1\n')  #save output from first channel to a1_1
-        #     f.write('\ta2_1 \t\t= a2\n')  #save output from second channel to a2_1
-        #     # process second channel
-        #     f.write('\ta1 \t\t= a2in\n')  #restore input on second channel from temporary storage in a2in
-        #     inc = open(os.path.join(systemfiles, 'effects',effect), 'r')
-        #     capture = 0 # skip writing the first parts of include files (meta information)
-        #     for line in inc:
-        #         if capture == 1:
-        #             f.write(line)
-        #         if '*/' in line:
-        #             capture = 1
-        #     inc.close()
-        #     f.write('\n')
-        #     #pan and output
-        #     f.write('\ta1 \t\t= a1_1+(a1*sqrt(0.33))+(a2_1*sqrt(0.66))\n') 
-        #     f.write('\ta2 \t\t= a2+(a1*sqrt(0.66))+(a2_1*sqrt(0.33))\n')
+        # in a stereo signal chain, using a 'mono-input-to-stereo-output' effect
+        # we want to preserve the input stereo image so use two separate instances of the effect
+        # we will pan the (four) outputs equally across the output stereo image
+        if ('mono' in audioInput) and ('stereo' in audioOutput):
+            f.write('\ta2in \t\t= a2\n')  #save input on second channel temporarily to a2in
+            # process first channel
+            inc = open(os.path.join(systemfiles, 'effects',effect), 'r')
+            capture = 0 # skip writing the first parts of include files (meta information)
+            for line in inc:
+                if capture == 1:
+                    f.write(line)
+                if '*/' in line:
+                    capture = 1
+            inc.close()
+            f.write('\n')
+            f.write('\ta1_1 \t\t= a1\n')  #save output from first channel to a1_1
+            f.write('\ta2_1 \t\t= a2\n')  #save output from second channel to a2_1
+            # process second channel
+            f.write('\ta1 \t\t= a2in\n')  #restore input on second channel from temporary storage in a2in
+            inc = open(os.path.join(systemfiles, 'effects',effect), 'r')
+            capture = 0 # skip writing the first parts of include files (meta information)
+            for line in inc:
+                if capture == 1:
+                    f.write(line)
+                if '*/' in line:
+                    capture = 1
+            inc.close()
+            f.write('\n')
+            #pan and output
+            f.write('\ta1 \t\t= a1_1+(a1*sqrt(0.33))+(a2_1*sqrt(0.66))\n') 
+            f.write('\ta2 \t\t= a2+(a1*sqrt(0.66))+(a2_1*sqrt(0.33))\n')
             
-        # # normal stereo effect
-        # if ('stereo' in audioInput) and ('stereo' in audioOutput):
-        #     inc = open(os.path.join(systemfiles, 'effects',effect), 'r')
-        #     capture = 0 # skip writing the first parts of include files (meta information)
-        #     for line in inc:
-        #         if capture == 1:
-        #             f.write(line)
-        #         if '*/' in line:
-        #             capture = 1
-        #     inc.close()
-        #     f.write('\n')
+        # normal stereo effect
+        if ('stereo' in audioInput) and ('stereo' in audioOutput):
+            inc = open(os.path.join(systemfiles, 'effects',effect), 'r')
+            capture = 0 # skip writing the first parts of include files (meta information)
+            for line in inc:
+                if capture == 1:
+                    f.write(line)
+                if '*/' in line:
+                    capture = 1
+            inc.close()
+            f.write('\n')
 
         f.write("chnset a1, \"target_audio_left\"\n")
         f.write("chnset a2, \"target_audio_right\"\n")
 
         f.write("\nendin\n")
         csScore += "i{} 0 999999999\n".format(instrumentNumber)
+        instrumentNumber += 10
+
+
+    instrumentNumber = 200
+
+    # Generate user effect code
+    for effect in effectParameterValues.keys():
+        
+        effect_name = effect[:-4]
+
+        f.write("\n;******************************** Effect: %s ********************************\n"%effect_name)
+        f.write("instr {}\n\n".format(instrumentNumber))
+
+        # read parameter values and audio routing
+        for key, value in effectParameterValues[effect].items():
+            if key == 'input':
+                audioInput = value
+            elif key == 'output':
+                audioOutput = value
+            else:
+                #s = '\t'+key+'     \t= '+ str(value) + '\n'
+                s = "{} \tchnget \"{}\"\n".format(key, effect_name + "_" + key)
+                f.write(s)
+
+        f.write("\na1 chnget \"user_audio_left\"\n")
+        f.write("a2 chnget \"user_audio_right\"\n")
+
+        # dual mono
+        if ('mono' in audioInput) and ('mono' in audioOutput):
+            # process first signal channel and write it temporarily to a1out
+            inc = open(os.path.join(systemfiles, 'effects', effect), 'r')
+            capture = 0 # skip writing the first parts of include files (meta information)
+            for line in inc:
+                if capture == 1:
+                    f.write(line)
+                if '*/' in line:
+                    capture = 1
+            inc.close()
+            f.write('\n')
+            f.write('\ta1out \t\t= a1\n')  #save output to temporary signal a1out
+            # process second signal 
+            f.write('\ta1 \t\t= a2\n')  #read the second signal
+            inc = open(os.path.join(systemfiles, 'effects',effect), 'r')
+            capture = 0 # skip writing the first parts of include files (meta information)
+            for line in inc:
+                if capture == 1:
+                    f.write(line)
+                if '*/' in line:
+                    capture = 1
+            inc.close()
+            f.write('\n')
+            f.write('\ta2 \t\t= a1\n')  #save output from second channel to a2
+            f.write('\ta1 \t\t= a1out\n')  #restore a1 from temporary storage a1out
+    
+        # in a stereo signal chain, using a 'mono-input-to-stereo-output' effect
+        # we want to preserve the input stereo image so use two separate instances of the effect
+        # we will pan the (four) outputs equally across the output stereo image
+        if ('mono' in audioInput) and ('stereo' in audioOutput):
+            f.write('\ta2in \t\t= a2\n')  #save input on second channel temporarily to a2in
+            # process first channel
+            inc = open(os.path.join(systemfiles, 'effects',effect), 'r')
+            capture = 0 # skip writing the first parts of include files (meta information)
+            for line in inc:
+                if capture == 1:
+                    f.write(line)
+                if '*/' in line:
+                    capture = 1
+            inc.close()
+            f.write('\n')
+            f.write('\ta1_1 \t\t= a1\n')  #save output from first channel to a1_1
+            f.write('\ta2_1 \t\t= a2\n')  #save output from second channel to a2_1
+            # process second channel
+            f.write('\ta1 \t\t= a2in\n')  #restore input on second channel from temporary storage in a2in
+            inc = open(os.path.join(systemfiles, 'effects',effect), 'r')
+            capture = 0 # skip writing the first parts of include files (meta information)
+            for line in inc:
+                if capture == 1:
+                    f.write(line)
+                if '*/' in line:
+                    capture = 1
+            inc.close()
+            f.write('\n')
+            #pan and output
+            f.write('\ta1 \t\t= a1_1+(a1*sqrt(0.33))+(a2_1*sqrt(0.66))\n') 
+            f.write('\ta2 \t\t= a2+(a1*sqrt(0.66))+(a2_1*sqrt(0.33))\n')
+            
+        # normal stereo effect
+        if ('stereo' in audioInput) and ('stereo' in audioOutput):
+            inc = open(os.path.join(systemfiles, 'effects',effect), 'r')
+            capture = 0 # skip writing the first parts of include files (meta information)
+            for line in inc:
+                if capture == 1:
+                    f.write(line)
+                if '*/' in line:
+                    capture = 1
+            inc.close()
+            f.write('\n')
+
+        f.write("chnset a1, \"user_audio_left\"\n")
+        f.write("chnset a2, \"user_audio_right\"\n")
+
+        f.write("\nendin\n")
+        csScore += "i{} 0 999999999\n".format(instrumentNumber)
+        instrumentNumber += 10
 
     # Master channel (instr 999)
     f.write('\n\n')
@@ -481,67 +585,6 @@ def writeCsoundFileInteractiveParameters(filename, effectParameterValues, system
     f.close
     return 0
 
-    # Old
-
-    # # create a file object
-    # outfilename = filename
-    # print 'outfilename', outfilename
-    # f = open(os.path.join(userfiles, outfilename), 'w')
-    # print 'opened file', outfilename
-    # currentSignalType = 'mono'
-    # instrumentNumber = 10;
-    
-    # ###########################
-    # # autogenerate DSP code
-    # ###########################
-
-    # # effects
-    # for effect in effectParameterValues.keys():
-    #     f.write('\ninstr  {} \n'.format(instrumentNumber))
-    #     instrumentNumber += 1
-
-    #     f.write('\n;**************** effect: %s ********************************\n'%effect[:-4])
-    #     f.write('\n\ta1 chnget "target_effect_left\"\n')
-    #     f.write('\ta2 chnget "target_effect_right\"\n\n')
-
-    #     # read parameter values and audio routing
-    #     for key, value in effectParameterValues[effect].items():
-    #         if key == 'input':
-    #             audioInput = value
-    #         elif key == 'output':
-    #             audioOutput = value
-    #         else:
-    #             s = '\t'+key+'     \t= '+ str(value) + '\n'
-    #             f.write(s)
-
-    #     # insert effect code
-    #     if 'mono' in currentSignalType:
-    #         inc = open(os.path.join(systemfiles, 'effects', effect), 'r')
-
-    #         capture = 0 # skip writing the first parts of include files (meta information)
-    #         for line in inc:
-    #             print line
-    #             if capture == 1:
-    #                 f.write(line)
-    #             if '*/' in line:
-    #                 capture = 1
-
-    #         f.write('\n\tchnmix a1, \"masterL\"\n')
-    #         f.write('\tchnmix a2, \"masterR\"\n')
-    #         f.write('\tchnclear \"target_effect_left\"\n')
-    #         f.write('\tchnclear \"target_effect_right\"\n')
-
-    #         f.write('\nendin \n')
-
-    #         inc.close()
-
-    #         #currentSignalType = audioOutput
-    
-    # f.close
-    # return 0
-
-###########################
-# autogenerate test
 
 if __name__ == '__main__':
     path = sys.argv[1]
