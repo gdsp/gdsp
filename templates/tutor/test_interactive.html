@@ -16,7 +16,6 @@
 <p>FX set: {{ context.effect_set }}</p>
 <p>csd file: {{ context.csd }}</p>
 
-
 <!-- {% for effect_name, effect_parameter_set in context.effect_set.items %}
 
 	<h3>{{ effect_name }}</h3>
@@ -51,7 +50,10 @@
 	    // Load initial csd file
 	    var csd_url = "/site_media/user/{{ context.csd }}";
 	    var csd_name = "test.csd";
-	    csound.CopyUrlToLocal(csd_url, csd_name);
+
+	    setTimeout(function() {
+	    	csound.CopyUrlToLocal(csd_url, csd_name);
+    	}, 1000);
 
 	    // Load initial audio file
 	    loadAudio("/site_media/system/samples/{{ context.sound }}");
