@@ -95,6 +95,7 @@ def test_interactive(request, test_name, level, FX):
         'level': level,
         'effect_set': effect_set,
         'sound': sound,
+        'csd': csd,
     }
 
     response = render_to_response('tutor/test_interactive.html', { 'context': context }, context_instance=RequestContext(request))

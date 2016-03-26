@@ -334,62 +334,88 @@ def writeCsoundFile(filename, effectParameterValues, systemfiles, userfiles, inp
 
 
 def writeCsoundFileInteractiveParameters(filename, effectParameterValues, systemfiles, userfiles):
+    
     # create a file object
     outfilename = filename
-    print 'outfilename', outfilename
     f = open(os.path.join(userfiles, outfilename), 'w')
     print 'opened file', outfilename
-    currentSignalType = 'mono'
-    instrumentNumber = 10;
+
+    # write top tags and options
+    f.write("<CsoundSynthesizer>\n<CsOptions>\n-odac -W -d -b1024 -B2048\n</CsOptions>\n<CsInstruments>")
+
+    # write header
+    f.write('\n\n')
+    inc = open(systemfiles + '/general/header.inc', 'r')
+    for line in inc:
+        f.write(line)
+    inc.close()
+
+    f.write("\tinstr 1\n\naOut oscil 0.2, 220\nouts aOut, aOut\n\n\tendin\n\n")
     
-    ###########################
-    # autogenerate DSP code
-    ###########################
-
-    # effects
-    for effect in effectParameterValues.keys():
-        f.write('\ninstr  {} \n'.format(instrumentNumber))
-        instrumentNumber += 1
-
-        f.write('\n;**************** effect: %s ********************************\n'%effect[:-4])
-        f.write('\n\ta1 chnget "target_effect_left\"\n')
-        f.write('\ta2 chnget "target_effect_right\"\n\n')
-
-        # read parameter values and audio routing
-        for key, value in effectParameterValues[effect].items():
-            if key == 'input':
-                audioInput = value
-            elif key == 'output':
-                audioOutput = value
-            else:
-                s = '\t'+key+'     \t= '+ str(value) + '\n'
-                f.write(s)
-
-        # insert effect code
-        if 'mono' in currentSignalType:
-            inc = open(os.path.join(systemfiles, 'effects', effect), 'r')
-
-            capture = 0 # skip writing the first parts of include files (meta information)
-            for line in inc:
-                print line
-                if capture == 1:
-                    f.write(line)
-                if '*/' in line:
-                    capture = 1
-
-            f.write('\n\tchnmix a1, \"masterL\"\n')
-            f.write('\tchnmix a2, \"masterR\"\n')
-            f.write('\tchnclear \"target_effect_left\"\n')
-            f.write('\tchnclear \"target_effect_right\"\n')
-
-            f.write('\nendin \n')
-
-            inc.close()
-
-            #currentSignalType = audioOutput
+    # write closing tags and score
+    f.write("</CsInstruments>\n<CsScore>\n\n</CsScore>\n</CsoundSynthesizer>")
     
     f.close
     return 0
+
+    # Old
+
+    # # create a file object
+    # outfilename = filename
+    # print 'outfilename', outfilename
+    # f = open(os.path.join(userfiles, outfilename), 'w')
+    # print 'opened file', outfilename
+    # currentSignalType = 'mono'
+    # instrumentNumber = 10;
+    
+    # ###########################
+    # # autogenerate DSP code
+    # ###########################
+
+    # # effects
+    # for effect in effectParameterValues.keys():
+    #     f.write('\ninstr  {} \n'.format(instrumentNumber))
+    #     instrumentNumber += 1
+
+    #     f.write('\n;**************** effect: %s ********************************\n'%effect[:-4])
+    #     f.write('\n\ta1 chnget "target_effect_left\"\n')
+    #     f.write('\ta2 chnget "target_effect_right\"\n\n')
+
+    #     # read parameter values and audio routing
+    #     for key, value in effectParameterValues[effect].items():
+    #         if key == 'input':
+    #             audioInput = value
+    #         elif key == 'output':
+    #             audioOutput = value
+    #         else:
+    #             s = '\t'+key+'     \t= '+ str(value) + '\n'
+    #             f.write(s)
+
+    #     # insert effect code
+    #     if 'mono' in currentSignalType:
+    #         inc = open(os.path.join(systemfiles, 'effects', effect), 'r')
+
+    #         capture = 0 # skip writing the first parts of include files (meta information)
+    #         for line in inc:
+    #             print line
+    #             if capture == 1:
+    #                 f.write(line)
+    #             if '*/' in line:
+    #                 capture = 1
+
+    #         f.write('\n\tchnmix a1, \"masterL\"\n')
+    #         f.write('\tchnmix a2, \"masterR\"\n')
+    #         f.write('\tchnclear \"target_effect_left\"\n')
+    #         f.write('\tchnclear \"target_effect_right\"\n')
+
+    #         f.write('\nendin \n')
+
+    #         inc.close()
+
+    #         #currentSignalType = audioOutput
+    
+    # f.close
+    # return 0
 
 ###########################
 # autogenerate test
