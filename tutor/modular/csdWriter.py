@@ -350,7 +350,21 @@ def writeCsoundFileInteractiveParameters(filename, effectParameterValues, system
         f.write(line)
     inc.close()
 
-    f.write("\tinstr 1\n\naOut oscil 0.2, 220\nchnset aOut, \"masterL\"\nchnset aOut, \"masterR\"\n\n\tendin\n\n")
+    #f.write("\tinstr 1\n\naOut oscil 0.2, 220\nchnset aOut, \"masterL\"\nchnset aOut, \"masterR\"\n\n\tendin\n\n")
+    
+    # Input channel, target (instr 1)
+    f.write('\n\n')
+    inc = open(systemfiles + '/general/interactive_input_target.inc', 'r')
+    for line in inc:
+        f.write(line)
+    inc.close()
+
+    # Input channel, user (instr 2)
+    f.write('\n\n')
+    inc = open(systemfiles + '/general/interactive_input_user.inc', 'r')
+    for line in inc:
+        f.write(line)
+    inc.close()
 
     # Master channel (instr 99)
     f.write('\n\n')

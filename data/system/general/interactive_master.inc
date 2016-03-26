@@ -1,10 +1,17 @@
 ; Master channel
 instr 99
 
-    aL chnget "masterL"
-    aR chnget "masterR"
-    outs aL, aR
-    chnclear "masterL"
-    chnclear "masterR"
+    aTargetLeft chnget "target_audio_left"
+    aTargetRight chnget "target_audio_right"    
+    aUserLeft chnget "user_audio_left"
+    aUserRight chnget "user_audio_right"
+
+    outs aTargetLeft + aUserLeft, aTargetRight + aUserRight
+
+    chnclear "target_audio_left"
+    chnclear "target_audio_right"
+    chnclear "user_audio_left"
+    chnclear "user_audio_right"
     
 endin
+

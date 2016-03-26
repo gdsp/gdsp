@@ -78,11 +78,11 @@ function play() {
 
 function mute() {
     if(!userInstanceIsPlaying) {
-        csound.SetChannel("targetAmplitude", 0.0);
-        csound.SetChannel("userAmplitude", 1.0);
+        csound.SetChannel("target_amplitude", 0.0);
+        csound.SetChannel("user_amplitude", 1.0);
     } else {
-        csound.SetChannel("targetAmplitude", 1.0);
-        csound.SetChannel("userAmplitude", 0.0);
+        csound.SetChannel("target_amplitude", 1.0);
+        csound.SetChannel("user_amplitude", 0.0);
     }
     userInstanceIsPlaying = !userInstanceIsPlaying;
     console.log(userInstanceIsPlaying);
