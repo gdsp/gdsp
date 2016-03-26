@@ -335,25 +335,32 @@ def writeCsoundFile(filename, effectParameterValues, systemfiles, userfiles, inp
 
 def writeCsoundFileInteractiveParameters(filename, effectParameterValues, systemfiles, userfiles):
     
-    # create a file object
+    # Create file object
     outfilename = filename
     f = open(os.path.join(userfiles, outfilename), 'w')
     print 'opened file', outfilename
 
-    # write top tags and options
+    # Top tags and options
     f.write("<CsoundSynthesizer>\n<CsOptions>\n-odac -W -d -b1024 -B2048\n</CsOptions>\n<CsInstruments>")
 
-    # write header
+    # Header
     f.write('\n\n')
     inc = open(systemfiles + '/general/header.inc', 'r')
     for line in inc:
         f.write(line)
     inc.close()
 
-    f.write("\tinstr 1\n\naOut oscil 0.2, 220\nouts aOut, aOut\n\n\tendin\n\n")
+    f.write("\tinstr 1\n\naOut oscil 0.2, 220\nchnset aOut, \"masterL\"\nchnset aOut, \"masterR\"\n\n\tendin\n\n")
+
+    # Master channel (instr 99)
+    f.write('\n\n')
+    inc = open(systemfiles + '/general/interactive_master.inc', 'r')
+    for line in inc:
+        f.write(line)
+    inc.close()
     
-    # write closing tags and score
-    f.write("</CsInstruments>\n<CsScore>\n\n</CsScore>\n</CsoundSynthesizer>")
+    # Closing tags and score
+    f.write("</CsInstruments>\n<CsScore>\ni99 0 999999999\n</CsScore>\n</CsoundSynthesizer>")
     
     f.close
     return 0
