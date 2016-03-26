@@ -1,5 +1,5 @@
 ; Master channel
-instr 99
+instr 999
 
     aTargetLeft chnget "target_audio_left"
     aTargetRight chnget "target_audio_right"    
