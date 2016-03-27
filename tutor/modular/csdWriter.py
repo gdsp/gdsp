@@ -342,16 +342,11 @@ def writeCsoundFileInteractiveParameters(filename, effectParameterValues, system
 
     # Top tags and options
     f.write("<CsoundSynthesizer>\n<CsOptions>\n-odac -W -d -b1024 -B2048\n</CsOptions>\n<CsInstruments>")
-
+    
     # Header
-    f.write('\n\n')
-    inc = open(systemfiles + '/general/header.inc', 'r')
-    for line in inc:
-        f.write(line)
-    inc.close()
+    f.write("\n\nnchnls = 2\n0dbfs = 1\n")
     
     # Input channel, target (instr 1)
-    f.write('\n\n')
     inc = open(systemfiles + '/general/interactive_input_target.inc', 'r')
     for line in inc:
         f.write(line)
@@ -366,7 +361,7 @@ def writeCsoundFileInteractiveParameters(filename, effectParameterValues, system
 
 
     # Start at instrument 100 and increase number programmatically based on number of effects
-    # Corresponding user_instr will always be target_instr + 100 
+    # Corresponding user_instr will always be target_instr + 100
     instrumentNumber = 100
 
     # Initialize an empty string which will start all appended instruments in CsScore
