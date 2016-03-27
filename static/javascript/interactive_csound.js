@@ -47,20 +47,20 @@ function attachListeners() {
 }
 
 function handleMessage(message) {
-    var mess = message.data;
-    if(mess == "finished render"){
-        ReadFile();
-        return;
-    } else if(mess == "Complete"){
-    //saveFile();
-    //scrollTo(0, messField.scrollHeight);
-    return;
-}
-    var messField = document.getElementById("csound_message")
-    if(messField) {
-        messField.innerText += mess;
-        scrollTo(0, messField.scrollHeight);
-    }
+//     var mess = message.data;
+//     if(mess == "finished render"){
+//         ReadFile();
+//         return;
+//     } else if(mess == "Complete"){
+//     //saveFile();
+//     //scrollTo(0, messField.scrollHeight);
+//     return;
+// }
+//     var messField = document.getElementById("csound_message")
+//     if(messField) {
+//         messField.innerText += mess;
+//         scrollTo(0, messField.scrollHeight);
+//     }
 }
 
 function play() {
