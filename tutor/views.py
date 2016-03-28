@@ -1,4 +1,4 @@
-import sys, pdb, random, inspect, urllib, json
+import sys, pdb, random, inspect, urllib
 import cPickle as pickle
 
 from django.shortcuts import render_to_response
@@ -96,7 +96,6 @@ def test_interactive(request, test_name, level, FX):
         'effect_set': effect_set,
         'sound': sound,
         'csd': csd,
-        'effect_set_json': json.dumps(effect_set),
     }
 
     response = render_to_response('tutor/test_interactive.html', { 'context': context }, context_instance=RequestContext(request))

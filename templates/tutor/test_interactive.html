@@ -50,17 +50,31 @@
 		{% for effect_name, effect_parameter_set in context.effect_set.items %}
 			{% for parameter, values in effect_parameter_set.items %}
 			    
+			    var self = this;
+
+			    // Get max/min and the function curve type: lin, expon or log.
+			    var minValue = {{ values.1.0 }};
+			    var maxValue = {{ values.1.1 }};
+			    var curveType = "{{ values.2 }}";
+
 			    // Set default value. TODO: Find better solution than middle pos
-			    var averageValueLinear = ({{ values.1.0 }} + {{ values.1.1 }}) / 2;
-			    document.getElementById("{{ effect_name }}_{{ parameter }}").value = averageValueLinear;
-			    document.getElementById("{{ effect_name }}_{{ parameter }}_text").innerHTML = averageValueLinear;
-			    csound.SetChannel("{{ effect_name }}_{{ parameter }}", averageValueLinear);
+			    var averageValueLinear = (minValue + maxValue) / 2;
+			    document.getElementById("{{ effect_name }}_{{ parameter }}").value = getValueFromCurve(averageValueLinear, minValue, maxValue, curveType);
+			    document.getElementById("{{ effect_name }}_{{ parameter }}_text").innerHTML = getValueFromCurve(averageValueLinear, minValue, maxValue, curveType);
+			    csound.SetChannel("{{ effect_name }}_{{ parameter }}", getValueFromCurve(averageValueLinear, minValue, maxValue, curveType));
 
 			    // Add listeners
 			    $("#{{ effect_name }}_{{ parameter }}").on("input change", function() {
-			        csound.SetChannel("{{ effect_name }}_{{ parameter }}", this.value);
-			    	$("#{{ effect_name }}_{{ parameter }}_text").text(this.value);
+			    	console.log(this);
+			    	var value = document.getElementById("{{ effect_name }}_{{ parameter }}").value;
+			    	console.log(value);
+			        csound.SetChannel("{{ effect_name }}_{{ parameter }}", getValueFromCurve(value, minValue, maxValue, curveType));
+			    	$("#{{ effect_name }}_{{ parameter }}_text").text(getValueFromCurve(value, minValue, maxValue, curveType));
 			    });
+			    
+			 //    document.getElementById("{{ effect_name }}_{{ parameter }}").addEventListener("input", function() {
+			 //    	document.getElementById("{{ effect_name }}_{{ parameter }}_text").innerHTML = getValueFromCurve(this.value, minValue, maxValue, curveType);
+				// }, false); 
 
 			{% endfor %}
 		{% endfor %}

@@ -110,4 +110,18 @@ function onError(e) {
     console.log(e);
 }
 
-
+/*
+* Use different scaling functions for the HTML input slider.
+*/
+function getValueFromCurve(inputValue, minValue, maxValue, curveType) {
+    var exponent = 1;
+    if (curveType === "lin") {
+        return inputValue;
+    } else if (curveType === "expon") {
+        exponent = 3;
+    } else if (curveType === "log") {
+        exponent = 0.5;
+    }
+    inputValue /= maxValue;
+    return (maxValue - 1)*Math.pow(inputValue, exponent) + minValue;
+}
