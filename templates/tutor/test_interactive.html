@@ -18,7 +18,7 @@
 
 {% for effect_name, effect_parameter_set in context.effect_set.items %}
 	{% for parameter, values in effect_parameter_set.items %}
-		<p>{{ parameter }}: <input class="slider" id="{{ effect_name }}_{{ parameter }}" type="range" min={{ values.1.0 }} max={{ values.1.1 }} value="0.5" step="0.001" /> </p>
+		<p>{{ parameter }}: <input class="slider" id="{{ effect_name }}_{{ parameter }}" type="range" min={{ values.1.0 }} max={{ values.1.1 }} value="0.5" step="0.001" /><label id="{{ effect_name }}_{{ parameter }}_text"></p>
 	{% endfor %}
 
 {% endfor %}
@@ -46,17 +46,22 @@
 	    csound.SetChannel("target_amplitude", 1.0);
 	    csound.SetChannel("user_amplitude", 0.0);
 
+	    // Add sliders for csound communication
 		{% for effect_name, effect_parameter_set in context.effect_set.items %}
 			{% for parameter, values in effect_parameter_set.items %}
-				// Add listener
-			    $("#{{ effect_name }}_{{ parameter }}").on("input change", function() {
-			        csound.SetChannel("{{ effect_name }}_{{ parameter }}", this.value);
-			    });
-
+			    
 			    // Set default value. TODO: Find better solution than middle pos
 			    var averageValueLinear = ({{ values.1.0 }} + {{ values.1.1 }}) / 2;
 			    document.getElementById("{{ effect_name }}_{{ parameter }}").value = averageValueLinear;
+			    document.getElementById("{{ effect_name }}_{{ parameter }}_text").innerHTML = averageValueLinear;
 			    csound.SetChannel("{{ effect_name }}_{{ parameter }}", averageValueLinear);
+
+			    // Add listeners
+			    $("#{{ effect_name }}_{{ parameter }}").on("input change", function() {
+			        csound.SetChannel("{{ effect_name }}_{{ parameter }}", this.value);
+			    	$("#{{ effect_name }}_{{ parameter }}_text").text(this.value);
+			    });
+
 			{% endfor %}
 		{% endfor %}
 	}
