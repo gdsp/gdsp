@@ -18,9 +18,8 @@
 
 {% for effect_name, effect_parameter_set in context.effect_set.items %}
 	{% for parameter, values in effect_parameter_set.items %}
-		<p>{{ parameter }}: <input class="slider" id="{{ effect_name }}_{{ parameter }}" type="range" min={{ values.1.0 }} max={{ values.1.1 }} value="0.5" step="0.001" /><label id="{{ effect_name }}_{{ parameter }}_text"></p>
+		<p>{{ parameter }}: <input class="slider" id="{{ effect_name }}_{{ parameter }}" type="range" min={{ values.1.0 }} max={{ values.1.1 }} value="0.5" step="0.001" disabled/><label id="{{ effect_name }}_{{ parameter }}_text"></p>
 	{% endfor %}
-
 {% endfor %}
 
 <script type="text/javascript">
@@ -62,20 +61,40 @@
 			    document.getElementById("{{ effect_name }}_{{ parameter }}").value = getValueFromCurve(averageValueLinear, minValue, maxValue, curveType);
 			    document.getElementById("{{ effect_name }}_{{ parameter }}_text").innerHTML = getValueFromCurve(averageValueLinear, minValue, maxValue, curveType);
 			    csound.SetChannel("{{ effect_name }}_{{ parameter }}", getValueFromCurve(averageValueLinear, minValue, maxValue, curveType));
+			    document.getElementById("{{ effect_name }}_{{ parameter }}").disabled = true;
 
 			    // Add listeners
 			    $("#{{ effect_name }}_{{ parameter }}").on("input change", function() {
-			    	console.log(this);
+			    	"use_strict";
+			    	console.log("this: " + this);
 			    	var value = document.getElementById("{{ effect_name }}_{{ parameter }}").value;
-			    	console.log(value);
-			        csound.SetChannel("{{ effect_name }}_{{ parameter }}", getValueFromCurve(value, minValue, maxValue, curveType));
-			    	$("#{{ effect_name }}_{{ parameter }}_text").text(getValueFromCurve(value, minValue, maxValue, curveType));
+			    	var newVal = getValueFromCurve(value, minValue, maxValue, curveType);
+			        csound.SetChannel("{{ effect_name }}_{{ parameter }}", newVal);
+			    	$("#{{ effect_name }}_{{ parameter }}_text").text(newVal);
 			    });
 			    
 			 //    document.getElementById("{{ effect_name }}_{{ parameter }}").addEventListener("input", function() {
 			 //    	document.getElementById("{{ effect_name }}_{{ parameter }}_text").innerHTML = getValueFromCurve(this.value, minValue, maxValue, curveType);
 				// }, false); 
 
+			{% endfor %}
+		{% endfor %}
+	}
+
+	function mute() {
+	    if(!userInstanceIsPlaying) {
+	        csound.SetChannel("target_amplitude", 0.0);
+	        csound.SetChannel("user_amplitude", 1.0);
+	    } else {
+	        csound.SetChannel("target_amplitude", 1.0);
+	        csound.SetChannel("user_amplitude", 0.0);
+	    }
+	    userInstanceIsPlaying = !userInstanceIsPlaying;
+		
+		// Disable if not interactable
+		{% for effect_name, effect_parameter_set in context.effect_set.items %}
+			{% for parameter, values in effect_parameter_set.items %}
+				document.getElementById("{{ effect_name }}_{{ parameter }}").disabled = !document.getElementById("{{ effect_name }}_{{ parameter }}").disabled;
 			{% endfor %}
 		{% endfor %}
 	}

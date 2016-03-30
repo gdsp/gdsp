@@ -76,18 +76,6 @@ function play() {
     isPlaying = !isPlaying
 }
 
-function mute() {
-    if(!userInstanceIsPlaying) {
-        csound.SetChannel("target_amplitude", 0.0);
-        csound.SetChannel("user_amplitude", 1.0);
-    } else {
-        csound.SetChannel("target_amplitude", 1.0);
-        csound.SetChannel("user_amplitude", 0.0);
-    }
-    userInstanceIsPlaying = !userInstanceIsPlaying;
-    console.log(userInstanceIsPlaying);
-}
-
 function loadAudio(url) {
     var request = new XMLHttpRequest();
     request.open('GET', url, true);
