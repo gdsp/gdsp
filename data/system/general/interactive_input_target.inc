@@ -8,6 +8,7 @@ instr 1
 
 	; Get audio level
 	kAmp chnget "target_amplitude"
+	kInputLevel chnget "input_level"
 
 	if iNumChannels == 1 then
 		aDryL diskin2 Sfile, 1, 0, 1
@@ -22,6 +23,8 @@ instr 1
 	aDryR *= aDeclickEnv
 	aDryL *= kAmp
 	aDryR *= kAmp
+	aDryL *= kInputLevel
+	aDryR *= kInputLevel
 
 	chnset aDryL, "target_audio_left"
 	chnset aDryR, "target_audio_right"

@@ -16,6 +16,8 @@
 <p>FX set: {{ context.effect_set }}</p>
 <p>csd file: {{ context.csd }}</p>
 
+<p>Input level: <input class="slider" id="input_level" type="range" min=0.0 max=1.0 value=1.0 step="0.01"/><label id="input_level_label">1</label></p>
+
 {% for effect_name, effect_parameter_set in context.effect_set.items %}
 	{% for parameter, values in effect_parameter_set.items %}
 		<p>{{ parameter }}: <input class="slider" id="{{ effect_name }}_{{ parameter }}" type="range" min={{ values.1.0 }} max={{ values.1.1 }} value="0.5" step="0.001" disabled/><label id="{{ effect_name }}_{{ parameter }}_text"></p>
@@ -44,6 +46,14 @@
 	    // Set levels to hear only the target sound
 	    csound.SetChannel("target_amplitude", 1.0);
 	    csound.SetChannel("user_amplitude", 0.0);
+	   	csound.SetChannel("input_level", 1.0);
+
+		// Add input level slider listener
+		$("#input_level").on("input change", function() {
+			var value = document.getElementById("input_level").value;
+		    csound.SetChannel("input_level", value);
+			$("#input_level_label").text(value);
+		});
 
 	    // Add sliders for csound communication
 		{% for effect_name, effect_parameter_set in context.effect_set.items %}
