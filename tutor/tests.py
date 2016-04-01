@@ -248,17 +248,15 @@ class InteractiveTest(TestCode):
         effectParameterSetCopy = copy.deepcopy(effectParameterSet)
         effectParameterValues = cs.getEffectParameterValues(effectParameterSetCopy)
 
-        print("****************************************************************")
-        print("inside first()")
-        print effectParameterSet
-        print("****************************************************************")
-
         sound, csd = self.process(effectParameterValues, isInteractive = True)
 
         # Return the csd-file as well as the dry sound file
         return effectParameterSet, effectParameterValues, sound, csd
 
     def check(self, request, correct):
+        print("****************************************************************")
+        print("inside check()")
+        print("****************************************************************")
         return self.first() if correct else self.less_choices(request)
 
 class BandpassMusic(TestCode):

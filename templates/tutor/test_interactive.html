@@ -51,7 +51,7 @@
 		// Add input level slider listener
 		$("#input_level").on("input change", function() {
 			var value = document.getElementById("input_level").value;
-		    csound.SetChannel("input_level", value);
+			csound.SetChannel("input_level", value);
 			$("#input_level_label").text(value);
 		});
 
@@ -118,6 +118,17 @@
 <audio controls>
 <source src="/site_media/system/samples/{{ context.sound }}" type="audio/wav">
 </audio>
+
+<!-- <input type="submit" value="Submit" />
+ -->
+
+tutor/test_interactive/{test}/{level}/{FX}
+
+<form class="test-form-wrapper" action="/tutor/test_interactive/{{ context.test_name }}/{{ context.level }}/{{ context.FX }}" method="post">
+{% csrf_token %}
+<input type="submit" value="Submit" />
+</form>
+
 
   <!-- csound message field -->
 <div id="csound_message"> </div>

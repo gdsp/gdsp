@@ -58,6 +58,10 @@ def test_interactive(request, test_name, level, FX):
     test = tests.find(test_name, level, FX, request.user)
     #correct = test.store_result(request) if request.method == 'POST' else False  
 
+    print("****************************************************************************************************")
+    print("Request method: " + request.method)
+    print("****************************************************************************************************")
+
     effect_set, effect_values, sound, csd = test.first()
 
     # Remove input and output keys from the dictionary. 
@@ -75,9 +79,6 @@ def test_interactive(request, test_name, level, FX):
 
     # Add random generated values to effect_set
     for effect_set_key, effect_set_value in effect_set.iteritems():
-        print("****************************************************************************************************")
-        print(effect_set_key)
-        print("****************************************************************************************************")
         # Remove .inc from effect names
         #effect_set[effect_set_key[:-4]] = effect_set.pop(effect_set_key)
 
@@ -96,6 +97,7 @@ def test_interactive(request, test_name, level, FX):
         'effect_set': effect_set,
         'sound': sound,
         'csd': csd,
+        'FX': FX,
     }
 
     response = render_to_response('tutor/test_interactive.html', { 'context': context }, context_instance=RequestContext(request))
