@@ -101,15 +101,18 @@ function onError(e) {
 /*
 * Use different scaling functions for the HTML input slider.
 */
-function getValueFromCurve(inputValue, minValue, maxValue, curveType) {
-    var exponent = 1;
+function getValueFromCurve(inputValue, minValue, maxValue, curveType) {   
+    var minValueLog = Math.log(minValue);
+    var maxValueLog = Math.log(maxValue);
+
+    // Calculate adjustment factor
+    var scale = (maxValueLog - minValueLog)/(maxValue - minValue);
+
     if (curveType === "lin") {
         return inputValue;
     } else if (curveType === "expon") {
-        exponent = 3;
+        return (Math.log(inputValue) - minValueLog)/scale + minValue;
     } else if (curveType === "log") {
-        exponent = 0.5;
+        return Math.exp(minValueLog + scale*(inputValue - minValue));
     }
-    inputValue /= maxValue;
-    return (maxValue - 1)*Math.pow(inputValue, exponent) + minValue;
 }
