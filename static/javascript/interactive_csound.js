@@ -7,7 +7,7 @@ var audioContext;
 $(document).ready(function() {
     $('#body').show();
     try {
-        // the AudioContext is the primary container for all audio  objects
+        // the AudioContext is the primary container for all audio objects
         audioContext = new AudioContext();
     }
     catch(e) {
