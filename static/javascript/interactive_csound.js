@@ -3,6 +3,7 @@ var isPlaying = false;
 var userInstanceIsPlaying = false;
 var audioBuffer = 0;
 var audioContext;
+var wavesurfer = Object.create(WaveSurfer);
 
 $(document).ready(function() {
     $('#body').show();
@@ -44,6 +45,11 @@ function attachListeners() {
     console.log("Attach listeners...");
     document.getElementById("playPauseButton").addEventListener("click", play);
     document.getElementById("switchInstanceButton").addEventListener("click", mute);
+
+    // Trick waveform to return to beginning when reaching the end
+    wavesurfer.on('finish', function() {
+        wavesurfer.play();
+    });
 }
 
 function handleMessage(message) {
@@ -67,10 +73,12 @@ function play() {
     if (isPlaying) {
         csound.Event("i-1 0 -1");
         csound.Event("i-2 0 -1");
+        wavesurfer.stop();
         document.getElementById("playPauseButton").src = "/static/images/play.png";
     } else {
         csound.Event("i1 0 -1");
         csound.Event("i2 0 -1");
+        wavesurfer.play();
         document.getElementById("playPauseButton").src = "/static/images/pause.png";
     }
     isPlaying = !isPlaying

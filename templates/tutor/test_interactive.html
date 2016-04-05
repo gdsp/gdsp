@@ -6,6 +6,7 @@
 <head>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
     <script src="{% static 'javascript/csound.js' %}"></script>
+    <script src="{% static 'javascript/wavesurfer.min.js' %}"></script>
 </head>
 
 <body>
@@ -106,6 +107,15 @@
 			    });
 			{% endfor %}
 		{% endfor %}
+
+		// Add waveform
+	    wavesurfer.init({
+	        container: document.querySelector('#waveform'),
+	        waveColor: '#00b2a9',
+	        progressColor: '#00b2a9'
+	    });
+	    wavesurfer.load("/site_media/system/samples/{{ context.sound }}");
+	    wavesurfer.toggleMute();
 	}
 
 	function mute() {
@@ -146,6 +156,11 @@ tutor/test_interactive/{test}/{level}/{FX}
 <input type="submit" value="Submit" />
 </form>
 
+<div id="waveform">
+    <div class="progress progress-striped active" id="progress-bar">
+        <div class="progress-bar progress-bar-info"></div>
+    </div>
+</div>
 
   <!-- csound message field -->
 <div id="csound_message"> </div>
