@@ -119,8 +119,8 @@ function getValueFromCurve(inputValue, minValue, maxValue, curveType) {
     if (curveType === "lin") {
         return inputValue;
     } else if (curveType === "expon") {
-        return (Math.log(inputValue) - minValueLog)/scale + minValue;
-    } else if (curveType === "log") {
         return Math.exp(minValueLog + scale*(inputValue - minValue));
+    } else if (curveType === "log") {
+        return (Math.log(inputValue) - minValueLog)/scale + minValue;
     }
 }
