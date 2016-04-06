@@ -67,7 +67,7 @@ def getEffectParameterSet(FX, path):
                     output = output.rstrip('\n')
                 elif 'tags' in line:
                     pass #effectParameterSet['tags'] = line.strip().partition('tags:')[-1].split(',')
-                else: # not input or tag: parameter (name range map) line
+                else: # not input or tag: parameter (name range map label) line
                     numParameters += 1
                     l = line.split('range')
                     parameter = l[0].split('"')[1]
@@ -81,7 +81,17 @@ def getEffectParameterSet(FX, path):
                     if 'int' in m[1]: pType = 'int'
                     elif 'float' in m[1]: pType = 'float'
                     else: pType = '*undefined*'
-                    parameterMap = [r, mapping, pType]
+
+                    rhs = line.split("label")
+                    labelText = ""
+
+                    # Get rid of this try-except-block when all inc files are updated with labels
+                    try:
+                        labelText = rhs[1].split('"')[1]
+                    except Exception, e:
+                        pass
+
+                    parameterMap = [r, mapping, pType, labelText]
                     parameters[parameter] = parameterMap # save the range, mapping type and parameter type
             if '/* input parameters for this effect' in line:
                 capture = 1
@@ -89,13 +99,6 @@ def getEffectParameterSet(FX, path):
         parameters['output'] = output
         print input, output
         effectParameterSet[effect] = parameters#, audioInput, audioOutput]
-
-    print len(FX), 'effects'
-    print numParameters, 'parameters'
-
-    print("****************************************************************")
-    print(effectParameterSet)
-    print("****************************************************************") 
     return effectParameterSet
 
 def getEffectParameterValues(effectParameterSet):
@@ -107,15 +110,15 @@ def getEffectParameterValues(effectParameterSet):
     for effect in effectParameterSet.keys():
         #log.write(str(effect))
         # generate parameter values
-        for key,value in effectParameterSet[effect].items():
+        for key, value in effectParameterSet[effect].items():
             #log.write('key:'+str(key)+ ' value:' + str(value))
             if key == 'input':
                 pass
             elif key == 'output':
                 pass
             else:
-                # parse parameterMap (key:parameterName, value:[range, mapping, parameterType])
-                r,mapping, pType = value
+                # parse parameterMap (key:parameterName, value:[range, mapping, parameterType, label])
+                r, mapping, pType, label = value
                 if mapping == 'lin':
                     v = (random.random()*(r[1]-r[0]))+r[0]
                 elif mapping == 'expon':

@@ -107,7 +107,6 @@ class TestCode(object):
         return level
 
     def process(self, effectParameterValues, isInteractive):
-        print "processing..."
         if isInteractive:
             inputSound = path.join(md.systemfiles, 'samples', random.choice(cs.getWavefileNames(md.systemfiles)))
             
@@ -141,11 +140,7 @@ class TestCode(object):
                 # Change the normalize CSD file.
                 normalizeFile = path.join(md.modular, 'normalize.csd')
                 subprocess.call('sed s,test,%s, ' % csoundFilepath.replace('\\','/') + normalizeFile + ' > ' + csoundNormFilepath, shell=True)
-                retcode = subprocess.call(['csound', csoundNormFilepath])
-                print '******************************'
-                print 'source sound:', inputSound
-                print effectParameterValues
-    
+                retcode = subprocess.call(['csound', csoundNormFilepath])    
             else:
                 print 'csound error'
         return path.basename(inputSound), csoundFilename
@@ -216,21 +211,17 @@ class GuessEffect(TestCode):
 
 class InteractiveTest(TestCode):
 
-    print("****************************************************************")
-    print("inside interactive test")
-    print("****************************************************************")
-    
     name = 'Interactive test'
     tags = 'general'
 
     def easy(self):
-        return 2
+        return 1
 
     def medium(self):
-        return 4
+        return 2
 
     def hard(self):
-        return 6
+        return 3
 
     def adaptive(self):
         """ We examine the entire history of this effect, and look at the trend of corrects. Two corrects in a row yields and increase, 
@@ -242,21 +233,20 @@ class InteractiveTest(TestCode):
         random.shuffle(self.FX)
         self.FX = self.FX[0:self.level()]
         effects = [ random.choice(self.FX) ]
+
+        print("level", self.level)
+        
         effectParameterSet = cs.getEffectParameterSet(effects, md.systemfiles)
 
         # Making a deep copy of the dictionary, because getEffectParameterValues() for some reason is changing it
         effectParameterSetCopy = copy.deepcopy(effectParameterSet)
         effectParameterValues = cs.getEffectParameterValues(effectParameterSetCopy)
-
         sound, csd = self.process(effectParameterValues, isInteractive = True)
 
         # Return the csd-file as well as the dry sound file
         return effectParameterSet, effectParameterValues, sound, csd
 
     def check(self, request, correct):
-        print("****************************************************************")
-        print("inside check()")
-        print("****************************************************************")
         return self.first() if correct else self.less_choices(request)
 
 class BandpassMusic(TestCode):

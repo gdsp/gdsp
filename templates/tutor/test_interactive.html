@@ -31,9 +31,7 @@
 			var curveType = "{{ values.2 }}";
 			var averageValue = getValueFromCurve(((minValue + maxValue) / 2), minValue, maxValue, curveType);
 
-			console.log(averageValue);
-
-			document.write("<p>{{ parameter }}:\
+			document.write("<p>{{ values.4 }}:\
 				<input\
 				class = \"slider\"\
 				id = \"{{ effect_name }}_{{ parameter }}\"\

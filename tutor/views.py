@@ -58,10 +58,6 @@ def test_interactive(request, test_name, level, FX):
     test = tests.find(test_name, level, FX, request.user)
     #correct = test.store_result(request) if request.method == 'POST' else False  
 
-    print("****************************************************************************************************")
-    print("Request method: " + request.method)
-    print("****************************************************************************************************")
-
     if request.method == 'GET':
         effect_set, effect_values, sound, csd = test.first()
     elif request.method == 'POST':
@@ -92,6 +88,16 @@ def test_interactive(request, test_name, level, FX):
 
     queryset = TestElement.objects.all()
     queryset.default_factory = None
+
+    print("****************************************************************************************************")
+    print("Request method: " + request.method)
+    print("****************************************************************************************************")
+
+    print("****************************************************************************************************")
+    print("Effect_set: ",  effect_set)
+    print("****************************************************************************************************")
+
+
 
     context = {
         'test_elements': queryset,
