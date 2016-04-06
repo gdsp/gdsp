@@ -10,8 +10,7 @@ $(document).ready(function() {
     try {
         // the AudioContext is the primary container for all audio objects
         audioContext = new AudioContext();
-    }
-    catch(e) {
+    } catch(e) {
         alert('Web Audio API is not supported in this browser');
     }
 });

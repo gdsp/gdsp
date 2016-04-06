@@ -111,8 +111,11 @@
 		// Add waveform
 	    wavesurfer.init({
 	        container: document.querySelector('#waveform'),
-	        waveColor: '#00b2a9',
-	        progressColor: '#00b2a9'
+	        progressColor: '#00b2a9',
+	        waveColor: '#68D8D6',
+	        cursorWidth: '0',
+	        pixelRatio: '2',
+	        interact: false
 	    });
 	    wavesurfer.load("/site_media/system/samples/{{ context.sound }}");
 	    wavesurfer.toggleMute();
