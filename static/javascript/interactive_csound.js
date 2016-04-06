@@ -62,7 +62,8 @@ function loadAudio(url) {
     var request = new XMLHttpRequest();
     request.open('GET', url, true);
     request.responseType = 'arraybuffer';
-    // When loaded decode the data and store the audio buffer in memory
+    
+    // When loaded, decode the data and store the audio buffer in memory
     request.onload = function() {
         audioContext.decodeAudioData(request.response, function(buffer) {
             audioBuffer = buffer;

@@ -73,37 +73,20 @@ def test_interactive(request, test_name, level, FX):
         del val['input']
         del val['output']
 
-    for effect_set_key, effect_set_value in effect_set.iteritems():
-        effect_set[effect_set_key[:-4]] = effect_set.pop(effect_set_key)
-
-    # Add random generated values to effect_set
-    for effect_set_key, effect_set_value in effect_set.iteritems():
-        # Remove .inc from effect names
-        #effect_set[effect_set_key[:-4]] = effect_set.pop(effect_set_key)
-
-        effect_value_key = effect_values[key]
-        for key in effect_set_value:
-            # Add at 0th position
-            effect_set_value[key].insert(0, effect_value_key[key])
+    effect_keys = list(effect_set.keys())
+    for effect_key in effect_keys:
+        effect_set[effect_key[:-4]] = effect_set.pop(effect_key)
+        effect_values[effect_key[:-4]] = effect_values.pop(effect_key)
 
     queryset = TestElement.objects.all()
     queryset.default_factory = None
-
-    print("****************************************************************************************************")
-    print("Request method: " + request.method)
-    print("****************************************************************************************************")
-
-    print("****************************************************************************************************")
-    print("Effect_set: ",  effect_set)
-    print("****************************************************************************************************")
-
-
 
     context = {
         'test_elements': queryset,
         'test_name': test_name,
         'level': level,
         'effect_set': effect_set,
+        'effect_values': effect_values,
         'sound': sound,
         'csd': csd,
         'FX': FX,

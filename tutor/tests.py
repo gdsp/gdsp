@@ -233,9 +233,12 @@ class InteractiveTest(TestCode):
         random.shuffle(self.FX)
         self.FX = self.FX[0:self.level()]
         effects = [ random.choice(self.FX) ]
+        effects = self.FX
 
-        print("level", self.level)
-        
+        print("level", self.level())
+        print("self.FX", self.FX)
+        print("effects", effects)
+
         effectParameterSet = cs.getEffectParameterSet(effects, md.systemfiles)
 
         # Making a deep copy of the dictionary, because getEffectParameterValues() for some reason is changing it

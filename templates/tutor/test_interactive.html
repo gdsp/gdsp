@@ -14,24 +14,27 @@
 
 <p>Test name: {{ context.test_name }}</p>
 <p>FX set: {{ context.effect_set }}</p>
+<p>FX values: {{ context.effect_values }}</p>
 <p>csd file: {{ context.csd }}</p>
 
 <p>Input level: <input class="slider" id="input_level" type="range" min=0.0 max=1.0 value=1.0 step="0.01"/><label id="input_level_label">1</label></p>
 
 <script type="text/javascript">
 
+	// Set up sliders
 	{% for effect_name, effect_parameter_set in context.effect_set.items %}
+		document.write("<p>{{ effect_name }}<p>");
 		{% for parameter, values in effect_parameter_set.items %}
-			
+
 			// Get max/min and the function curve type: lin, expon or log.
-			var minValue = {{ values.1.0 }};
-			var maxValue = {{ values.1.1 }};
+			var minValue = {{ values.0.0 }};
+			var maxValue = {{ values.0.1 }};
 
 			// Get correct average value based on curve function
-			var curveType = "{{ values.2 }}";
+			var curveType = "{{ values.1 }}";
 			var averageValue = getValueFromCurve(((minValue + maxValue) / 2), minValue, maxValue, curveType);
 
-			document.write("<p>{{ values.4 }}:\
+			document.write("<p>{{ values.3 }}:\
 				<input\
 				class = \"slider\"\
 				id = \"{{ effect_name }}_{{ parameter }}\"\
@@ -92,28 +95,29 @@
 		{% for effect_name, effect_parameter_set in context.effect_set.items %}
 			{% for parameter, values in effect_parameter_set.items %}
 
-				// Get max/min and the function curve type: lin, expon or log.
-				var minValue = {{ values.1.0 }};
-				var maxValue = {{ values.1.1 }};
+				// Get max/min and the function curve type [lin, expon, log]
+				var minValue = {{ values.0.0 }};
+				var maxValue = {{ values.0.1 }};
 
 				// Get average value based on function slope
-				var curveType = "{{ values.2 }}";
+				var curveType = "{{ values.1 }}";
 				var averageValue = getValueFromCurve(((minValue + maxValue) / 2), minValue, maxValue, curveType);
 
 				csound.SetChannel("{{ effect_name }}_{{ parameter }}", averageValue);
 
 				// Add listeners
 				$("#{{ effect_name }}_{{ parameter }}").on("input change", function() {
-					var minValue = {{ values.1.0 }};
-					var maxValue = {{ values.1.1 }};
-					var curveType = "{{ values.2 }}"; // lin, exp or log
-					var dataType = "{{ values.3 }}"; // float or int
+					var minValue = {{ values.0.0 }};
+					var maxValue = {{ values.0.1 }};
+					var curveType = "{{ values.1 }}"; // lin, exp or log
+					var dataType = "{{ values.2 }}"; // float or int
 
 					var value = document.getElementById("{{ effect_name }}_{{ parameter }}").value;
 					var scaledValue = getValueFromCurve(value, minValue, maxValue, curveType);
 					csound.SetChannel("{{ effect_name }}_{{ parameter }}", scaledValue);
 					$("#{{ effect_name }}_{{ parameter }}_label").text(scaledValue);
 
+					// Check if parameter have discrete steps
 					if (dataType == 'int') {
 						document.getElementById("{{ effect_name }}_{{ parameter }}").step = 1;
 					}
