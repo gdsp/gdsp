@@ -10,7 +10,6 @@
 </head>
 
 <body>
-
 <script src="{% static 'javascript/interactive_csound.js' %}"></script>
 
 <p>Test name: {{ context.test_name }}</p>
@@ -52,26 +51,37 @@
 	{% endfor %}
 
     function moduleDidLoad() {
-	    localStorage.clear();
+		localStorage.clear();
 
-	    // Load initial csd file
-	    var csd_url = "/site_media/user/{{ context.csd }}";
-	    var csd_name = "test.csd";
+		// Add waveform
+		wavesurfer.init({
+			container: document.querySelector('#waveform'),
+			progressColor: '#00b2a9',
+			waveColor: '#68D8D6',
+			cursorWidth: '0',
+			pixelRatio: '2',
+			interact: false
+		});
+		wavesurfer.load("/site_media/system/samples/{{ context.sound }}");
+		wavesurfer.toggleMute();
 
-	    csound.CopyUrlToLocal(csd_url, csd_name);
+		// Load initial csd file
+		var csd_url = "/site_media/user/{{ context.csd }}";
+		var csd_name = "test.csd";
+		csound.CopyUrlToLocal(csd_url, csd_name);
 
-	    // Load initial audio file
-	    loadAudio("/site_media/system/samples/{{ context.sound }}");
+		// Load initial audio file. TODO: Be able to change audio file
+		loadAudio("/site_media/system/samples/{{ context.sound }}");
 
-	    // Start csound
-	   	setTimeout(function() {
-	    	csound.PlayCsd("local/test.csd");
-	    }, 500);
+		// Start csound
+		setTimeout(function() {
+			csound.PlayCsd("local/test.csd");
+		}, 500);
 
-	    // Set levels to hear only the target sound
-	    csound.SetChannel("target_amplitude", 1.0);
-	    csound.SetChannel("user_amplitude", 0.0);
-	   	csound.SetChannel("input_level", 1.0);
+		// Set levels to hear only the target sound
+		csound.SetChannel("target_amplitude", 1.0);
+		csound.SetChannel("user_amplitude", 0.0);
+		csound.SetChannel("input_level", 1.0);
 
 		// Add input level slider listener
 		$("#input_level").on("input change", function() {
@@ -80,7 +90,7 @@
 			$("#input_level_label").text(value);
 		});
 
-	    // Add sliders for csound communication
+		// Add sliders for csound communication
 		{% for effect_name, effect_parameter_set in context.effect_set.items %}
 			{% for parameter, values in effect_parameter_set.items %}
 
@@ -88,89 +98,71 @@
 				var minValue = {{ values.1.0 }};
 				var maxValue = {{ values.1.1 }};
 
-				// Get correct average value based on curve function
+				// Get average value based on function slope
 				var curveType = "{{ values.2 }}";
 				var averageValue = getValueFromCurve(((minValue + maxValue) / 2), minValue, maxValue, curveType);
 
-			    csound.SetChannel("{{ effect_name }}_{{ parameter }}", averageValue);
+				csound.SetChannel("{{ effect_name }}_{{ parameter }}", averageValue);
 
-			    // Add listeners
-			    $("#{{ effect_name }}_{{ parameter }}").on("input change", function() {
-			   		var minValue = {{ values.1.0 }};
-			   		var maxValue = {{ values.1.1 }};
-			   		var curveType = "{{ values.2 }}";
+				// Add listeners
+				$("#{{ effect_name }}_{{ parameter }}").on("input change", function() {
+					var minValue = {{ values.1.0 }};
+					var maxValue = {{ values.1.1 }};
+					var curveType = "{{ values.2 }}"; // lin, exp or log
+					var dataType = "{{ values.3 }}"; // float or int
 
-			    	var value = document.getElementById("{{ effect_name }}_{{ parameter }}").value;
-			    	var scaledValue = getValueFromCurve(value, minValue, maxValue, curveType);
-			        csound.SetChannel("{{ effect_name }}_{{ parameter }}", scaledValue);
-			    	$("#{{ effect_name }}_{{ parameter }}_label").text(scaledValue);
+					var value = document.getElementById("{{ effect_name }}_{{ parameter }}").value;
+					var scaledValue = getValueFromCurve(value, minValue, maxValue, curveType);
+					csound.SetChannel("{{ effect_name }}_{{ parameter }}", scaledValue);
+					$("#{{ effect_name }}_{{ parameter }}_label").text(scaledValue);
+
+					if (dataType == 'int') {
+						document.getElementById("{{ effect_name }}_{{ parameter }}").step = 1;
+					}
 			    });
 			{% endfor %}
 		{% endfor %}
-
-		// Add waveform
-	    wavesurfer.init({
-	        container: document.querySelector('#waveform'),
-	        progressColor: '#00b2a9',
-	        waveColor: '#68D8D6',
-	        cursorWidth: '0',
-	        pixelRatio: '2',
-	        interact: false
-	    });
-	    wavesurfer.load("/site_media/system/samples/{{ context.sound }}");
-	    wavesurfer.toggleMute();
 	}
 
 	function mute() {
-	    if(!userInstanceIsPlaying) {
-	        csound.SetChannel("target_amplitude", 0.0);
-	        csound.SetChannel("user_amplitude", 1.0);
-	    } else {
-	        csound.SetChannel("target_amplitude", 1.0);
-	        csound.SetChannel("user_amplitude", 0.0);
-	    }
-	    userInstanceIsPlaying = !userInstanceIsPlaying;
+		if(!userInstanceIsPlaying) {
+			csound.SetChannel("target_amplitude", 0.0);
+			csound.SetChannel("user_amplitude", 1.0);
+		} else {
+			csound.SetChannel("target_amplitude", 1.0);
+			csound.SetChannel("user_amplitude", 0.0);
+		}
+		userInstanceIsPlaying = !userInstanceIsPlaying;
 		
-		// Disable if not interactable
+		// Disable all sliders if not interactable
 		{% for effect_name, effect_parameter_set in context.effect_set.items %}
 			{% for parameter, values in effect_parameter_set.items %}
 				document.getElementById("{{ effect_name }}_{{ parameter }}").disabled = !document.getElementById("{{ effect_name }}_{{ parameter }}").disabled;
 			{% endfor %}
 		{% endfor %}
 	}
-
 </script>
-
 
 <input type="image" id="playPauseButton" src="{% static 'images/play.png' %}" style="outline: none;" />
 <input type="button" id="switchInstanceButton" value="A/B">
 
-<audio controls>
-<source src="/site_media/system/samples/{{ context.sound }}" type="audio/wav">
-</audio>
-
-<!-- <input type="submit" value="Submit" />
- -->
-
-tutor/test_interactive/{test}/{level}/{FX}
-
 <form class="test-form-wrapper" action="/tutor/test_interactive/{{ context.test_name }}/{{ context.level }}/{{ context.FX }}" method="post">
-{% csrf_token %}
-<input type="submit" value="Submit" />
+	{% csrf_token %}
+	<input type="submit" value="Submit" />
 </form>
 
+<!-- waveform -->
 <div id="waveform">
     <div class="progress progress-striped active" id="progress-bar">
         <div class="progress-bar progress-bar-info"></div>
     </div>
 </div>
 
-  <!-- csound message field -->
+<!-- csound message field -->
 <div id="csound_message"> </div>
 
 <!--pNaCl csound module -->
 <div id="engine"></div>
-
 
 </body>
 </html>

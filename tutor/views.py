@@ -62,7 +62,10 @@ def test_interactive(request, test_name, level, FX):
     print("Request method: " + request.method)
     print("****************************************************************************************************")
 
-    effect_set, effect_values, sound, csd = test.first()
+    if request.method == 'GET':
+        effect_set, effect_values, sound, csd = test.first()
+    elif request.method == 'POST':
+        lol = 0
 
     # Remove input and output keys from the dictionary. 
     # TODO: Change this in csdWriter.py
