@@ -1,8 +1,8 @@
 /* input parameters for this effect
-	"aDepth" range (1, 15) map (expon float)
-	"kRate" range (0.1, 1) map (lin float)
-	"kOffset" range (1, 15)  map (expon float)
-	"kFeed" range (0, 0.9) map (lin float)
+	"aDepth" range (1, 15) map (expon float) label "Depth"
+	"kRate" range (0.1, 1) map (lin float) label "Rate"
+	"kOffset" range (1, 15)  map (expon float) label "Offset"
+	"kFeed" range (0, 0.9) map (lin float) label "Feedback"
 	input:mono output:mono
 	tags:time based, flanger, pitch modulation, modulation, filter
 */

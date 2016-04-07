@@ -1,6 +1,6 @@
 /* input parameters for this effect
-	"kClip" range (0.1, 0.9) map (expon float)
-	"kType" range (0, 2) map (lin int)
+	"kClip" range (0.1, 0.9) map (expon float) label "Clip"
+	"kType" range (0, 2) map (lin int) label "Effect type"
 	input:mono output:mono
 	tags:distortion, clipping
 */

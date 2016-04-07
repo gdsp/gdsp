@@ -1,5 +1,5 @@
 /* input parameters for this effect
-	"krate" range (0.2, 10) map (expon float)
+	"krate" range (0.2, 10) map (expon float) label "Rate"
 	input:mono output:mono
 	tags:spectral, fft, freeze
 */

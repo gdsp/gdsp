@@ -1,8 +1,8 @@
 /* input parameters for this effect
-	"kDrive" range (0, 10) map (expon float)
-	"kSlope" range (0, 0.1) map (lin float)
-	"kDuty" range (0, 0.02) map (lin float)
-	"kCutoff" range (1000, 9000) map (log float)
+	"kDrive" range (0, 10) map (expon float) label "Drive"
+	"kSlope" range (0, 0.1) map (lin float) label "Slope"
+	"kDuty" range (0, 0.02) map (lin float) label "Duty"
+	"kCutoff" range (1000, 9000) map (log float) label "Cutoff frequency"
 	input:mono output:mono
 	tags:distortion, delay, slope
 */

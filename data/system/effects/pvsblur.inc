@@ -1,5 +1,5 @@
 /* input parameters for this effect
-	"kblurTime" range (0.2, 2) map (expon float)
+	"kblurTime" range (0.2, 2) map (expon float) label "Blur time"
 	input:mono output:mono
 	tags:spectral, fft, blur
 */

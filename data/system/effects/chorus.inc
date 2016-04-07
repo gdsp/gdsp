@@ -1,7 +1,7 @@
 /* input parameters for this effect
-	"aDepth" range (5, 25) map (lin float)
-	"kRate" range (0.1, 1)  map (lin float)
-	"kOffset" range (10, 25)  map (lin float)
+	"aDepth" range (5, 25) map (lin float) label "Depth"
+	"kRate" range (0.1, 1)  map (lin float) label "Rate"
+	"kOffset" range (10, 25)  map (lin float) label "Offset"
 	input:mono output:stereo
 	tags:time based, chorus, pitch modulation, modulation
 */

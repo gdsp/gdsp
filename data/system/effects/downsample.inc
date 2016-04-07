@@ -1,5 +1,5 @@
 /* input parameters for this effect
-	"kSampleRate" range (1000, 15000) map(log int)
+	"kSampleRate" range (1000, 15000) map(log int) label "Sample rate"
 	input:mono output:mono
 	tags:distortion, decimation, downsampling
 */

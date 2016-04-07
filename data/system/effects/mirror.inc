@@ -1,5 +1,5 @@
 /* input parameters for this effect
-	"kMirror" range (0.1, 0.9) map (expon float)
+	"kMirror" range (0.1, 0.9) map (expon float) label "Mirror"
 	input:mono output:mono
 	tags:distortion, clipping, mirror
 */

@@ -1,5 +1,5 @@
 /* input parameters for this effect
-	"kWrap" range (0.1, 0.9) map (expon float)
+	"kWrap" range (0.1, 0.9) map (expon float) label "Wrap"
 	input:mono output:mono
 	tags:distortion, clipping
 */

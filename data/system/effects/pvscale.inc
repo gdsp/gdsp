@@ -1,6 +1,6 @@
 /* input parameters for this effect
-	"kscale" range (0.25, 4) map (expon float)
-	"ikeepform" range (0, 1) map (lin int)
+	"kscale" range (0.25, 4) map (expon float) label "Scale"
+	"ikeepform" range (0, 1) map (lin int) label "Keep formants"
 	input:mono output:mono
 	tags:spectral, fft, scale, pitch 
 */

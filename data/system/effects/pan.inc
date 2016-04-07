@@ -1,5 +1,5 @@
 /* input parameters for this effect
-	"kPan" range (0.0, 1.0) map (lin float)
+	"kPan" range (0.0, 1.0) map (lin float) label "Pan"
 	input:mono output:stereo
 	tags:pan
 */

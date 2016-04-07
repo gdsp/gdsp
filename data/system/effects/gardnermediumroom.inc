@@ -1,6 +1,6 @@
 /* input parameters for this effect
 	input:mono output:stereo
-	"kmix" range (0.3, 1.0) map (lin float)
+	"kmix" range (0.3, 1.0) map (lin float) label "Mix"
 	tags:reverb, delay, allpass, comb, filter
 */
 

@@ -1,7 +1,7 @@
 /* input parameters for this effect
-	"kshift" range (-1000, 1000) map (lin float)
-	"klowest" range (1, 1000) map (log float)
-	"ikeepform" range (0, 1) map (lin int)	
+	"kshift" range (-1000, 1000) map (lin float) label "Shift"
+	"klowest" range (1, 1000) map (log float) label "Lowest"
+	"ikeepform" range (0, 1) map (lin int) label "Keep formants"
 	input:mono output:mono
 	tags:spectral, fft, shift
 */

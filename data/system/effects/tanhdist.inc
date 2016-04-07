@@ -1,5 +1,5 @@
 /* input parameters for this effect
-	"kDrive" range (1, 10) map (expon float)
+	"kDrive" range (1, 10) map (expon float) label "Drive"
 	input:mono output:mono
 	tags:distortion, clipping, waveshaping
 */
