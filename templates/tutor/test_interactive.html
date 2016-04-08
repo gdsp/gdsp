@@ -198,17 +198,27 @@
 
 					var value = document.getElementById("{{ effect_name }}_{{ parameter }}").value;
 					var scaledValue = getValueFromCurve(value, minValue, maxValue, curveType);
-					console.log(value);
-					console.log(scaledValue);
-
 					csound.SetChannel("{{ effect_name }}_{{ parameter }}", scaledValue);
-					scaledValue = parseFloat(scaledValue).toFixed(2);
-					$("#{{ effect_name }}_{{ parameter }}_label").text(scaledValue);
 
-					// Check if parameter have discrete steps
-					if (dataType == 'int') {
-						document.getElementById("{{ effect_name }}_{{ parameter }}").step = 1;
+					scaledValue = parseFloat(scaledValue).toFixed(2);
+
+					// Set number of decimals in label string to fit inside knob
+					if (scaledValue.toString().length >= 8) {
+						scaledValue = parseFloat(scaledValue.toString()).toFixed(0);
+					} else if (scaledValue.toString().length == 7) {
+						scaledValue = parseFloat(scaledValue.toString()).toFixed(1);
 					}
+
+					// Check if parameter type use discrete steps
+					if (dataType == 'int') {
+						// If int, we don't need decimal points
+						scaledValue = parseFloat(scaledValue.toString()).toFixed(0);
+
+						// Set the csound value once again (for integer types only)
+						csound.SetChannel("{{ effect_name }}_{{ parameter }}", scaledValue);
+					}
+
+					$("#{{ effect_name }}_{{ parameter }}_label").text(scaledValue);
 			    });
 			{% endfor %}
 		{% endfor %}
