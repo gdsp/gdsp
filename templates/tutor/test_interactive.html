@@ -8,9 +8,19 @@
     <link href='http://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'> <!-- LAGT TIL -->
 
 	<style>
-		.knobjs-bg {fill: rgba(0,0,0,0);}
-		.knobjs-arcbg {fill: rgba(0,0,0,0); stroke-width:0.05; stroke: #00B2A9;}
-		.knobjs-arc {fill:#00B2A9;}
+		.knobjs-bg {
+			fill: rgba(0,0,0,0);
+		}
+
+		.knobjs-arcbg {
+			fill: rgba(0,0,0,0); 
+			stroke-width: 0.05; 
+			stroke: #00B2A9;
+		}
+
+		.knobjs-arc {
+			fill: #00B2A9;
+		}
 
 		x-knobjs-knob {
 			display: inline-block;
@@ -223,13 +233,16 @@
 			csound.SetChannel("user_amplitude", 0.0);
 		}
 		userInstanceIsPlaying = !userInstanceIsPlaying;
-		
-		// Disable all sliders if not interactable
-		{% for effect_name, effect_parameter_set in context.effect_set.items %}
-			{% for parameter, values in effect_parameter_set.items %}
-				document.getElementById("{{ effect_name }}_{{ parameter }}").disabled = !document.getElementById("{{ effect_name }}_{{ parameter }}").disabled;
-			{% endfor %}
-		{% endfor %}
+
+		if(userInstanceIsPlaying) {
+			$('.knobjs-arcbg').css("stroke", "#BBB");
+			$('.knobjs-arc').css("fill", "#BBB");
+			$('.knob_value').css("color", "#BBB");
+		} else {
+			$('.knobjs-arcbg').css("stroke", "#00B2A9");
+			$('.knobjs-arc').css("fill", "#00B2A9");
+			$('.knob_value').css("color", "#00B2A9");
+		}
 	}
 </script>
 
