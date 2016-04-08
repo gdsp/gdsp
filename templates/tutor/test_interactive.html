@@ -27,6 +27,10 @@
 			height: 90px;
 		}
 
+		.line{
+			float: left;
+		}
+
 		.knob {
 			display: inline-block;
 			width: 90px;
@@ -96,7 +100,7 @@
     	document.dispatchEvent(event);
     });
 
-	// Set up sliders
+	// Set up sliders and their initial values
 	{% for effect_name, effect_parameter_set in context.effect_set.items %}
 		document.write("<div class=\"effect\">");
 		document.write("<h2>{{ effect_name }}<h2>");
@@ -105,32 +109,31 @@
 			// Get max/min and the function curve type: lin, expon or log.
 			var minValue = {{ values.0.0 }};
 			var maxValue = {{ values.0.1 }};
+			var dataType = "{{ values.2 }}"; // float or int
+			var humanReadableLabelText = "{{ values.4 }}";
 
 			// Get correct average value based on curve function
-			var curveType = "{{ values.1 }}";
+			var curveType = "{{ values.1 }}"; // lin, exp or log
 			var averageValue = getValueFromCurve(((minValue + maxValue) / 2), minValue, maxValue, curveType);
-
-			// document.write("<p>{{ values.3 }}:\
-			// 	<input\
-			// 	class = \"slider\"\
-			// 	id = \"{{ effect_name }}_{{ parameter }}\"\
-			// 	type = \"range\"\
-			// 	min = " + minValue + "\
-			// 	max = " + maxValue + "\
-			// 	value = " + averageValue + "\
-			// 	step = \"0.01\"\
-			// 	disabled/>\
-			// 	<label id = \"{{ effect_name }}_{{ parameter }}_label\"\
-			// 	value = " + averageValue + ">\
-			// 	</p>");
 
 			document.write("<div class=\"knob\">\
 				<x-knobjs-knob id=\"{{ effect_name }}_{{ parameter }}\"></x-knobjs-knob>\
 				<label class=\"knob_value\" id = \"{{ effect_name }}_{{ parameter }}_label\">123</label>\
-				<h2 class=\"knob_label\" id=\"{{ effect_name }}_{{ parameter }}\">{{ parameter }}</h2></div>");
+				<h2 class=\"knob_label\" id=\"{{ effect_name }}_{{ parameter }}\">{{ values.4 }}</h2></div>");
 			document.getElementById("{{ effect_name }}_{{ parameter }}").setAttribute("max", maxValue);
 			document.getElementById("{{ effect_name }}_{{ parameter }}").setAttribute("min", minValue);
-			document.getElementById("{{ effect_name }}_{{ parameter }}").setAttribute("value", averageValue);
+			document.getElementById("{{ effect_name }}_{{ parameter }}").setAttribute("value", (maxValue + minValue) / 2);
+
+			// Set number of decimals in label string to fit inside knob
+			var labelValue = getLabelValue(averageValue);
+
+			// Check if parameter type use discrete steps
+			if (dataType == 'int') {
+				// If int, we don't need decimal points
+				labelValue = parseFloat(labelValue.toString()).toFixed(0);
+			}
+
+			$("#{{ effect_name }}_{{ parameter }}_label").text(labelValue);
 		{% endfor %}
 		document.write("</div>");
 	{% endfor %}
@@ -141,8 +144,8 @@
 		// Add waveform
 		wavesurfer.init({
 			container: document.querySelector('#waveform'),
-			progressColor: '#00B2A9',
-			waveColor: '#68D8D6',
+			progressColor: '#68D8D6',
+			waveColor: '#00B2A9',
 			cursorWidth: '0',
 			pixelRatio: '2',
 			interact: false
@@ -200,25 +203,19 @@
 					var scaledValue = getValueFromCurve(value, minValue, maxValue, curveType);
 					csound.SetChannel("{{ effect_name }}_{{ parameter }}", scaledValue);
 
-					scaledValue = parseFloat(scaledValue).toFixed(2);
-
 					// Set number of decimals in label string to fit inside knob
-					if (scaledValue.toString().length >= 8) {
-						scaledValue = parseFloat(scaledValue.toString()).toFixed(0);
-					} else if (scaledValue.toString().length == 7) {
-						scaledValue = parseFloat(scaledValue.toString()).toFixed(1);
-					}
+					var labelValue = getLabelValue(scaledValue);
 
 					// Check if parameter type use discrete steps
 					if (dataType == 'int') {
 						// If int, we don't need decimal points
-						scaledValue = parseFloat(scaledValue.toString()).toFixed(0);
+						labelValue = parseFloat(scaledValue.toString()).toFixed(0);
 
 						// Set the csound value once again (for integer types only)
-						csound.SetChannel("{{ effect_name }}_{{ parameter }}", scaledValue);
+						csound.SetChannel("{{ effect_name }}_{{ parameter }}", labelValue);
 					}
 
-					$("#{{ effect_name }}_{{ parameter }}_label").text(scaledValue);
+					$("#{{ effect_name }}_{{ parameter }}_label").text(labelValue);
 			    });
 			{% endfor %}
 		{% endfor %}

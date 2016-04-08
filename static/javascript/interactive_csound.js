@@ -16,7 +16,7 @@ $(document).ready(function() {
 });
 
 function attachListeners() {
-    console.log("Attach listeners...");
+    
     document.getElementById("playPauseButton").addEventListener("click", play);
     document.getElementById("switchInstanceButton").addEventListener("click", mute);
 
@@ -27,23 +27,23 @@ function attachListeners() {
 }
 
 function handleMessage(message) {
+    
     var mess = message.data;
-    if(mess == "finished render"){
+    
+    if(mess == "finished render") {
         ReadFile();
         return;
-    } else if(mess == "Complete"){
-    //saveFile();
-    //scrollTo(0, messField.scrollHeight);
-    return;
-}
+    } else if(mess == "Complete") {
+        return;
+    }
     var messField = document.getElementById("csound_message")
     if(messField) {
         messField.innerText += mess;
-        //scrollTo(0, messField.scrollHeight);
     }
 }
 
 function play() {
+    
     if (isPlaying) {
         csound.Event("i-1 0 -1");
         csound.Event("i-2 0 -1");
@@ -55,10 +55,12 @@ function play() {
         wavesurfer.play();
         document.getElementById("playPauseButton").src = "/static/images/pause.png";
     }
+    
     isPlaying = !isPlaying
 }
 
 function loadAudio(url) {
+    
     var request = new XMLHttpRequest();
     request.open('GET', url, true);
     request.responseType = 'arraybuffer';
@@ -85,6 +87,7 @@ function onError(e) {
 * Use different scaling functions for the HTML input slider.
 */
 function getValueFromCurve(inputValue, minValue, maxValue, curveType) {   
+    
     var minValueLog = Math.log(minValue);
     var maxValueLog = Math.log(maxValue);
 
@@ -99,5 +102,19 @@ function getValueFromCurve(inputValue, minValue, maxValue, curveType) {
         return Math.exp(minValueLog + scale*(inputValue - minValue));
     } else if (curveType === "log_1p5") {
     }
+
     return inputValue;
+}
+
+function getLabelValue(inputValue) {
+    
+    labelValue = parseFloat(inputValue.toString()).toFixed(2);
+
+    if (labelValue.toString().length >= 8) {
+        labelValue = parseFloat(labelValue.toString()).toFixed(0);
+    } else if (labelValue.toString().length == 7) {
+        labelValue = parseFloat(labelValue.toString()).toFixed(1);
+    }
+
+    return labelValue;
 }

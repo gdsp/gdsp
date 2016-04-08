@@ -78,6 +78,8 @@ def test_interactive(request, test_name, level, FX):
         effect_set[effect_key[:-4]] = effect_set.pop(effect_key)
         effect_values[effect_key[:-4]] = effect_values.pop(effect_key)
 
+    print effect_set
+    
     queryset = TestElement.objects.all()
     queryset.default_factory = None
 
