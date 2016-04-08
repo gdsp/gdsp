@@ -18,25 +18,33 @@
 		}
 
 		.knob {
+			display: inline-block;
 			width: 90px;
 			text-align: center;
+			padding-right: 25px;
 		}
 
-		#knob_value {
+		.knob_value {
 			position: relative;
 			top: -64px;
 			pointer-events: none;
-			text-transform:uppercase;
+			text-transform: uppercase;
 			font-family: 'Montserrat', sans-serif;
 			color: #00B2A9;
 		}
 
-		#knob_label {
+		.knob_label {
 			position: relative;
 			top: -40px;
 			pointer-events: none;
 			font-family: 'Montserrat', sans-serif;
 			color: #333;
+		}
+
+		h2 {
+			font-family: 'Montserrat';
+			color: #333;
+			text-transform: uppercase;
 		}
 
 	</style>
@@ -58,8 +66,13 @@
 
 <div class="knob">
 	<x-knobjs-knob id="knob"></x-knobjs-knob>
-	<label id="knob_value">123</label>
-	<h2 id="knob_label">Modulation frequency</h2>
+	<label class="knob_value">123</label>
+	<h2 class="knob_label">Modulation frequency</h2>
+</div>
+<div class="knob">
+	<x-knobjs-knob id="knob"></x-knobjs-knob>
+	<label class="knob_value">123</label>
+	<h2 class="knob_label">Modulation frequency</h2>
 </div>
 
 <!-- <p>Test name: {{ context.test_name }}</p>
@@ -76,9 +89,23 @@
     	document.getElementById("knob_value").innerText = parseFloat(document.getElementById("knob").value).toFixed(2);
     }
 
+	$(document).on('touchmove', function(e) {
+	    if (!$(e.target).parents('.scroll')[0]) {
+	        e.preventDefault();
+	    }
+	});
+
+	// Cancel dragging if mouse leaves the editor container.
+    $('.testElement').on('mouseleave', function(){
+    	var event = document.createEvent('MouseEvents');
+    	event.initEvent('blur', true, true);
+    	document.dispatchEvent(event);
+    });
+
 	// Set up sliders
 	{% for effect_name, effect_parameter_set in context.effect_set.items %}
-		document.write("<p>{{ effect_name }}<p>");
+		document.write("<div class=\"effect\">");
+		document.write("<h2>{{ effect_name }}<h2>");
 		{% for parameter, values in effect_parameter_set.items %}
 
 			// Get max/min and the function curve type: lin, expon or log.
@@ -89,21 +116,26 @@
 			var curveType = "{{ values.1 }}";
 			var averageValue = getValueFromCurve(((minValue + maxValue) / 2), minValue, maxValue, curveType);
 
-			document.write("<p>{{ values.3 }}:\
-				<input\
-				class = \"slider\"\
-				id = \"{{ effect_name }}_{{ parameter }}\"\
-				type = \"range\"\
-				min = " + minValue + "\
-				max = " + maxValue + "\
-				value = " + averageValue + "\
-				step = \"0.01\"\
-				disabled/>\
-				<label id = \"{{ effect_name }}_{{ parameter }}_label\"\
-				value = " + averageValue + ">\
-				</p>");
+			// document.write("<p>{{ values.3 }}:\
+			// 	<input\
+			// 	class = \"slider\"\
+			// 	id = \"{{ effect_name }}_{{ parameter }}\"\
+			// 	type = \"range\"\
+			// 	min = " + minValue + "\
+			// 	max = " + maxValue + "\
+			// 	value = " + averageValue + "\
+			// 	step = \"0.01\"\
+			// 	disabled/>\
+			// 	<label id = \"{{ effect_name }}_{{ parameter }}_label\"\
+			// 	value = " + averageValue + ">\
+			// 	</p>");
 
+			document.write("<div class=\"knob\">\
+				<x-knobjs-knob id=\"{{ effect_name }}_{{ parameter }}\"></x-knobjs-knob>\
+				<label class=\"knob_value\" id = \"{{ effect_name }}_{{ parameter }}_label\">123</label>\
+				<h2 class=\"knob_label\" id=\"{{ effect_name }}_{{ parameter }}\">{{ parameter }}</h2></div>");
 		{% endfor %}
+		document.write("</div>");
 	{% endfor %}
 
     function moduleDidLoad() {
@@ -170,6 +202,7 @@
 					var value = document.getElementById("{{ effect_name }}_{{ parameter }}").value;
 					var scaledValue = getValueFromCurve(value, minValue, maxValue, curveType);
 					csound.SetChannel("{{ effect_name }}_{{ parameter }}", scaledValue);
+					scaledValue = parseFloat(scaledValue).toFixed(2);
 					$("#{{ effect_name }}_{{ parameter }}_label").text(scaledValue);
 
 					// Check if parameter have discrete steps
