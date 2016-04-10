@@ -449,8 +449,8 @@ def writeCsoundFileInteractiveParameters(filename, effectParameterValues, system
             inc.close()
             f.write('\n')
             #pan and output
-            f.write('\ta1 \t\t= a1_1+(a1*sqrt(0.33))+(a2_1*sqrt(0.66))\n') 
-            f.write('\ta2 \t\t= a2+(a1*sqrt(0.66))+(a2_1*sqrt(0.33))\n')
+            f.write('\ta1 \t\t= (a1_1+(a1*sqrt(0.33))+(a2_1*sqrt(0.66)))*0.5\n') 
+            f.write('\ta2 \t\t= (a2+(a1*sqrt(0.66))+(a2_1*sqrt(0.33)))*0.5\n')
             
         # normal stereo effect
         if ('stereo' in audioInput) and ('stereo' in audioOutput):
@@ -552,8 +552,8 @@ def writeCsoundFileInteractiveParameters(filename, effectParameterValues, system
             inc.close()
             f.write('\n')
             #pan and output
-            f.write('\ta1 \t\t= a1_1+(a1*sqrt(0.33))+(a2_1*sqrt(0.66))\n') 
-            f.write('\ta2 \t\t= a2+(a1*sqrt(0.66))+(a2_1*sqrt(0.33))\n')
+            f.write('\ta1 \t\t= (a1_1+(a1*sqrt(0.33))+(a2_1*sqrt(0.66)))*0.5\n') 
+            f.write('\ta2 \t\t= (a2+(a1*sqrt(0.66))+(a2_1*sqrt(0.33)))*0.5\n')
             
         # normal stereo effect
         if ('stereo' in audioInput) and ('stereo' in audioOutput):

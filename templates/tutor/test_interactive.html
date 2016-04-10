@@ -35,6 +35,7 @@
 			display: inline-block;
 			width: 90px;
 			text-align: center;
+			vertical-align: text-top;
 			padding-right: 25px;
 		}
 
@@ -48,6 +49,7 @@
 		}
 
 		.knob_label {
+			height: 20px;
 			position: relative;
 			top: -40px;
 			pointer-events: none;
@@ -58,7 +60,6 @@
 		h2 {
 			font-family: 'Montserrat';
 			color: #333;
-			text-transform: uppercase;
 		}
 
 	</style>
@@ -71,17 +72,18 @@
 <body>
 <script src="{% static 'javascript/interactive_csound.js' %}"></script>
 
-<!-- waveform -->
-<div id="waveform">
-    <div class="progress progress-striped active" id="progress-bar">
-        <div class="progress-bar progress-bar-info"></div>
-    </div>
-</div>
-
 <!-- <p>Test name: {{ context.test_name }}</p>
 <p>FX set: {{ context.effect_set }}</p>
 <p>FX values: {{ context.effect_values }}</p>
 <p>csd file: {{ context.csd }}</p> -->
+
+<input type="image" id="playPauseButton" src="{% static 'images/play.png' %}" style="outline: none;" />
+<input type="button" id="switchInstanceButton" value="A/B">
+
+<form class="test-form-wrapper" action="/tutor/test_interactive/{{ context.test_name }}/{{ context.level }}/{{ context.FX }}" method="post">
+	{% csrf_token %}
+	<input type="submit" value="Submit" />
+</form>
 
 <p>Input level: <input class="slider" id="input_level" type="range" min=0.0 max=1.0 value=1.0 step="0.01"/><label id="input_level_label">1</label></p>
 
@@ -103,29 +105,29 @@
 	// Set up sliders and their initial values
 	{% for effect_name, effect_parameter_set in context.effect_set.items %}
 		document.write("<div class=\"effect\">");
-		document.write("<h2>{{ effect_name }}<h2>");
 		{% for parameter, values in effect_parameter_set.items %}
 
 			// Get max/min and the function curve type: lin, expon or log.
 			var minValue = {{ values.0.0 }};
 			var maxValue = {{ values.0.1 }};
 			var dataType = "{{ values.2 }}"; // float or int
-			var humanReadableLabelText = "{{ values.4 }}";
+			var humanReadableLabelText = "{{ values.3 }}";
 
 			// Get correct average value based on curve function
 			var curveType = "{{ values.1 }}"; // lin, exp or log
-			var averageValue = getValueFromCurve(((minValue + maxValue) / 2), minValue, maxValue, curveType);
+			var averageValue = ((minValue + maxValue) / 2);
+			var scaledAverageValue = getValueFromCurve(averageValue, minValue, maxValue, curveType);
 
 			document.write("<div class=\"knob\">\
 				<x-knobjs-knob id=\"{{ effect_name }}_{{ parameter }}\"></x-knobjs-knob>\
 				<label class=\"knob_value\" id = \"{{ effect_name }}_{{ parameter }}_label\">123</label>\
-				<h2 class=\"knob_label\" id=\"{{ effect_name }}_{{ parameter }}\">{{ values.4 }}</h2></div>");
+				<h2 class=\"knob_label\" id=\"{{ effect_name }}_{{ parameter }}\">{{ values.3 }}</h2></div>");
 			document.getElementById("{{ effect_name }}_{{ parameter }}").setAttribute("max", maxValue);
 			document.getElementById("{{ effect_name }}_{{ parameter }}").setAttribute("min", minValue);
-			document.getElementById("{{ effect_name }}_{{ parameter }}").setAttribute("value", (maxValue + minValue) / 2);
+			document.getElementById("{{ effect_name }}_{{ parameter }}").setAttribute("value", averageValue);
 
 			// Set number of decimals in label string to fit inside knob
-			var labelValue = getLabelValue(averageValue);
+			var labelValue = getLabelValue(scaledAverageValue);
 
 			// Check if parameter type use discrete steps
 			if (dataType == 'int') {
@@ -243,17 +245,16 @@
 	}
 </script>
 
-<input type="image" id="playPauseButton" src="{% static 'images/play.png' %}" style="outline: none;" />
-<input type="button" id="switchInstanceButton" value="A/B">
-
-<form class="test-form-wrapper" action="/tutor/test_interactive/{{ context.test_name }}/{{ context.level }}/{{ context.FX }}" method="post">
-	{% csrf_token %}
-	<input type="submit" value="Submit" />
-</form>
+<!-- waveform -->
+<div id="waveform">
+    <div class="progress progress-striped active" id="progress-bar">
+        <div class="progress-bar progress-bar-info"></div>
+    </div>
+</div>
 
 <!-- csound message field -->
-<div id="csound_message"> </div>
-
+<!-- <div id="csound_message"> </div>
+ -->
 <!--pNaCl csound module -->
 <div id="engine"></div>
 
