@@ -15,6 +15,14 @@ $(document).ready(function() {
     }
 });
 
+$(window).load(function(){
+    console.log("window loaded!!!");
+});
+
+$(document).load(function(){
+    console.log("document loaded!!!");
+});
+
 function attachListeners() {
     
     document.getElementById("playPauseButton").addEventListener("click", play);
@@ -55,12 +63,10 @@ function play() {
         wavesurfer.play();
         document.getElementById("playPauseButton").src = "/static/images/pause.png";
     }
-    
     isPlaying = !isPlaying
 }
 
 function loadAudio(url) {
-    
     var request = new XMLHttpRequest();
     request.open('GET', url, true);
     request.responseType = 'arraybuffer';
@@ -86,8 +92,7 @@ function onError(e) {
 /*
 * Use different scaling functions for the HTML input slider.
 */
-function getValueFromCurve(inputValue, minValue, maxValue, curveType) {   
-    
+function getValueFromCurve(inputValue, minValue, maxValue, curveType) {
     var minValueLog = Math.log(minValue);
     var maxValueLog = Math.log(maxValue);
 
@@ -97,9 +102,10 @@ function getValueFromCurve(inputValue, minValue, maxValue, curveType) {
     if (curveType === "lin") {
         return inputValue;
     } else if (curveType === "expon") {
-        return (Math.log(inputValue) - minValueLog)/scale + minValue;
-    } else if (curveType === "log") {
         return Math.exp(minValueLog + scale*(inputValue - minValue));
+    } else if (curveType === "log") {
+        return (Math.log(inputValue) - minValueLog)/scale + minValue;
+        //return Math.exp(minValueLog + scale*(inputValue - minValue));
     } else if (curveType === "log_1p5") {
     }
 
@@ -107,7 +113,6 @@ function getValueFromCurve(inputValue, minValue, maxValue, curveType) {
 }
 
 function getLabelValue(inputValue) {
-    
     labelValue = parseFloat(inputValue.toString()).toFixed(2);
 
     if (labelValue.toString().length >= 8) {

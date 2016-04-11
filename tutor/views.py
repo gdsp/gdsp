@@ -73,13 +73,24 @@ def test_interactive(request, test_name, level, FX):
         del val['input']
         del val['output']
 
+    print '******************************************************************************************'
+    print effect_set
+    print '******************************************************************************************'
+
+    # Get effect all names
+    config = {}
+    execfile(md.systemfiles + '/effectsDict_edit.txt', config)
+    #context['effectsDict'] = config['effectsDict']
+
     effect_keys = list(effect_set.keys())
     for effect_key in effect_keys:
         effect_set[effect_key[:-4]] = effect_set.pop(effect_key)
         effect_values[effect_key[:-4]] = effect_values.pop(effect_key)
 
-    print effect_set
-    
+    print '******************************************************************************************'
+    print config
+    print '******************************************************************************************'
+
     queryset = TestElement.objects.all()
     queryset.default_factory = None
 

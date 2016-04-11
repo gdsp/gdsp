@@ -1,4 +1,5 @@
 	
+	sr = 44100
 	nchnls = 2
 	0dbfs = 1
 

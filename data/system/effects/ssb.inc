@@ -1,5 +1,5 @@
 /* input parameters for this effect
-	"kmodFreq" range (50, 5000) map (log float) label "Modulation freq"
+	"kmodFreq" range (50, 5000) map (log float) label "Modulation frequency"
 	"kSide" range (-1, 1) map (lin float) label "Side"
 	input:mono output:mono
 	tags:modulation,amplitude modulation, single sideband

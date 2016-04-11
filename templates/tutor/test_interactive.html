@@ -60,6 +60,7 @@
 		h2 {
 			font-family: 'Montserrat';
 			color: #333;
+			line-height: 140%;
 		}
 
 	</style>
@@ -86,6 +87,11 @@
 </form>
 
 <p>Input level: <input class="slider" id="input_level" type="range" min=0.0 max=1.0 value=1.0 step="0.01"/><label id="input_level_label">1</label></p>
+<!-- <div class="knob">
+<x-knobjs-knob id="input_level" min="0.0" max="1.0" value="1.0"></x-knobjs-knob>
+<label class="knob_label" id="input_level_label">1.0</label>
+<h2 class="input_level_title" id="input_level_title">Input level</h2>
+</div> -->
 
 <script type="text/javascript">
 
@@ -95,14 +101,14 @@
 	    }
 	});
 
-	// Cancel dragging if mouse leaves the editor container.
+	// Cancel dragging if mouse leaves the iframe container.
     $('.testElement').on('mouseleave', function(){
     	var event = document.createEvent('MouseEvents');
     	event.initEvent('blur', true, true);
     	document.dispatchEvent(event);
     });
 
-	// Set up sliders and their initial values
+	// All other sliders
 	{% for effect_name, effect_parameter_set in context.effect_set.items %}
 		document.write("<div class=\"effect\">");
 		{% for parameter, values in effect_parameter_set.items %}
@@ -141,8 +147,9 @@
 	{% endfor %}
 
     function moduleDidLoad() {
-		localStorage.clear();
+		//localStorage.clear();
 
+		console.log("moduleDidLoad");
 		// Add waveform
 		wavesurfer.init({
 			container: document.querySelector('#waveform'),
@@ -162,6 +169,13 @@
 
 		// Load initial audio file. TODO: Be able to change audio file
 		loadAudio("/site_media/system/samples/{{ context.sound }}");
+
+		// Print num channels in audio file
+		var a = new Audio("/site_media/system/samples/{{ context.sound }}");
+		a.load()
+		document.body.appendChild( a );
+		var channels = [a];
+		console.log("Num channels: " + channels.length);
 
 		// Start csound
 		setTimeout(function() {
@@ -253,8 +267,8 @@
 </div>
 
 <!-- csound message field -->
-<!-- <div id="csound_message"> </div>
- -->
+<div id="csound_message"> </div>
+
 <!--pNaCl csound module -->
 <div id="engine"></div>
 
