@@ -1,5 +1,5 @@
 /* input parameters for this effect
-	"kmodFreq" range (0.4, 7) map (log float) label "Modulation frequency"
+	"kmodFreq" range (0.4, 7) map (expon float) label "Modulation frequency"
 	"kFeed" range (0.3, 0.7) map (lin float) label "Feedback"
 	"kSide" range (-1, 1) map (lin float) label "Side"
 	input:mono output:mono

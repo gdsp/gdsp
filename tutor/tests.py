@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: latin-1 -*-
 
-import random, copy, subprocess, pdb
+import random, copy, subprocess, pdb, ast
 import time, inspect, sys, uuid, copy
 
 from tutor.models import Result, History
@@ -224,9 +224,6 @@ class InteractiveTest(TestCode):
         return 3
 
     def adaptive(self):
-        """ We examine the entire history of this effect, and look at the trend of corrects. Two corrects in a row yields and increase, 
-        two wrongs a decrease. A mix is no change. In the worst case, a student will have done this a couple of thousand times, which 
-        should pose no problem to the Django engine. """
         return self._calculate_integer_level(2, self.easy(), self.hard())
 
     def first(self):
@@ -250,7 +247,24 @@ class InteractiveTest(TestCode):
         return effectParameterSet, effectParameterValues, sound, csd
 
     def check(self, request, correct):
-        return self.first() if correct else self.less_choices(request)
+        effect_set = ast.literal_eval(request.POST.get("effect_set"))
+
+        # Add user potmeter values to effect_set
+        for effect, parameters in effect_set.iteritems():
+            for parameter, values in parameters.iteritems():
+                values[4][1] = request.POST.get(effect + ":" + parameter) # Ugly delimiter, but it works
+
+        print effect_set
+        
+        # TODO: Evaluate values.
+
+        return True
+        #return self.first() if correct else self.less_choices(request)
+
+    def store_result(self, request):
+        print "\n\n Subclassed store_result \n\n"
+        correct = True #request.POST['answer'] == request.POST['choice']
+        return correct
 
 class BandpassMusic(TestCode):
 

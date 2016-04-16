@@ -58,52 +58,65 @@ def test_interactive(request, test_name, level, FX):
     test = tests.find(test_name, level, FX, request.user)
     #correct = test.store_result(request) if request.method == 'POST' else False  
 
+    context = {}
+
     if request.method == 'GET':
         effect_set, effect_values, sound, csd = test.first()
+        
+        # Remove input and output keys from the dictionary. 
+        # TODO: Change this in csdWriter.py
+        for key, val in effect_set.iteritems():
+            del val['input']
+            del val['output']
+
+        for key, val in effect_values.iteritems():
+            del val['input']
+            del val['output']
+
+        # Get effect all names
+        config = {}
+        execfile(md.systemfiles + '/effectsDict_edit.txt', config)
+        #context['effectsDict'] = config['effectsDict']
+
+        effect_keys = list(effect_set.keys())
+        for effect_key in effect_keys:
+            effect_set[effect_key[:-4]] = dict(effect_set.pop(effect_key))
+            effect_values[effect_key[:-4]] = dict(effect_values.pop(effect_key))
+
+        print '******************************************************************************************'
+        print "config"
+        print '******************************************************************************************'
+
+        queryset = TestElement.objects.all()
+        queryset.default_factory = None
+
+        # Add a defaul answer value (0.0) in a touple along with the generated value 
+        for effect, parameters in effect_values.iteritems():
+            for parameter_name, parameter_value in parameters.iteritems():     
+                effect_set[effect][parameter_name].append([parameter_value, 0.0])
+
+        print '******************************************************************************************'
+        print "effect_values"
+        print effect_values
+        print '******************************************************************************************'
+
+        print '******************************************************************************************'
+        print "effect_set"
+        print effect_set
+        print '******************************************************************************************'
+
+        context = {
+            'test_elements': queryset,
+            'test_name': test_name,
+            'level': level,
+            'effect_set': dict(effect_set),
+            'sound': sound,
+            'csd': csd,
+            'FX': FX,
+        }
     elif request.method == 'POST':
-        lol = 0
-
-    # Remove input and output keys from the dictionary. 
-    # TODO: Change this in csdWriter.py
-    for key, val in effect_set.iteritems():
-        del val['input']
-        del val['output']
-
-    for key, val in effect_values.iteritems():
-        del val['input']
-        del val['output']
-
-    print '******************************************************************************************'
-    print effect_set
-    print '******************************************************************************************'
-
-    # Get effect all names
-    config = {}
-    execfile(md.systemfiles + '/effectsDict_edit.txt', config)
-    #context['effectsDict'] = config['effectsDict']
-
-    effect_keys = list(effect_set.keys())
-    for effect_key in effect_keys:
-        effect_set[effect_key[:-4]] = effect_set.pop(effect_key)
-        effect_values[effect_key[:-4]] = effect_values.pop(effect_key)
-
-    print '******************************************************************************************'
-    print config
-    print '******************************************************************************************'
-
-    queryset = TestElement.objects.all()
-    queryset.default_factory = None
-
-    context = {
-        'test_elements': queryset,
-        'test_name': test_name,
-        'level': level,
-        'effect_set': effect_set,
-        'effect_values': effect_values,
-        'sound': sound,
-        'csd': csd,
-        'FX': FX,
-    }
+        correct = test.check(request, False)
+        #effect_values = validate_effect_parameters(effect_set, effect_values)
 
     response = render_to_response('tutor/test_interactive.html', { 'context': context }, context_instance=RequestContext(request))
     return response

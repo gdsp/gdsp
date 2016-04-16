@@ -84,6 +84,31 @@
 <form class="test-form-wrapper" action="/tutor/test_interactive/{{ context.test_name }}/{{ context.level }}/{{ context.FX }}" method="post">
 	{% csrf_token %}
 	<input type="submit" value="Submit" />
+	<input type="hidden" name="effect_set" value="{{ context.effect_set }}">
+
+	<script type="text/javascript">
+		// Set value for each potmeter to be able to evaluate the user
+		{% for effect_name, effect_parameter_set in context.effect_set.items %}
+			{% for parameter, values in effect_parameter_set.items %}
+
+				// Get max/min and the function curve type: lin, expon or log.
+				var minValue = {{ values.0.0 }};
+				var maxValue = {{ values.0.1 }};
+				var dataType = "{{ values.2 }}"; // float or int
+				var humanReadableLabelText = "{{ values.3 }}";
+
+				// Get correct average value based on curve function
+				var curveType = "{{ values.1 }}"; // lin, exp or log
+				var averageValue = ((minValue + maxValue) / 2);
+				var scaledAverageValue = getValueFromCurve(averageValue, minValue, maxValue, curveType);
+
+				document.write("<input type=\"hidden\" name=\"{{ effect_name }}:{{ parameter }}\" value=123>");
+			{% endfor %}
+		{% endfor %}
+
+	</script>
+
+
 </form>
 
 <p>Input level: <input class="slider" id="input_level" type="range" min=0.0 max=1.0 value=1.0 step="0.01"/><label id="input_level_label">1</label></p>
@@ -235,6 +260,7 @@
 			    });
 			{% endfor %}
 		{% endfor %}
+
 	}
 
 	function mute() {

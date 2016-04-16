@@ -367,8 +367,8 @@ def writeCsoundFileInteractiveParameters(filename, effectParameterValues, system
     inc.close()
 
 
-    # Start at instrument 100 and increase number programmatically based on number of effects
-    # Corresponding user_instr will always be target_instr + 100 
+    # Start at instrument 100 (target_instr) and increase number based on number of effects
+    # Corresponding user_instr will always be target_instr + 100
     instrumentNumber = 100
 
     # Initialize an empty string which will start all appended instruments in CsScore
@@ -390,8 +390,8 @@ def writeCsoundFileInteractiveParameters(filename, effectParameterValues, system
                 s = '\t'+key+'     \t= '+ str(value) + '\n'
                 f.write(s)
 
-        f.write("a1 chnget \"target_audio_left\"\n")
-        f.write("a2 chnget \"target_audio_right\"\n")
+        f.write("\n\ta1 chnget \"target_audio_left\"\n")
+        f.write("\ta2 chnget \"target_audio_right\"\n")
 
         # dual mono
         if ('mono' in audioInput) and ('mono' in audioOutput):
@@ -464,8 +464,8 @@ def writeCsoundFileInteractiveParameters(filename, effectParameterValues, system
             inc.close()
             f.write('\n')
 
-        f.write("chnset a1, \"target_audio_left\"\n")
-        f.write("chnset a2, \"target_audio_right\"\n")
+        f.write("\tchnset a1, \"target_audio_left\"\n")
+        f.write("\tchnset a2, \"target_audio_right\"\n")
 
         f.write("\nendin\n")
         csScore += "i{} 0 999999999\n".format(instrumentNumber)
@@ -493,8 +493,8 @@ def writeCsoundFileInteractiveParameters(filename, effectParameterValues, system
                 s = "{} \tchnget \"{}\"\n".format(key, effect_name + "_" + key)
                 f.write(s)
 
-        f.write("\na1 chnget \"user_audio_left\"\n")
-        f.write("a2 chnget \"user_audio_right\"\n")
+        f.write("\n\ta1 chnget \"user_audio_left\"\n")
+        f.write("\ta2 chnget \"user_audio_right\"\n")
 
         # dual mono
         if ('mono' in audioInput) and ('mono' in audioOutput):
@@ -542,7 +542,7 @@ def writeCsoundFileInteractiveParameters(filename, effectParameterValues, system
             f.write('\ta2_1 \t\t= a2\n')  #save output from second channel to a2_1
             # process second channel
             f.write('\ta1 \t\t= a2in\n')  #restore input on second channel from temporary storage in a2in
-            inc = open(os.path.join(systemfiles, 'effects',effect), 'r')
+            inc = open(os.path.join(systemfiles, 'effects', effect), 'r')
             capture = 0 # skip writing the first parts of include files (meta information)
             for line in inc:
                 if capture == 1:
@@ -557,7 +557,7 @@ def writeCsoundFileInteractiveParameters(filename, effectParameterValues, system
             
         # normal stereo effect
         if ('stereo' in audioInput) and ('stereo' in audioOutput):
-            inc = open(os.path.join(systemfiles, 'effects',effect), 'r')
+            inc = open(os.path.join(systemfiles, 'effects', effect), 'r')
             capture = 0 # skip writing the first parts of include files (meta information)
             for line in inc:
                 if capture == 1:
@@ -567,8 +567,8 @@ def writeCsoundFileInteractiveParameters(filename, effectParameterValues, system
             inc.close()
             f.write('\n')
 
-        f.write("chnset a1, \"user_audio_left\"\n")
-        f.write("chnset a2, \"user_audio_right\"\n")
+        f.write("\tchnset a1, \"user_audio_left\"\n")
+        f.write("\tchnset a2, \"user_audio_right\"\n")
 
         f.write("\nendin\n")
         csScore += "i{} 0 999999999\n".format(instrumentNumber)
