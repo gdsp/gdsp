@@ -102,7 +102,7 @@
 				var averageValue = ((minValue + maxValue) / 2);
 				var scaledAverageValue = getValueFromCurve(averageValue, minValue, maxValue, curveType);
 
-				document.write("<input type=\"hidden\" name=\"{{ effect_name }}:{{ parameter }}\" value=123>");
+				document.write("<input type=\"hidden\" id=\"{{ effect_name }}:{{ parameter }}\" name=\"{{ effect_name }}:{{ parameter }}\" value=" + scaledAverageValue + ">");
 			{% endfor %}
 		{% endfor %}
 
@@ -257,6 +257,9 @@
 					}
 
 					$("#{{ effect_name }}_{{ parameter }}_label").text(labelValue);
+
+					document.getElementById("{{ effect_name }}:{{ parameter }}").value = scaledValue;
+
 			    });
 			{% endfor %}
 		{% endfor %}
