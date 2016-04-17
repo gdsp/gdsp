@@ -83,27 +83,14 @@ def test_interactive(request, test_name, level, FX):
             effect_set[effect_key[:-4]] = dict(effect_set.pop(effect_key))
             effect_values[effect_key[:-4]] = dict(effect_values.pop(effect_key))
 
-        print '******************************************************************************************'
-        print "config"
-        print '******************************************************************************************'
-
         queryset = TestElement.objects.all()
         queryset.default_factory = None
 
-        # Add a defaul answer value (0.0) in a touple along with the generated value 
+        # Add a default answer value (0.0) in a touple along with the generated value 
         for effect, parameters in effect_values.iteritems():
             for parameter_name, parameter_value in parameters.iteritems():     
                 effect_set[effect][parameter_name].append([parameter_value, 0.0])
-
-        print '******************************************************************************************'
-        print "effect_values"
-        print effect_values
-        print '******************************************************************************************'
-
-        print '******************************************************************************************'
-        print "effect_set"
-        print effect_set
-        print '******************************************************************************************'
+                effect_set[effect][parameter_name].append("unevaluated")
 
         context = {
             'test_elements': queryset,
@@ -115,7 +102,21 @@ def test_interactive(request, test_name, level, FX):
             'FX': FX,
         }
     elif request.method == 'POST':
-        correct = test.check(request, False)
+        effect_set = test.check(request, False)
+
+        context = {
+            'test_name': test_name,
+            'level': level,
+            'effect_set': effect_set,
+            'sound': request.POST.get("sound"),
+            'csd': request.POST.get("csd"),
+            'FX': FX,
+        }
+        print '******************************************************************************************'
+        print "effect_set"
+        print effect_set
+        print '******************************************************************************************'
+
         #effect_values = validate_effect_parameters(effect_set, effect_values)
 
     response = render_to_response('tutor/test_interactive.html', { 'context': context }, context_instance=RequestContext(request))

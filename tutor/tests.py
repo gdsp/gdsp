@@ -246,7 +246,54 @@ class InteractiveTest(TestCode):
         # Return the csd-file as well as the dry sound file
         return effectParameterSet, effectParameterValues, sound, csd
 
+    def validate(self, values):
+
+        # print '******************************************************************************************'
+        # print "values"
+        # print values
+        # print '******************************************************************************************'
+
+        threshold_good = 0.1;
+        threshold_medium = 0.3;
+        min_value = values[0][0]
+        max_value = values[0][1]
+        delta = max_value - min_value
+        function_shape = values[1]
+        correct_answer = values[4][0]
+        user_answer = float(values[4][1])
+        answer_diff = abs(correct_answer - user_answer)
+
+        good_range_upper = delta * threshold_good
+        good_range_lower = delta * threshold_good
+        medium_range_upper = delta * threshold_medium
+        medium_range_lower = delta * threshold_medium
+
+        # If user answer is outside ok threshold
+        if answer_diff > medium_range_upper or answer_diff < medium_range_lower:
+            return "bad"
+        elif answer_diff > good_range_upper or answer_diff < good_range_lower:
+            return "medium"
+        return "ok"
+
+    def getValueFromFunctionShape(input_value, min_value, max_value, function_shape):
+        min_value_log = math.log(min_value);
+        max_value_log = math.log(max_value);
+
+        # Calculate adjustment factor
+        scale = (max_value_log - min_value_log)/(max_value - min_value);
+
+        if function_shape == "lin":
+            return input_value;
+        elif (function_shape == "expon"):
+            return math.exp(min_value_log + scale*(input_value - min_value));
+        elif function_shape == "log":
+            return (math.log(input_value) - min_value_log)/scale + min_value;
+        elif function_shape == "log_1p5":
+            NotImplementedError
+        return input_value;
+
     def check(self, request, correct):
+        # Get effect set as dict WITHOUT the user potmeter values
         effect_set = ast.literal_eval(request.POST.get("effect_set"))
 
         # Add user potmeter values to effect_set
@@ -254,11 +301,12 @@ class InteractiveTest(TestCode):
             for parameter, values in parameters.iteritems():
                 values[4][1] = request.POST.get(effect + ":" + parameter) # Ugly delimiter, but it works
 
-        print effect_set
-        
         # TODO: Evaluate values.
+        for effect, parameters in effect_set.iteritems():
+            for parameter, values in parameters.iteritems():
+                values[5] = self.validate(values)
 
-        return True
+        return effect_set
         #return self.first() if correct else self.less_choices(request)
 
     def store_result(self, request):

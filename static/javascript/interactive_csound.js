@@ -24,7 +24,6 @@ $(document).load(function(){
 });
 
 function attachListeners() {
-    
     document.getElementById("playPauseButton").addEventListener("click", play);
     document.getElementById("switchInstanceButton").addEventListener("click", mute);
 
@@ -35,7 +34,6 @@ function attachListeners() {
 }
 
 function handleMessage(message) {
-    
     var mess = message.data;
     
     if(mess == "finished render") {
@@ -51,7 +49,6 @@ function handleMessage(message) {
 }
 
 function play() {
-    
     if (isPlaying) {
         csound.Event("i-1 0 -1");
         csound.Event("i-2 0 -1");
@@ -122,4 +119,49 @@ function getLabelValue(inputValue) {
     }
 
     return labelValue;
+}
+
+function blendColors(a, b, alpha) {
+    var aa = [
+        parseInt('0x' + a.substring(1, 3)), 
+        parseInt('0x' + a.substring(3, 5)), 
+        parseInt('0x' + a.substring(5, 7))
+        ];
+
+    var bb = [
+        parseInt('0x' + b.substring(1, 3)), 
+        parseInt('0x' + b.substring(3, 5)), 
+        parseInt('0x' + b.substring(5, 7))
+        ];
+
+    r = '0' + Math.round(aa[0] + (bb[0] - aa[0])*alpha).toString(16);
+    g = '0' + Math.round(aa[1] + (bb[1] - aa[1])*alpha).toString(16);
+    b = '0' + Math.round(aa[2] + (bb[2] - aa[2])*alpha).toString(16);
+
+    return '#'
+          + r.substring(r.length - 2)
+          + g.substring(g.length - 2)
+          + b.substring(b.length - 2);
+}
+
+function fadeBetweenColors(colorFrom, colorTo, element) {
+    var t = [];
+    var steps = 100;
+    var delay = 3000;
+    for (var i = 0; i < steps; i++) {
+        (function(j) {
+            t[j] = setTimeout(function() {
+            var alpha  = j / steps;
+            var color = blendColors(colorFrom, colorTo, alpha);
+            element.style.color = color;
+        }, j * delay / steps);
+        })(i);
+    }
+    return t;
+}
+
+function stopColorFade(t) {
+     for (i in t) {
+        clearTimeout(t[i]);
+     }
 }

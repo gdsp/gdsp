@@ -65,7 +65,8 @@
 
 	</style>
 	<script src="http://www.russellmcc.com/knobjs/knob.min.js"></script>
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
     <script src="{% static 'javascript/csound.js' %}"></script>
     <script src="{% static 'javascript/wavesurfer.min.js' %}"></script>
 </head>
@@ -78,6 +79,7 @@
 <p>FX values: {{ context.effect_values }}</p>
 <p>csd file: {{ context.csd }}</p> -->
 
+<p id="lulz">Halla, balla!</p>
 <input type="image" id="playPauseButton" src="{% static 'images/play.png' %}" style="outline: none;" />
 <input type="button" id="switchInstanceButton" value="A/B">
 
@@ -85,6 +87,8 @@
 	{% csrf_token %}
 	<input type="submit" value="Submit" />
 	<input type="hidden" name="effect_set" value="{{ context.effect_set }}">
+	<input type="hidden" name="sound" value="{{ context.sound }}">
+	<input type="hidden" name="csd" value="{{ context.csd }}">
 
 	<script type="text/javascript">
 		// Set value for each potmeter to be able to evaluate the user
@@ -101,14 +105,17 @@
 				var curveType = "{{ values.1 }}"; // lin, exp or log
 				var averageValue = ((minValue + maxValue) / 2);
 				var scaledAverageValue = getValueFromCurve(averageValue, minValue, maxValue, curveType);
+				if (dataType == 'int') {
+					scaledAverageValue = Math.round(scaledAverageValue);
+				}
 
-				document.write("<input type=\"hidden\" id=\"{{ effect_name }}:{{ parameter }}\" name=\"{{ effect_name }}:{{ parameter }}\" value=" + scaledAverageValue + ">");
+				document.write("<input type=\"hidden\" \
+									id=\"{{ effect_name }}:{{ parameter }}\" \
+									name=\"{{ effect_name }}:{{ parameter }}\" \
+									value=" + scaledAverageValue + ">");
 			{% endfor %}
 		{% endfor %}
-
 	</script>
-
-
 </form>
 
 <p>Input level: <input class="slider" id="input_level" type="range" min=0.0 max=1.0 value=1.0 step="0.01"/><label id="input_level_label">1</label></p>
@@ -133,7 +140,7 @@
     	document.dispatchEvent(event);
     });
 
-	// All other sliders
+	// All other knobs
 	{% for effect_name, effect_parameter_set in context.effect_set.items %}
 		document.write("<div class=\"effect\">");
 		{% for parameter, values in effect_parameter_set.items %}
@@ -152,7 +159,7 @@
 			document.write("<div class=\"knob\">\
 				<x-knobjs-knob id=\"{{ effect_name }}_{{ parameter }}\"></x-knobjs-knob>\
 				<label class=\"knob_value\" id = \"{{ effect_name }}_{{ parameter }}_label\">123</label>\
-				<h2 class=\"knob_label\" id=\"{{ effect_name }}_{{ parameter }}\">{{ values.3 }}</h2></div>");
+				<h2 class=\"knob_label\" id=\"{{ effect_name }}_{{ parameter }}_parameter\">{{ values.3 }}</h2></div>");
 			document.getElementById("{{ effect_name }}_{{ parameter }}").setAttribute("max", maxValue);
 			document.getElementById("{{ effect_name }}_{{ parameter }}").setAttribute("min", minValue);
 			document.getElementById("{{ effect_name }}_{{ parameter }}").setAttribute("value", averageValue);
@@ -164,6 +171,7 @@
 			if (dataType == 'int') {
 				// If int, we don't need decimal points
 				labelValue = parseFloat(labelValue.toString()).toFixed(0);
+				scaledAverageValue = Math.round(scaledAverageValue);
 			}
 
 			$("#{{ effect_name }}_{{ parameter }}_label").text(labelValue);
@@ -174,7 +182,6 @@
     function moduleDidLoad() {
 		//localStorage.clear();
 
-		console.log("moduleDidLoad");
 		// Add waveform
 		wavesurfer.init({
 			container: document.querySelector('#waveform'),
@@ -257,10 +264,22 @@
 					}
 
 					$("#{{ effect_name }}_{{ parameter }}_label").text(labelValue);
-
+					
+					if (dataType == 'int') scaledValue = Math.round(scaledValue);
 					document.getElementById("{{ effect_name }}:{{ parameter }}").value = scaledValue;
-
 			    });
+			{% endfor %}
+		{% endfor %}
+
+		{% for effect_name, effect_parameter_set in context.effect_set.items %}
+			{% for parameter, values in effect_parameter_set.items %}
+				var difficulty = "{{ values.5 }}";
+				console.log(difficulty == "bad");
+				if (difficulty == "medium") {
+					$("#{{ effect_name }}_{{ parameter }}_parameter").delay(500).effect("bounce", {distance:10, times: 10}, 1500);
+				} else if (difficulty == "bad") {
+					$("#{{ effect_name }}_{{ parameter }}_parameter").delay(500).effect("bounce", {distance:10, times: 10}, 1500);
+				}
 			{% endfor %}
 		{% endfor %}
 
@@ -275,16 +294,25 @@
 			csound.SetChannel("user_amplitude", 0.0);
 		}
 		userInstanceIsPlaying = !userInstanceIsPlaying;
+		setKnobColors();
+	}
 
-		if(!userInstanceIsPlaying) {
-			$('.knobjs-arcbg').css("stroke", "#BBB");
-			$('.knobjs-arc').css("fill", "#BBB");
-			$('.knob_value').css("color", "#BBB");
-		} else {
-			$('.knobjs-arcbg').css("stroke", "#00B2A9");
-			$('.knobjs-arc').css("fill", "#00B2A9");
-			$('.knob_value').css("color", "#00B2A9");
-		}
+	function setKnobColors() {
+		var colorInactive = "#BBB";
+		var colorActive = "#00B2A9";
+		var colorGood = "#7DCD85";
+		var colorOK = "#FFEF63";
+		var colorBad = "#E78F8E";
+
+	    if(!userInstanceIsPlaying) {
+	        $('.knobjs-arcbg').css("stroke", colorInactive);
+	        $('.knobjs-arc').css("fill", colorInactive);
+	        $('.knob_value').css("color", colorInactive);
+	    } else {
+	        $('.knobjs-arcbg').css("stroke", colorActive);
+	        $('.knobjs-arc').css("fill", colorActive);
+	        $('.knob_value').css("color", colorActive);
+	    }
 	}
 </script>
 
