@@ -27,7 +27,7 @@
 			height: 90px;
 		}
 
-		.line{
+		.line {
 			float: left;
 		}
 
@@ -48,6 +48,15 @@
 			color: #BBB;
 		}
 
+		.knob_value.input_knob {
+			position: relative;
+			top: -64px;
+			pointer-events: none;
+			text-transform: uppercase;
+			font-family: 'Montserrat', sans-serif;
+			color: #2892D7;
+		}
+
 		.knob_label {
 			height: 20px;
 			position: relative;
@@ -59,6 +68,13 @@
 
 		h2 {
 			font-family: 'Montserrat';
+			color: #333;
+			line-height: 140%;
+		}
+
+		h3 {
+			font-family: 'Montserrat';
+			font-size: 10px;
 			color: #333;
 			line-height: 140%;
 		}
@@ -118,7 +134,24 @@
 	</script>
 </form>
 
-<p>Input level: <input class="slider" id="input_level" type="range" min=0.0 max=1.0 value=1.0 step="0.01"/><label id="input_level_label">1</label></p>
+
+<div class="lolz" style="margin-bottom: 10px;">
+	<div class="knob" style="float: left; margin-top: 20px">
+		<x-knobjs-knob id="input_level" min=0.0 max=1.0 value=1.0></x-knobjs-knob>
+		<label class="knob_value input_knob" id="input_level_label">1.0</label>
+		<h3 class="knob_label" id="input_level_parameter">Input level</h3>
+	</div>
+
+	<!-- waveform -->
+	<div id="waveform" style="margin-left: 120px;">
+	    <div class="progress progress-striped active" id="progress-bar">
+	        <div class="progress-bar progress-bar-info"></div>
+	    </div>
+	</div>
+</div>
+<br>
+
+
 <!-- <div class="knob">
 <x-knobjs-knob id="input_level" min="0.0" max="1.0" value="1.0"></x-knobjs-knob>
 <label class="knob_label" id="input_level_label">1.0</label>
@@ -138,9 +171,9 @@
     	var event = document.createEvent('MouseEvents');
     	event.initEvent('blur', true, true);
     	document.dispatchEvent(event);
-    });
+    });    
 
-	// Write knobs
+	// Set up the knobs
 	{% for effect_name, effect_parameter_set in context.effect_set.items %}
 		document.write("<div class=\"effect\">");
 
@@ -162,7 +195,7 @@
 			document.write("<div class=\"knob\">\
 				<x-knobjs-knob id=\"{{ effect_name }}_{{ parameter }}\"></x-knobjs-knob>\
 				<label class=\"knob_value\" id = \"{{ effect_name }}_{{ parameter }}_label\">123</label>\
-				<h2 class=\"knob_label\" id=\"{{ effect_name }}_{{ parameter }}_parameter\">{{ values.3 }}</h2></div>");
+				<h3 class=\"knob_label\" id=\"{{ effect_name }}_{{ parameter }}_parameter\">{{ values.3 }}</h3></div>");
 			document.getElementById("{{ effect_name }}_{{ parameter }}").setAttribute("max", maxValue);
 			document.getElementById("{{ effect_name }}_{{ parameter }}").setAttribute("min", minValue);
 			document.getElementById("{{ effect_name }}_{{ parameter }}").setAttribute("value", averageValue);
@@ -226,7 +259,7 @@
 		$("#input_level").on("input change", function() {
 			var value = document.getElementById("input_level").value;
 			csound.SetChannel("input_level", value);
-			$("#input_level_label").text(value);
+			$("#input_level_label").text(getLabelValue(value));
 		});
 
 		// Add sliders for csound communication
@@ -306,6 +339,7 @@
 		var colorGood = "#7DCD85";
 		var colorOK = "#FFEF63";
 		var colorBad = "#E78F8E";
+		var colorInputLevel = "#0A81D1";
 
 	    if(!userInstanceIsPlaying) {
 	        $('.knobjs-arcbg').css("stroke", colorInactive);
@@ -316,15 +350,17 @@
 	        $('.knobjs-arc').css("fill", colorActive);
 	        $('.knob_value').css("color", colorActive);
 	    }
+
+	    // Input level knob color always the same
+		$('.knob_value.input_knob').css("color", colorInputLevel); // Center label
+		
+		var knob = document.getElementById("input_level");
+		var $svg = jQuery(knob).find('svg');
+		var $path = $('#input_level').children('svg').children('path');
+		$path.eq(0).attr({style: 'stroke:' + colorInputLevel + ';'});
+		$path.eq(1).attr({style: 'fill:' + colorInputLevel + ';'});
 	}
 </script>
-
-<!-- waveform -->
-<div id="waveform">
-    <div class="progress progress-striped active" id="progress-bar">
-        <div class="progress-bar progress-bar-info"></div>
-    </div>
-</div>
 
 <!-- csound message field -->
 <!-- <div id="csound_message"> </div>
