@@ -73,11 +73,12 @@ def test_interactive(request, test_name, level, FX):
             del val['input']
             del val['output']
 
-        # Get effect all names
+        # Get all effect names
         config = {}
         execfile(md.systemfiles + '/effectsDict_edit.txt', config)
-        #context['effectsDict'] = config['effectsDict']
+        humanReadableEffectNames = config['effectsDict']
 
+        # Remove ".inc" from both the keys of both effect dictionaries
         effect_keys = list(effect_set.keys())
         for effect_key in effect_keys:
             effect_set[effect_key[:-4]] = dict(effect_set.pop(effect_key))
@@ -91,6 +92,8 @@ def test_interactive(request, test_name, level, FX):
             for parameter_name, parameter_value in parameters.iteritems():     
                 effect_set[effect][parameter_name].append([parameter_value, 0.0])
                 effect_set[effect][parameter_name].append("unevaluated")
+                # Appending the effect title to each parameter. Not good...
+                effect_set[effect][parameter_name].append(humanReadableEffectNames[effect + ".inc"])
 
         context = {
             'test_elements': queryset,

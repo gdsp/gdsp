@@ -79,7 +79,7 @@
 <p>FX values: {{ context.effect_values }}</p>
 <p>csd file: {{ context.csd }}</p> -->
 
-<p id="lulz">Halla, balla!</p>
+<p>{{ context }}</p>
 <input type="image" id="playPauseButton" src="{% static 'images/play.png' %}" style="outline: none;" />
 <input type="button" id="switchInstanceButton" value="A/B">
 
@@ -140,9 +140,12 @@
     	document.dispatchEvent(event);
     });
 
-	// All other knobs
+	// Write knobs
 	{% for effect_name, effect_parameter_set in context.effect_set.items %}
 		document.write("<div class=\"effect\">");
+
+		// Ridiculous hack, append the effect title to each parameter, positioned at 0.1.6...
+		document.write("<h2>{{ effect_parameter_set.items.0.1.6 }}</h2>");
 		{% for parameter, values in effect_parameter_set.items %}
 
 			// Get max/min and the function curve type: lin, expon or log.
@@ -278,7 +281,7 @@
 				if (difficulty == "medium") {
 					$("#{{ effect_name }}_{{ parameter }}_parameter").delay(500).effect("bounce", {distance:10, times: 10}, 1500);
 				} else if (difficulty == "bad") {
-					$("#{{ effect_name }}_{{ parameter }}_parameter").delay(500).effect("bounce", {distance:10, times: 10}, 1500);
+					$("#{{ effect_name }}_{{ parameter }}_parameter").delay(500).effect("bounce", {}, "slow");
 				}
 			{% endfor %}
 		{% endfor %}
@@ -324,8 +327,8 @@
 </div>
 
 <!-- csound message field -->
-<div id="csound_message"> </div>
-
+<!-- <div id="csound_message"> </div>
+ -->
 <!--pNaCl csound module -->
 <div id="engine"></div>
 
