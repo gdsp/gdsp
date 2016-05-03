@@ -171,9 +171,17 @@
     	var event = document.createEvent('MouseEvents');
     	event.initEvent('blur', true, true);
     	document.dispatchEvent(event);
-    });    
+    });
 
-	// Set up the knobs
+    // Set input level knob colors
+	var colorInputLevel = "#0A81D1";
+    var knob = document.getElementById("input_level");
+	var $svg = jQuery(knob).find('svg');
+	var $path = $('#input_level').children('svg').children('path');
+	$path.eq(0).attr({style: 'stroke:' + colorInputLevel + ';'});
+	$path.eq(1).attr({style: 'fill:' + colorInputLevel + ';'});
+
+	// Set up the rest of the knobs
 	{% for effect_name, effect_parameter_set in context.effect_set.items %}
 		document.write("<div class=\"effect\">");
 
