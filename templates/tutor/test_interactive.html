@@ -74,7 +74,7 @@
 
 		h3 {
 			font-family: 'Montserrat';
-			font-size: 10px;
+			font-size: 11px;
 			color: #333;
 			line-height: 140%;
 		}
@@ -110,20 +110,19 @@
 <!-- <p>{{ context }}</p>
  -->
 <div class="lolz" style="margin-bottom: 10px;">
+	
+	<div id="media-control-buttons" style="float: left; margin-top: 30px; margin-right: 20px; outline: none;">
+		<input type="image" id="playPauseButton" src="{% static 'images/play_colored.png' %}" style="margin: auto; display: block; outline: none;" />
+		<input type="image" id="switchInstanceButton" src="{% static 'images/ab_button_a.png' %}" style="margin: auto; margin-top: 18px; display: block; outline: none;" />
+	</div>
 	<div class="knob" style="float: left; margin-top: 20px">
 		<x-knobjs-knob id="input_level" min=0.0 max=1.0 value=1.0></x-knobjs-knob>
 		<label class="knob_value input_knob" id="input_level_label">1.0</label>
 		<h3 class="knob_label" id="input_level_parameter">Input level</h3>
 	</div>
 
-	<div id="media-control-buttons" style="float: left; margin-top: 30px; margin-right: 20px; outline: none;">
-		<input type="image" id="playPauseButton" src="{% static 'images/play_colored.png' %}" style="margin: auto; display: block; outline: none;" />
-		<input type="image" id="switchInstanceButton" src="{% static 'images/ab_button_a.png' %}" style="margin: auto; margin-top: 18px; display: block; outline: none;" />
-
-	</div>
-
 	<!-- waveform -->
-	<div id="waveform" style="width:intrinsic;">
+	<div id="waveform" style="">
 	    <div class="progress progress-striped active" id="progress-bar">
 	        <div class="progress-bar progress-bar-info"></div>
 	    </div>
@@ -295,18 +294,39 @@
 			{% endfor %}
 		{% endfor %}
 
+		// Each parameter has assigned a value that represent how close the user tweaked the knob to the actual answer: 
+		// ["undefined", "bad", "medium", "ok"]
+		// Ony used in POST requests - in GET requests this value is always undefined
 		{% for effect_name, effect_parameter_set in context.effect_set.items %}
 			{% for parameter, values in effect_parameter_set.items %}
-				var difficulty = "{{ values.5 }}";
-				console.log(difficulty == "bad");
-				if (difficulty == "medium") {
+				var performance = "{{ values.5 }}";
+				console.log(performance == "bad");
+				if (performance == "medium") {
 					$("#{{ effect_name }}_{{ parameter }}_parameter").delay(500).effect("bounce", {distance:10, times: 10}, 1500);
-				} else if (difficulty == "bad") {
-					$("#{{ effect_name }}_{{ parameter }}_parameter").delay(500).effect("bounce", {}, "slow");
+				} else if (performance == "bad") {		
+					var colorBad = "#E78F8E";
+					var $path = $('#{{ effect_name }}_{{ parameter }}').children('svg').children('path');
+					$path.eq(0).attr({style: 'stroke:' + colorBad + ';'});
+					$path.eq(1).attr({style: 'fill:' + colorBad + ';'});
+					var textLabel = $("#{{ effect_name }}_{{ parameter }}_parameter");
+					textLabel.css("color", colorBad);
+					var valueLabel = $("#{{ effect_name }}_{{ parameter }}_label");
+					valueLabel.css("color", colorBad);
+					setErrorPotmeterTimeout($path, textLabel, valueLabel);
 				}
 			{% endfor %}
 		{% endfor %}
+	}
 
+	// Set potmeter color to back to original value after a 2.5 sec timeout
+	function setErrorPotmeterTimeout(path, textLabel, valueLabel) {
+		setTimeout(function() {
+			var colorInactive = "#BBB";
+			textLabel.css("color", "#333");
+			valueLabel.css("color", colorInactive);
+			path.eq(0).attr({style: 'stroke:' + colorInactive + ';'});
+			path.eq(1).attr({style: 'fill:' + colorInactive + ';'});
+		}, 2500);
 	}
 
 	function mute() {

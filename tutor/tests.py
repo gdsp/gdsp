@@ -314,6 +314,35 @@ class InteractiveTest(TestCode):
         correct = True #request.POST['answer'] == request.POST['choice']
         return correct
 
+class InteractiveTestMultipleEffects(InteractiveTest):
+
+    name = 'Interactive test multiple effects'
+    tags = 'general'
+
+    def easy(self):
+        return super(InteractiveTestMultipleEffects, self).easy()
+
+    def medium(self):
+        return super(InteractiveTestMultipleEffects, self).medium()
+
+    def hard(self):
+        return super(InteractiveTestMultipleEffects, self).hard()
+
+    def adaptive(self):
+        return super(InteractiveTestMultipleEffects, self).adaptive()
+
+    def first(self):
+        return super(InteractiveTestMultipleEffects, self).first()
+
+    def validate(self, values):
+        return super(InteractiveTestMultipleEffects, self).validate(values)
+
+    def check(self, request, correct):
+        return super(InteractiveTestMultipleEffects, self).check(request, correct)
+
+    def store_result(self, request):
+        return super(InteractiveTestMultipleEffects, self).store_result(request)
+
 class BandpassMusic(TestCode):
 
     name = 'Bandpass music'
