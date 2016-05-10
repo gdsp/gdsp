@@ -230,7 +230,6 @@ class InteractiveTest(TestCode):
         random.shuffle(self.FX)
         self.FX = self.FX[0:self.level()]
         effects = [ random.choice(self.FX) ]
-        effects = self.FX
 
         print("level", self.level())
         print("self.FX", self.FX)
@@ -332,7 +331,19 @@ class InteractiveTestMultipleEffects(InteractiveTest):
         return super(InteractiveTestMultipleEffects, self).adaptive()
 
     def first(self):
-        return super(InteractiveTestMultipleEffects, self).first()
+        random.shuffle(self.FX)
+        self.FX = self.FX[0:self.level()]
+        effects = self.FX
+        
+        effectParameterSet = cs.getEffectParameterSet(effects, md.systemfiles)
+
+        # Making a deep copy of the dictionary, because getEffectParameterValues() for some reason is changing it
+        effectParameterSetCopy = copy.deepcopy(effectParameterSet)
+        effectParameterValues = cs.getEffectParameterValues(effectParameterSetCopy)
+        sound, csd = self.process(effectParameterValues, isInteractive = True)
+
+        # Return the csd-file as well as the dry sound file
+        return effectParameterSet, effectParameterValues, sound, csd
 
     def validate(self, values):
         return super(InteractiveTestMultipleEffects, self).validate(values)

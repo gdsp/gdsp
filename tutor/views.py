@@ -64,7 +64,7 @@ def test_interactive(request, test_name, level, FX):
         effect_set, effect_values, sound, csd = test.first()
         
         # Remove input and output keys from the dictionary. 
-        # TODO: Change this in csdWriter.py
+        # TODO: Do this in csdWriter.py instead
         for key, val in effect_set.iteritems():
             del val['input']
             del val['output']
