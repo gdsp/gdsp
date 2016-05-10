@@ -53,12 +53,12 @@ function play() {
         csound.Event("i-1 0 -1");
         csound.Event("i-2 0 -1");
         wavesurfer.stop();
-        document.getElementById("playPauseButton").src = "/static/images/play.png";
+        document.getElementById("playPauseButton").src = "/static/images/play_colored.png";
     } else {
         csound.Event("i1 0 -1");
         csound.Event("i2 0 -1");
         wavesurfer.play();
-        document.getElementById("playPauseButton").src = "/static/images/pause.png";
+        document.getElementById("playPauseButton").src = "/static/images/pause_colored.png";
     }
     isPlaying = !isPlaying
 }

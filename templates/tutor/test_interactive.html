@@ -54,7 +54,7 @@
 			pointer-events: none;
 			text-transform: uppercase;
 			font-family: 'Montserrat', sans-serif;
-			color: #2892D7;
+			color: #00B2A9;
 		}
 
 		.knob_label {
@@ -79,6 +79,18 @@
 			line-height: 140%;
 		}
 
+		hr { 
+		    display: block;
+		    margin-top: 0.5em;
+		    margin-bottom: 0.5em;
+		    margin-left: 0px;
+		    margin-right: 0px;
+		    border-style: inset;
+		    border-width: 0px;
+		    height: 1px;
+		    background-color: #CCC;
+		}
+
 	</style>
 	<script src="http://www.russellmcc.com/knobjs/knob.min.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
@@ -95,46 +107,8 @@
 <p>FX values: {{ context.effect_values }}</p>
 <p>csd file: {{ context.csd }}</p> -->
 
-<p>{{ context }}</p>
-<input type="image" id="playPauseButton" src="{% static 'images/play.png' %}" style="outline: none;" />
-<input type="button" id="switchInstanceButton" value="A/B">
-
-<form class="test-form-wrapper" action="/tutor/test_interactive/{{ context.test_name }}/{{ context.level }}/{{ context.FX }}" method="post">
-	{% csrf_token %}
-	<input type="submit" value="Submit" />
-	<input type="hidden" name="effect_set" value="{{ context.effect_set }}">
-	<input type="hidden" name="sound" value="{{ context.sound }}">
-	<input type="hidden" name="csd" value="{{ context.csd }}">
-
-	<script type="text/javascript">
-		// Set value for each potmeter to be able to evaluate the user
-		{% for effect_name, effect_parameter_set in context.effect_set.items %}
-			{% for parameter, values in effect_parameter_set.items %}
-
-				// Get max/min and the function curve type: lin, expon or log.
-				var minValue = {{ values.0.0 }};
-				var maxValue = {{ values.0.1 }};
-				var dataType = "{{ values.2 }}"; // float or int
-				var humanReadableLabelText = "{{ values.3 }}";
-
-				// Get correct average value based on curve function
-				var curveType = "{{ values.1 }}"; // lin, exp or log
-				var averageValue = ((minValue + maxValue) / 2);
-				var scaledAverageValue = getValueFromCurve(averageValue, minValue, maxValue, curveType);
-				if (dataType == 'int') {
-					scaledAverageValue = Math.round(scaledAverageValue);
-				}
-
-				document.write("<input type=\"hidden\" \
-									id=\"{{ effect_name }}:{{ parameter }}\" \
-									name=\"{{ effect_name }}:{{ parameter }}\" \
-									value=" + scaledAverageValue + ">");
-			{% endfor %}
-		{% endfor %}
-	</script>
-</form>
-
-
+<!-- <p>{{ context }}</p>
+ -->
 <div class="lolz" style="margin-bottom: 10px;">
 	<div class="knob" style="float: left; margin-top: 20px">
 		<x-knobjs-knob id="input_level" min=0.0 max=1.0 value=1.0></x-knobjs-knob>
@@ -142,15 +116,20 @@
 		<h3 class="knob_label" id="input_level_parameter">Input level</h3>
 	</div>
 
+	<div id="media-control-buttons" style="float: left; margin-top: 30px; margin-right: 20px; outline: none;">
+		<input type="image" id="playPauseButton" src="{% static 'images/play_colored.png' %}" style="margin: auto; display: block; outline: none;" />
+		<input type="image" id="switchInstanceButton" src="{% static 'images/ab_button_a.png' %}" style="margin: auto; margin-top: 18px; display: block; outline: none;" />
+
+	</div>
+
 	<!-- waveform -->
-	<div id="waveform" style="margin-left: 120px;">
+	<div id="waveform" style="width:intrinsic;">
 	    <div class="progress progress-striped active" id="progress-bar">
 	        <div class="progress-bar progress-bar-info"></div>
 	    </div>
 	</div>
 </div>
 <br>
-
 
 <!-- <div class="knob">
 <x-knobjs-knob id="input_level" min="0.0" max="1.0" value="1.0"></x-knobjs-knob>
@@ -174,7 +153,7 @@
     });
 
     // Set input level knob colors
-	var colorInputLevel = "#0A81D1";
+	var colorInputLevel = "#00B2A9";
     var knob = document.getElementById("input_level");
 	var $svg = jQuery(knob).find('svg');
 	var $path = $('#input_level').children('svg').children('path');
@@ -183,9 +162,10 @@
 
 	// Set up the rest of the knobs
 	{% for effect_name, effect_parameter_set in context.effect_set.items %}
+		document.write("<hr>");
 		document.write("<div class=\"effect\">");
 
-		// Ridiculous hack, append the effect title to each parameter, positioned at 0.1.6...
+		// Ridiculous hack, appending the effect title to each parameter, positioned at 0.1.6...
 		document.write("<h2>{{ effect_parameter_set.items.0.1.6 }}</h2>");
 		{% for parameter, values in effect_parameter_set.items %}
 
@@ -280,7 +260,7 @@
 
 				// Get average value based on function slope
 				var curveType = "{{ values.1 }}";
-				var averageValue = getValueFromCurve(((minValue + maxValue) / 2), minValue, maxValue, curveType);
+				var averageValue = getValueFromCurve(((minValue + maxValue) * 0.5), minValue, maxValue, curveType);
 
 				csound.SetChannel("{{ effect_name }}_{{ parameter }}", averageValue);
 
@@ -333,9 +313,11 @@
 		if(!userInstanceIsPlaying) {
 			csound.SetChannel("target_amplitude", 0.0);
 			csound.SetChannel("user_amplitude", 1.0);
+			$("#switchInstanceButton").attr("src","{% static 'images/ab_button_b.png' %}");
 		} else {
 			csound.SetChannel("target_amplitude", 1.0);
 			csound.SetChannel("user_amplitude", 0.0);
+			$("#switchInstanceButton").attr("src","{% static 'images/ab_button_a.png' %}");
 		}
 		userInstanceIsPlaying = !userInstanceIsPlaying;
 		setKnobColors();
@@ -347,7 +329,7 @@
 		var colorGood = "#7DCD85";
 		var colorOK = "#FFEF63";
 		var colorBad = "#E78F8E";
-		var colorInputLevel = "#0A81D1";
+		var colorInputLevel = "#00B2A9";
 
 	    if(!userInstanceIsPlaying) {
 	        $('.knobjs-arcbg').css("stroke", colorInactive);
@@ -369,6 +351,42 @@
 		$path.eq(1).attr({style: 'fill:' + colorInputLevel + ';'});
 	}
 </script>
+
+<form class="test-form-wrapper" action="/tutor/test_interactive/{{ context.test_name }}/{{ context.level }}/{{ context.FX }}" method="post">
+	{% csrf_token %}
+	<input type="submit" value="Submit" />
+	<input type="hidden" name="effect_set" value="{{ context.effect_set }}">
+	<input type="hidden" name="sound" value="{{ context.sound }}">
+	<input type="hidden" name="csd" value="{{ context.csd }}">
+
+	<script type="text/javascript">
+		// Set value for each potmeter to be able to evaluate the user
+		{% for effect_name, effect_parameter_set in context.effect_set.items %}
+			{% for parameter, values in effect_parameter_set.items %}
+
+				// Get max/min and the function curve type: lin, expon or log.
+				var minValue = {{ values.0.0 }};
+				var maxValue = {{ values.0.1 }};
+				var dataType = "{{ values.2 }}"; // float or int
+				var humanReadableLabelText = "{{ values.3 }}";
+
+				// Get correct average value based on curve function
+				var curveType = "{{ values.1 }}"; // lin, exp or log
+				var averageValue = ((minValue + maxValue) / 2);
+				var scaledAverageValue = getValueFromCurve(averageValue, minValue, maxValue, curveType);
+				if (dataType == 'int') {
+					scaledAverageValue = Math.round(scaledAverageValue);
+				}
+
+				document.write("<input type=\"hidden\" \
+									id=\"{{ effect_name }}:{{ parameter }}\" \
+									name=\"{{ effect_name }}:{{ parameter }}\" \
+									value=" + scaledAverageValue + ">");
+			{% endfor %}
+		{% endfor %}
+	</script>
+</form>
+
 
 <!-- csound message field -->
 <!-- <div id="csound_message"> </div>
