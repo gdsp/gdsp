@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: latin-1 -*-
 
-import random, copy, subprocess, pdb, ast
+import random, copy, subprocess, pdb, ast, math
 import time, inspect, sys, uuid, copy
 
 from tutor.models import Result, History
@@ -215,13 +215,13 @@ class InteractiveTest(TestCode):
     tags = 'general'
 
     def easy(self):
-        return 1
+        return 200 # 20 percent
 
     def medium(self):
-        return 2
+        return 150
 
     def hard(self):
-        return 3
+        return 100
 
     def adaptive(self):
         return self._calculate_integer_level(2, self.easy(), self.hard())
@@ -247,51 +247,71 @@ class InteractiveTest(TestCode):
 
     def validate(self, values):
 
-        # print '******************************************************************************************'
-        # print "values"
-        # print values
-        # print '******************************************************************************************'
+        print '******************************************************************************************'
+        print "values"
+        print values
+        print '******************************************************************************************'
 
-        threshold_good = 0.1;
-        threshold_medium = 0.3;
+        threshold = self.level() * 0.001; #Converting int percentage to decimal
+
         min_value = values[0][0]
         max_value = values[0][1]
-        delta = max_value - min_value
         function_shape = values[1]
         correct_answer = values[4][0]
         user_answer = float(values[4][1])
-        answer_diff = abs(correct_answer - user_answer)
 
-        good_range_upper = delta * threshold_good
-        good_range_lower = delta * threshold_good
-        medium_range_upper = delta * threshold_medium
-        medium_range_lower = delta * threshold_medium
+        max_valid_value = self.getValueFromFunctionShape(correct_answer + (max_value - min_value) * threshold, min_value, max_value, "lin")
+        min_valid_value = self.getValueFromFunctionShape(correct_answer - (max_value - min_value) * threshold, min_value, max_value, "lin")
 
         # If user answer is outside ok threshold
-        if answer_diff > medium_range_upper or answer_diff < medium_range_lower:
-            return "bad"
-        elif answer_diff > good_range_upper or answer_diff < good_range_lower:
-            return "medium"
-        return "ok"
+        if user_answer < max_valid_value and user_answer > min_valid_value:
+            return "ok"
+        return "bad"
 
-    def getValueFromFunctionShape(input_value, min_value, max_value, function_shape):
-        min_value_log = math.log(min_value);
-        max_value_log = math.log(max_value);
+    def getValueFromFunctionShape(self, input_value, min_value, max_value, function_shape):
+        if min_value < 0.00001:
+            min_value = 0.00001
+        min_value_log = math.log(min_value)
+        max_value_log = math.log(max_value)
 
         # Calculate adjustment factor
-        scale = (max_value_log - min_value_log)/(max_value - min_value);
+        scale = (max_value_log - min_value_log)/(max_value - min_value)
 
         if function_shape == "lin":
-            return input_value;
+            return input_value
         elif (function_shape == "expon"):
-            return math.exp(min_value_log + scale*(input_value - min_value));
+            return math.exp(min_value_log + scale*(input_value - min_value))
         elif function_shape == "log":
-            return (math.log(input_value) - min_value_log)/scale + min_value;
+            return (math.log(input_value) - min_value_log)/scale + min_value
         elif function_shape == "log_1p5":
             NotImplementedError
-        return input_value;
+        return input_value
+
+    def getValueFromFunctionShapeInverse(self, input_value, min_value, max_value, function_shape):
+        if min_value < 0.00001:
+            min_value = 0.00001
+        min_value_log = math.log(min_value)
+        max_value_log = math.log(max_value)
+
+        # Calculate adjustment factor
+        scale = (max_value_log - min_value_log)/(max_value - min_value)
+
+        if function_shape == "lin":
+            return input_value
+        elif (function_shape == "expon"):
+            return math.exp(min_value_log + (input_value - min_value)*scale)
+        elif function_shape == "log":
+            return math.exp(min_value_log + scale*(input_value - min_value))
+        elif function_shape == "log_1p5":
+            NotImplementedError
+        return input_value
 
     def check(self, request, correct):
+        return correct
+
+    def store_result(self, request):
+        print "\n\n Subclassed store_result \n\n"
+
         # Get effect set as dict WITHOUT the user potmeter values
         effect_set = ast.literal_eval(request.POST.get("effect_set"))
 
@@ -301,17 +321,15 @@ class InteractiveTest(TestCode):
                 values[4][1] = request.POST.get(effect + ":" + parameter) # Ugly delimiter, but it works
 
         # TODO: Evaluate values.
+        test_valid = True
         for effect, parameters in effect_set.iteritems():
             for parameter, values in parameters.iteritems():
-                values[5] = self.validate(values)
+                validity = self.validate(values)
+                values[5] = validity
+                if validity == "bad":
+                    test_valid = False
 
-        return effect_set
-        #return self.first() if correct else self.less_choices(request)
-
-    def store_result(self, request):
-        print "\n\n Subclassed store_result \n\n"
-        correct = True #request.POST['answer'] == request.POST['choice']
-        return correct
+        return test_valid, effect_set
 
 class InteractiveTestMultipleEffects(InteractiveTest):
 
@@ -319,13 +337,13 @@ class InteractiveTestMultipleEffects(InteractiveTest):
     tags = 'general'
 
     def easy(self):
-        return super(InteractiveTestMultipleEffects, self).easy()
+        return 1
 
     def medium(self):
-        return super(InteractiveTestMultipleEffects, self).medium()
+        return 2
 
     def hard(self):
-        return super(InteractiveTestMultipleEffects, self).hard()
+        return 3
 
     def adaptive(self):
         return super(InteractiveTestMultipleEffects, self).adaptive()

@@ -63,6 +63,12 @@ function play() {
     isPlaying = !isPlaying
 }
 
+function stop() {
+    csound.Event("i-1 0 -1");
+    csound.Event("i-2 0 -1");
+    wavesurfer.stop();
+}
+
 function loadAudio(url) {
     var request = new XMLHttpRequest();
     request.open('GET', url, true);
