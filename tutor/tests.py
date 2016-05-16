@@ -247,12 +247,7 @@ class InteractiveTest(TestCode):
 
     def validate(self, values):
 
-        print '******************************************************************************************'
-        print "values"
-        print values
-        print '******************************************************************************************'
-
-        threshold = self.level() * 0.001; #Converting int percentage to decimal
+        threshold = self.level() * 0.001; #Convert int percentage to decimal
 
         min_value = values[0][0]
         max_value = values[0][1]

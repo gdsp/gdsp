@@ -117,8 +117,8 @@
         <input type="image" id="switchInstanceButton" src="{% static 'images/ab_button_a.png' %}" style="margin: auto; margin-top: 18px; display: block; outline: none;" />
     </div>
     <div class="knob" style="float: left; margin-top: 20px">
-        <x-knobjs-knob id="input_level" min=0.0 max=1.0 value=1.0></x-knobjs-knob>
-        <label class="knob_value input_knob" id="input_level_label">1.0</label>
+        <x-knobjs-knob id="input_level" min=0.0 max=1.0 value={{ context.input_level }}></x-knobjs-knob>
+        <label class="knob_value input_knob" id="input_level_label">{{ context.input_level }}</label>
         <h3 class="knob_label" id="input_level_parameter">Input level</h3>
     </div>
 
@@ -237,13 +237,18 @@
         // Set levels to hear only the target sound
         csound.SetChannel("target_amplitude", 1.0);
         csound.SetChannel("user_amplitude", 0.0);
-        csound.SetChannel("input_level", 1.0);
+        csound.SetChannel("input_level", {{ context.input_level }});
+
+        // Remember input level for POST requests
+        //document.write("<input type=\"hidden\" id=\"lol\" name=\"drit\" value=" + 0.0 + ">");
+        //document.write("<h1>halla</h1>");
 
         // Add input level slider listener
         $("#input_level").on("input change", function() {
             var value = document.getElementById("input_level").value;
             csound.SetChannel("input_level", value);
             $("#input_level_label").text(getLabelValue(value));
+            document.getElementById("input_level_hidden").value = getLabelValue(value); 
         });
 
         // Add sliders for csound communication
@@ -377,6 +382,7 @@
     <input type="hidden" name="effect_set" value="{{ context.effect_set }}">
     <input type="hidden" name="sound" value="{{ context.sound }}">
     <input type="hidden" name="csd" value="{{ context.csd }}">
+    <input type="hidden" id="input_level_hidden" name="input_level_hidden" value="{{ context.input_level }}">
 
     <script type="text/javascript">
         // Set value for each potmeter to be able to evaluate the user

@@ -95,6 +95,8 @@ def test_interactive(request, test_name, level, FX):
                 # Appending the effect title to each parameter. Not good...
                 effect_set[effect][parameter_name].append(humanReadableEffectNames[effect + ".inc"])
 
+        input_level = 0.1 # Default input level
+
         context = {
             'test_elements': queryset,
             'test_name': test_name,
@@ -103,6 +105,7 @@ def test_interactive(request, test_name, level, FX):
             'sound': sound,
             'csd': csd,
             'FX': FX,
+            'input_level': input_level,
         }
     elif request.method == 'POST':
         correct, effect_set = test.store_result(request)
@@ -143,6 +146,7 @@ def test_interactive(request, test_name, level, FX):
                     effect_set[effect][parameter_name].append(humanReadableEffectNames[effect + ".inc"])
 
             msg = 'Good work!'
+            input_level = 1.0 # Default input level
 
             context = {
                 'test_elements': queryset,
@@ -152,7 +156,8 @@ def test_interactive(request, test_name, level, FX):
                 'sound': sound,
                 'csd': csd,
                 'FX': FX,
-                'msg': msg
+                'msg': msg,
+                'input_level': input_level,
             }
             #context['last_csd'] = Result.objects.filter(user = request.user).filter(correct = 1).latest('timestamp').csd
         else:
@@ -167,7 +172,11 @@ def test_interactive(request, test_name, level, FX):
                 'csd': request.POST.get("csd"),
                 'FX': FX,
                 'msg': msg,
+                'input_level': request.POST.get("input_level_hidden"),
             }
+
+            print("input_level_hidden:")
+            print(request.POST.get("input_level_hidden"))
 
             #context['last_csd'] = 'Not a single correct answer yet!?'
         
