@@ -180,10 +180,10 @@
                 <h3 class=\"knob_label\" id=\"{{ effect_name }}_{{ parameter }}_parameter\">{{ values.3 }}</h3></div>");
             document.getElementById("{{ effect_name }}_{{ parameter }}").setAttribute("max", maxValue);
             document.getElementById("{{ effect_name }}_{{ parameter }}").setAttribute("min", minValue);
-            document.getElementById("{{ effect_name }}_{{ parameter }}").setAttribute("value", averageValue);
+            document.getElementById("{{ effect_name }}_{{ parameter }}").setAttribute("value", getValueFromCurveInverse("{{ values.4.1 }}", minValue, maxValue, curveType));
 
             // Set number of decimals in label string to fit inside knob
-            var labelValue = getLabelValue(scaledAverageValue);
+            var labelValue = getLabelValue("{{ values.4.1 }}");
 
             // Check if parameter type use discrete steps
             if (dataType == 'int') {
@@ -406,7 +406,7 @@
                 document.write("<input type=\"hidden\" \
                                     id=\"{{ effect_name }}:{{ parameter }}\" \
                                     name=\"{{ effect_name }}:{{ parameter }}\" \
-                                    value=" + scaledAverageValue + ">");
+                                    value={{ values.4.1 }}>");
             {% endfor %}
         {% endfor %}
     </script>

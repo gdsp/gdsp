@@ -115,6 +115,26 @@ function getValueFromCurve(inputValue, minValue, maxValue, curveType) {
     return inputValue;
 }
 
+function getValueFromCurveInverse(inputValue, minValue, maxValue, curveType) {
+    var minValueLog = Math.log(minValue);
+    var maxValueLog = Math.log(maxValue);
+
+    // Calculate adjustment factor
+    var scale = (maxValueLog - minValueLog)/(maxValue - minValue);
+
+    if (curveType === "lin") {
+        return inputValue;
+    } else if (curveType === "expon") {
+        return (Math.log(inputValue) - minValueLog)/scale + minValue;
+    } else if (curveType === "log") {
+        return Math.exp(minValueLog + scale*(inputValue - minValue));
+    } else if (curveType === "log_1p5") {
+        // Not currently in use
+    }
+
+    return inputValue;
+}
+
 function getLabelValue(inputValue) {
     labelValue = parseFloat(inputValue.toString()).toFixed(2);
 

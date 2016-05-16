@@ -89,13 +89,17 @@ def test_interactive(request, test_name, level, FX):
 
         # Add a default answer value (0.0) in a touple along with the generated value 
         for effect, parameters in effect_values.iteritems():
-            for parameter_name, parameter_value in parameters.iteritems():     
-                effect_set[effect][parameter_name].append([parameter_value, 0.0])
+            for parameter_name, parameter_value in parameters.iteritems():
+                min_value = effect_set[effect][parameter_name][0][0]
+                max_value = effect_set[effect][parameter_name][0][1]
+                shape = effect_set[effect][parameter_name][1]
+
+                effect_set[effect][parameter_name].append([parameter_value, test.getValueFromFunctionShape((max_value+min_value)*0.5, min_value, max_value, shape)])
                 effect_set[effect][parameter_name].append("unevaluated")
                 # Appending the effect title to each parameter. Not good...
                 effect_set[effect][parameter_name].append(humanReadableEffectNames[effect + ".inc"])
 
-        input_level = 0.1 # Default input level
+        input_level = 1.0 # Default input level
 
         context = {
             'test_elements': queryset,
@@ -140,7 +144,11 @@ def test_interactive(request, test_name, level, FX):
             # Add a default answer value (0.0) in a touple along with the generated value 
             for effect, parameters in effect_values.iteritems():
                 for parameter_name, parameter_value in parameters.iteritems():     
-                    effect_set[effect][parameter_name].append([parameter_value, 0.0])
+                    min_value = effect_set[effect][parameter_name][0][0]
+                    max_value = effect_set[effect][parameter_name][0][1]
+                    shape = effect_set[effect][parameter_name][1]
+    
+                    effect_set[effect][parameter_name].append([parameter_value, test.getValueFromFunctionShape((max_value+min_value)*0.5, min_value, max_value, shape)])
                     effect_set[effect][parameter_name].append("unevaluated")
                     # Appending the effect title to each parameter. Not good...
                     effect_set[effect][parameter_name].append(humanReadableEffectNames[effect + ".inc"])

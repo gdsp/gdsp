@@ -264,8 +264,10 @@ class InteractiveTest(TestCode):
         return "bad"
 
     def getValueFromFunctionShape(self, input_value, min_value, max_value, function_shape):
-        if min_value < 0.00001:
-            min_value = 0.00001
+        if min_value < 0.0000001:
+            min_value = 0.0000001
+        if max_value < 0.0000001:
+            max_value = 0.0000001
         min_value_log = math.log(min_value)
         max_value_log = math.log(max_value)
 
