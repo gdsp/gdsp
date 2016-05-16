@@ -302,20 +302,22 @@
         {% for effect_name, effect_parameter_set in context.effect_set.items %}
             {% for parameter, values in effect_parameter_set.items %}
                 var performance = "{{ values.5 }}";
-                console.log(performance == "bad");
-                if (performance == "medium") {
-                    $("#{{ effect_name }}_{{ parameter }}_parameter").delay(500).effect("bounce", {distance:10, times: 10}, 1500);
+                var color;
+                if (performance == "ok") {
+                    color = "#5FE26A";
+                } else if (performance == "medium") {
+                    // Not used
                 } else if (performance == "bad") {      
-                    var colorBad = "#E78F8E";
-                    var $path = $('#{{ effect_name }}_{{ parameter }}').children('svg').children('path');
-                    $path.eq(0).attr({style: 'stroke:' + colorBad + ';'});
-                    $path.eq(1).attr({style: 'fill:' + colorBad + ';'});
-                    var textLabel = $("#{{ effect_name }}_{{ parameter }}_parameter");
-                    textLabel.css("color", colorBad);
-                    var valueLabel = $("#{{ effect_name }}_{{ parameter }}_label");
-                    valueLabel.css("color", colorBad);
-                    setErrorPotmeterTimeout($path, textLabel, valueLabel);
+                    color = "#E78F8E";
                 }
+                var $path = $('#{{ effect_name }}_{{ parameter }}').children('svg').children('path');
+                $path.eq(0).attr({style: 'stroke:' + color + ';'});
+                $path.eq(1).attr({style: 'fill:' + color + ';'});
+                var textLabel = $("#{{ effect_name }}_{{ parameter }}_parameter");
+                textLabel.css("color", color);
+                var valueLabel = $("#{{ effect_name }}_{{ parameter }}_label");
+                valueLabel.css("color", color);
+                setErrorPotmeterTimeout($path, textLabel, valueLabel);
             {% endfor %}
         {% endfor %}
     }
