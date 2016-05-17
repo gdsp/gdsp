@@ -110,7 +110,7 @@
 <!-- <p>{{ context }}</p>
  -->
 
-<div class="controls" style="margin-bottom: 10px;">
+<div class="controls" style="margin-bottom: 10px; display:block; ">
     
     <div id="media-control-buttons" style="float: left; margin-top: 30px; margin-right: 20px; outline: none;">
         <input type="image" id="playPauseButton" src="{% static 'images/play_colored.png' %}" style="margin: auto; display: block; outline: none;" />
@@ -123,13 +123,14 @@
     </div>
 
     <!-- waveform -->
-    <div id="waveform" style="">
+    <div id="waveform" style="width:615px;">
         <div class="progress progress-striped active" id="progress-bar">
             <div class="progress-bar progress-bar-info"></div>
         </div>
     </div>
 </div>
 <br>
+
 
 <script type="text/javascript">
 
@@ -206,8 +207,9 @@
             progressColor: '#68D8D6',
             waveColor: '#00B2A9',
             cursorWidth: '0',
-            pixelRatio: '2',
-            interact: false
+            pixelRatio: 1,
+            interact: false,
+            fillParent: true
         });
         wavesurfer.load("/site_media/system/samples/{{ context.sound }}");
         wavesurfer.toggleMute();
@@ -314,7 +316,7 @@
                 $path.eq(0).attr({style: 'stroke:' + color + ';'});
                 $path.eq(1).attr({style: 'fill:' + color + ';'});
                 var textLabel = $("#{{ effect_name }}_{{ parameter }}_parameter");
-                textLabel.css("color", color);
+                //textLabel.css("color", color);
                 var valueLabel = $("#{{ effect_name }}_{{ parameter }}_label");
                 valueLabel.css("color", color);
                 setErrorPotmeterTimeout($path, textLabel, valueLabel);

@@ -13,6 +13,10 @@ $(document).ready(function() {
     } catch(e) {
         alert('Web Audio API is not supported in this browser');
     }
+    console.log($("#waveform").attr("wave"))
+    $("#waveform").width("600px");
+    var $path = $('#waveform').children();
+    console.log($path);
 });
 
 $(window).load(function(){
