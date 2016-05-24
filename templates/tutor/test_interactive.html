@@ -1,0 +1,441 @@
+
+{% load i18n staticfiles %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="/static/css/application.css">
+    <link href='http://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'> <!-- LAGT TIL -->
+
+    <style>
+        .knobjs-bg {
+            fill: rgba(0,0,0,0);
+        }
+
+        .knobjs-arcbg {
+            fill: rgba(0,0,0,0); 
+            stroke-width: 0.05; 
+            stroke: #BBB;
+        }
+
+        .knobjs-arc {
+            fill: #BBB;
+        }
+
+        x-knobjs-knob {
+            display: inline-block;
+            height: 90px;
+        }
+
+        .line {
+            float: left;
+        }
+
+        .knob {
+            display: inline-block;
+            width: 90px;
+            text-align: center;
+            vertical-align: text-top;
+            padding-right: 25px;
+        }
+
+        .knob_value {
+            position: relative;
+            top: -64px;
+            pointer-events: none;
+            text-transform: uppercase;
+            font-family: 'Montserrat', sans-serif;
+            color: #BBB;
+        }
+
+        .knob_value.input_knob {
+            position: relative;
+            top: -64px;
+            pointer-events: none;
+            text-transform: uppercase;
+            font-family: 'Montserrat', sans-serif;
+            color: #00B2A9;
+        }
+
+        .knob_label {
+            height: 20px;
+            position: relative;
+            top: -40px;
+            pointer-events: none;
+            font-family: 'Montserrat', sans-serif;
+            color: #333;
+        }
+
+        h2 {
+            font-family: 'Montserrat';
+            color: #333;
+            line-height: 140%;
+        }
+
+        h3 {
+            font-family: 'Montserrat';
+            font-size: 11px;
+            color: #333;
+            line-height: 140%;
+        }
+
+        hr { 
+            display: block;
+            margin-top: 0.5em;
+            margin-bottom: 0.5em;
+            margin-left: 0px;
+            margin-right: 0px;
+            border-style: inset;
+            border-width: 0px;
+            height: 1px;
+            background-color: #CCC;
+        }
+
+    </style>
+    <script src="http://www.russellmcc.com/knobjs/knob.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+    <script src="{% static 'javascript/csound.js' %}"></script>
+    <script src="{% static 'javascript/wavesurfer.min.js' %}"></script>
+</head>
+
+<body>
+<script src="{% static 'javascript/interactive_csound.js' %}"></script>
+
+<!-- <p>Test name: {{ context.test_name }}</p>
+<p>FX set: {{ context.effect_set }}</p>
+<p>FX values: {{ context.effect_values }}</p>
+<p>csd file: {{ context.csd }}</p> -->
+
+<!-- <p>{{ context }}</p>
+ -->
+
+<div class="controls" style="margin-bottom: 10px; display:block; ">
+    
+    <div id="media-control-buttons" style="float: left; margin-top: 30px; margin-right: 20px; outline: none;">
+        <input type="image" id="playPauseButton" src="{% static 'images/play_colored.png' %}" style="margin: auto; display: block; outline: none;" />
+        <input type="image" id="switchInstanceButton" src="{% static 'images/ab_button_a.png' %}" style="margin: auto; margin-top: 18px; display: block; outline: none;" />
+    </div>
+    <div class="knob" style="float: left; margin-top: 20px">
+        <x-knobjs-knob id="input_level" min=0.0 max=1.0 value={{ context.input_level }}></x-knobjs-knob>
+        <label class="knob_value input_knob" id="input_level_label">{{ context.input_level }}</label>
+        <h3 class="knob_label" id="input_level_parameter">Input level</h3>
+    </div>
+
+    <!-- waveform -->
+    <div id="waveform" style="width:615px;">
+        <div class="progress progress-striped active" id="progress-bar">
+            <div class="progress-bar progress-bar-info"></div>
+        </div>
+    </div>
+</div>
+<br>
+
+
+<script type="text/javascript">
+
+    $(document).on('touchmove', function(e) {
+        if (!$(e.target).parents('.scroll')[0]) {
+            e.preventDefault();
+        }
+    });
+
+    // Cancel dragging if mouse leaves the iframe container.
+    $('.testElement').on('mouseleave', function(){
+        var event = document.createEvent('MouseEvents');
+        event.initEvent('blur', true, true);
+        document.dispatchEvent(event);
+    });
+
+    // Set input level knob colors
+    var colorInputLevel = "#00B2A9";
+    var knob = document.getElementById("input_level");
+    var $svg = jQuery(knob).find('svg');
+    var $path = $('#input_level').children('svg').children('path');
+    $path.eq(0).attr({style: 'stroke:' + colorInputLevel + ';'});
+    $path.eq(1).attr({style: 'fill:' + colorInputLevel + ';'});
+
+    // Set up the rest of the knobs
+    {% for effect_name, effect_parameter_set in context.effect_set.items %}
+        document.write("<hr>");
+        document.write("<div class=\"effect\">");
+
+        // Ridiculous hack, appending the effect title to each parameter, positioned at 0.1.6...
+        document.write("<h2>{{ effect_parameter_set.items.0.1.6 }}</h2>");
+        {% for parameter, values in effect_parameter_set.items %}
+
+            // Get max/min and the function curve type: lin, expon or log.
+            var minValue = {{ values.0.0 }};
+            var maxValue = {{ values.0.1 }};
+            var dataType = "{{ values.2 }}"; // float or int
+            var humanReadableLabelText = "{{ values.3 }}";
+
+            // Get correct average value based on curve function
+            var curveType = "{{ values.1 }}"; // lin, exp or log
+            var averageValue = ((minValue + maxValue) / 2);
+            var scaledAverageValue = getValueFromCurve(averageValue, minValue, maxValue, curveType);
+
+            document.write("<div class=\"knob\">\
+                <x-knobjs-knob id=\"{{ effect_name }}_{{ parameter }}\"></x-knobjs-knob>\
+                <label class=\"knob_value\" id = \"{{ effect_name }}_{{ parameter }}_label\">123</label>\
+                <h3 class=\"knob_label\" id=\"{{ effect_name }}_{{ parameter }}_parameter\">{{ values.3 }}</h3></div>");
+            document.getElementById("{{ effect_name }}_{{ parameter }}").setAttribute("max", maxValue);
+            document.getElementById("{{ effect_name }}_{{ parameter }}").setAttribute("min", minValue);
+            document.getElementById("{{ effect_name }}_{{ parameter }}").setAttribute("value", getValueFromCurveInverse("{{ values.4.1 }}", minValue, maxValue, curveType));
+
+            // Set number of decimals in label string to fit inside knob
+            var labelValue = getLabelValue("{{ values.4.1 }}");
+
+            // Check if parameter type use discrete steps
+            if (dataType == 'int') {
+                // If int, we don't need decimal points
+                labelValue = parseFloat(labelValue.toString()).toFixed(0);
+                scaledAverageValue = Math.round(scaledAverageValue);
+            }
+
+            $("#{{ effect_name }}_{{ parameter }}_label").text(labelValue);
+        {% endfor %}
+        document.write("</div>");
+    {% endfor %}
+
+    function moduleDidLoad() {
+        //localStorage.clear();
+
+        // Add waveform
+        wavesurfer.init({
+            container: document.querySelector('#waveform'),
+            progressColor: '#68D8D6',
+            waveColor: '#00B2A9',
+            cursorWidth: '0',
+            pixelRatio: 2,
+            interact: false,
+            fillParent: true
+        });
+        wavesurfer.load("/site_media/system/samples/{{ context.sound }}");
+        wavesurfer.toggleMute();
+
+        // Load initial csd file
+        var csd_url = "/site_media/user/{{ context.csd }}";
+        var csd_name = "test.csd";
+        csound.CopyUrlToLocal(csd_url, csd_name);
+
+        stop();
+
+        // Load initial audio file. TODO: Be able to change audio file
+        loadAudio("/site_media/system/samples/{{ context.sound }}");
+
+        // Print num channels in audio file
+        var a = new Audio("/site_media/system/samples/{{ context.sound }}");
+        a.load()
+        document.body.appendChild( a );
+        var channels = [a];
+        console.log("Num channels: " + channels.length);
+
+        // Start csound
+        setTimeout(function() {
+            csound.PlayCsd("local/test.csd");
+        }, 500);
+
+        // Set levels to hear only the target sound
+        csound.SetChannel("target_amplitude", 1.0);
+        csound.SetChannel("user_amplitude", 0.0);
+        csound.SetChannel("input_level", {{ context.input_level }});
+
+        // Remember input level for POST requests
+        //document.write("<input type=\"hidden\" id=\"lol\" name=\"drit\" value=" + 0.0 + ">");
+        //document.write("<h1>halla</h1>");
+
+        // Add input level slider listener
+        $("#input_level").on("input change", function() {
+            var value = document.getElementById("input_level").value;
+            csound.SetChannel("input_level", value);
+            $("#input_level_label").text(getLabelValue(value));
+            document.getElementById("input_level_hidden").value = getLabelValue(value); 
+        });
+
+        // Add sliders for csound communication
+        {% for effect_name, effect_parameter_set in context.effect_set.items %}
+            {% for parameter, values in effect_parameter_set.items %}
+
+                // Get max/min and the function curve type [lin, expon, log]
+                var minValue = {{ values.0.0 }};
+                var maxValue = {{ values.0.1 }};
+
+                // Get average value based on function slope
+                var curveType = "{{ values.1 }}";
+                var averageValue = getValueFromCurve(((minValue + maxValue) * 0.5), minValue, maxValue, curveType);
+
+                csound.SetChannel("{{ effect_name }}_{{ parameter }}", averageValue);
+
+                // Add listeners
+                $("#{{ effect_name }}_{{ parameter }}").on("input change", function() {
+                    var minValue = {{ values.0.0 }};
+                    var maxValue = {{ values.0.1 }};
+                    var curveType = "{{ values.1 }}"; // lin, exp or log
+                    var dataType = "{{ values.2 }}"; // float or int
+
+                    var value = document.getElementById("{{ effect_name }}_{{ parameter }}").value;
+                    var scaledValue = getValueFromCurve(value, minValue, maxValue, curveType);
+                    csound.SetChannel("{{ effect_name }}_{{ parameter }}", scaledValue);
+
+                    // Set number of decimals in label string to fit inside knob
+                    var labelValue = getLabelValue(scaledValue);
+
+                    // Check if parameter type use discrete steps
+                    if (dataType == 'int') {
+                        // If int, we don't need decimal points
+                        labelValue = parseFloat(scaledValue.toString()).toFixed(0);
+
+                        // Set the csound value once again (for integer types only)
+                        csound.SetChannel("{{ effect_name }}_{{ parameter }}", labelValue);
+                    }
+
+                    $("#{{ effect_name }}_{{ parameter }}_label").text(labelValue);
+                    
+                    if (dataType == 'int') scaledValue = Math.round(scaledValue);
+                    document.getElementById("{{ effect_name }}:{{ parameter }}").value = scaledValue;
+                });
+            {% endfor %}
+        {% endfor %}
+
+        // Each parameter has assigned a value that represent how close the user tweaked the knob to the actual answer: 
+        // ["undefined", "bad", "medium", "ok"]
+        // Ony used in POST requests - in GET requests this value is always undefined
+        {% for effect_name, effect_parameter_set in context.effect_set.items %}
+            {% for parameter, values in effect_parameter_set.items %}
+                var performance = "{{ values.5 }}";
+                var color;
+                if (performance == "ok") {
+                    color = "#5FE26A";
+                } else if (performance == "medium") {
+                    // Not used
+                } else if (performance == "bad") {      
+                    color = "#E78F8E";
+                }
+                var $path = $('#{{ effect_name }}_{{ parameter }}').children('svg').children('path');
+                $path.eq(0).attr({style: 'stroke:' + color + ';'});
+                $path.eq(1).attr({style: 'fill:' + color + ';'});
+                var textLabel = $("#{{ effect_name }}_{{ parameter }}_parameter");
+                //textLabel.css("color", color);
+                var valueLabel = $("#{{ effect_name }}_{{ parameter }}_label");
+                valueLabel.css("color", color);
+                setErrorPotmeterTimeout($path, textLabel, valueLabel);
+            {% endfor %}
+        {% endfor %}
+    }
+
+    // Set potmeter color to back to original value after a 2.5 sec timeout
+    function setErrorPotmeterTimeout(path, textLabel, valueLabel) {
+        setTimeout(function() {
+            var colorInactive = "#BBB";
+            textLabel.css("color", "#333");
+            valueLabel.css("color", colorInactive);
+            path.eq(0).attr({style: 'stroke:' + colorInactive + ';'});
+            path.eq(1).attr({style: 'fill:' + colorInactive + ';'});
+        }, 2500);
+    }
+
+    function mute() {
+        if(!userInstanceIsPlaying) {
+            csound.SetChannel("target_amplitude", 0.0);
+            csound.SetChannel("user_amplitude", 1.0);
+            $("#switchInstanceButton").attr("src","{% static 'images/ab_button_b.png' %}");
+        } else {
+            csound.SetChannel("target_amplitude", 1.0);
+            csound.SetChannel("user_amplitude", 0.0);
+            $("#switchInstanceButton").attr("src","{% static 'images/ab_button_a.png' %}");
+        }
+        userInstanceIsPlaying = !userInstanceIsPlaying;
+        setKnobColors();
+    }
+
+    function setKnobColors() {
+        var colorInactive = "#BBB";
+        var colorActive = "#00B2A9";
+        var colorGood = "#7DCD85";
+        var colorOK = "#FFEF63";
+        var colorBad = "#E78F8E";
+        var colorInputLevel = "#00B2A9";
+
+        if(!userInstanceIsPlaying) {
+            $('.knobjs-arcbg').css("stroke", colorInactive);
+            $('.knobjs-arc').css("fill", colorInactive);
+            $('.knob_value').css("color", colorInactive);
+        } else {
+            $('.knobjs-arcbg').css("stroke", colorActive);
+            $('.knobjs-arc').css("fill", colorActive);
+            $('.knob_value').css("color", colorActive);
+        }
+
+        // Input level knob color always the same
+        $('.knob_value.input_knob').css("color", colorInputLevel); // Center label
+        
+        var knob = document.getElementById("input_level");
+        var $svg = jQuery(knob).find('svg');
+        var $path = $('#input_level').children('svg').children('path');
+        $path.eq(0).attr({style: 'stroke:' + colorInputLevel + ';'});
+        $path.eq(1).attr({style: 'fill:' + colorInputLevel + ';'});
+    }
+</script>
+
+<hr>
+
+<form class="test-form-wrapper" action="/tutor/test_interactive/{{ context.test_name }}/{{ context.level }}/{{ context.FX }}" method="post">
+    {% csrf_token %}
+    <input type="submit" value="Submit" style="position:relative; text-align:center;" />
+    <input type="hidden" name="effect_set" value="{{ context.effect_set }}">
+    <input type="hidden" name="sound" value="{{ context.sound }}">
+    <input type="hidden" name="csd" value="{{ context.csd }}">
+    <input type="hidden" id="input_level_hidden" name="input_level_hidden" value="{{ context.input_level }}">
+
+    <script type="text/javascript">
+        // Set value for each potmeter to be able to evaluate the user
+        {% for effect_name, effect_parameter_set in context.effect_set.items %}
+            {% for parameter, values in effect_parameter_set.items %}
+
+                // Get max/min and the function curve type: lin, expon or log.
+                var minValue = {{ values.0.0 }};
+                var maxValue = {{ values.0.1 }};
+                var dataType = "{{ values.2 }}"; // float or int
+                var humanReadableLabelText = "{{ values.3 }}";
+
+                // Get correct average value based on curve function
+                var curveType = "{{ values.1 }}"; // lin, exp or log
+                var averageValue = ((minValue + maxValue) / 2);
+                var scaledAverageValue = getValueFromCurve(averageValue, minValue, maxValue, curveType);
+                if (dataType == 'int') {
+                    scaledAverageValue = Math.round(scaledAverageValue);
+                }
+
+                document.write("<input type=\"hidden\" \
+                                    id=\"{{ effect_name }}:{{ parameter }}\" \
+                                    name=\"{{ effect_name }}:{{ parameter }}\" \
+                                    value={{ values.4.1 }}>");
+            {% endfor %}
+        {% endfor %}
+    </script>
+
+    <br><br>
+
+    <B>{{ context.msg }}</B> <P>
+
+<!--     <br><br>
+    The <a href = "/site_media/user/{{ context.csd }}"
+    onclick="document.getElementById('cheated').value='True';"> CSD file</a> used to generate the sound. If you open it, the
+    result will not count (you cheated!)
+
+    <br><br>
+    The <a href = "/site_media/user/{{ context.last_csd }}"> CSD file</a>
+    of the previous test where you answered correctly. -->
+
+</form>
+
+
+<!-- csound message field -->
+<!-- <div id="csound_message"> </div>
+ -->
+<!--pNaCl csound module -->
+<div id="engine"></div>
+
+</body>
+</html>

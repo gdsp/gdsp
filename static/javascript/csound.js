@@ -20,7 +20,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-
 var csound = (function() {
 
   /**
@@ -32,6 +31,8 @@ var csound = (function() {
     model.setAttribute('id', 'csound_module');
     model.setAttribute('path', '/static/pnacl');
     model.setAttribute('src', '/static/pnacl/csound.nmf');
+    // model.setAttribute('path', 'http://folk.ntnu.no/mortengk/csound/pnacl/Release/');
+    // model.setAttribute('src', 'http://folk.ntnu.no/mortengk/csound/pnacl/Release/csound.nmf');
     var mimetype = 'application/x-pnacl';
     model.setAttribute('type', mimetype);
     var csoundhook = document.getElementById('engine');
@@ -42,7 +43,7 @@ var csound = (function() {
    * Attaches handlers for events
    */
   function attachDefaultListeners() {
-    var csoundhook= document.getElementById('engine');
+    var csoundhook = document.getElementById('engine');
     csoundhook.addEventListener('load', moduleDidLoad, true);
     csoundhook.addEventListener('message', handleMessage, true);
     csoundhook.addEventListener('crash', handleCrash, true);
@@ -113,6 +114,18 @@ var csound = (function() {
         csoundhook.addEventListener('message', handleMessage, true);
    }
 
+  var tableData = null;
+  function handleTableMessage(event) {
+      updateStatus("fetching table data\n");
+      tableData = event.data;
+      updateStatus("finished fetching table data\n");
+        var csoundhook= document.getElementById('engine');
+        csoundhook.removeEventListener('message', handleTableMessage, true);
+        csoundhook.addEventListener('message', handleMessage, true);
+   }
+
+
+
   /**
    * handles messages by passing them to the window handler
    *
@@ -126,6 +139,11 @@ var csound = (function() {
           var csoundhook= document.getElementById('engine');
           csoundhook.removeEventListener('message', handleMessage, true);
           csoundhook.addEventListener('message', handleFileMessage, true);
+	}
+        else if(event.data == "ReadingTable:"){
+          var csoundhook= document.getElementById('engine');
+          csoundhook.removeEventListener('message', handleMessage, true);
+          csoundhook.addEventListener('message', handleTableMessage, true);
 	}
        else 
        window.handleMessage(event);
@@ -221,11 +239,124 @@ var csound = (function() {
    * Sets the value of a control channel in Csound
    *
    * @param {string} name The channel to be set.
-   * @param {string} value The value to set the channel.
+   * @param {number} value The value to set the channel.
    */
   function SetChannel(name, value){
     var channel = 'channel:' + name + ':';
     csound.module.postMessage(channel + value);
+   }
+
+
+  /**
+   * Sends in a MIDI message to Csound MIDI system
+   *
+   * @param {number} byte1 first midi byte (128-255)
+   * @param {number} byte2 second midi byte (0-127)
+   * @param {number} byte3 third midi byte (0-127)
+   */
+    function MIDIin(byte1, byte2, byte3){
+        if(byte1 < 128 || byte1 > 255) return;
+        if(byte2 < 0 || byte2 > 127) return;
+	       if(byte3 < 0 || byte3 > 127) return;
+	       var mess1 = 'midi:' + byte1;
+	       var mess2 = ':' + byte2;
+	       var mess3 = ':' + byte3;
+        csound.module.postMessage(mess1+mess2+mess3);
+    }
+    
+   /**
+   * Sends in a MIDI NOTEOFF message to Csound MIDI system
+   *
+   * @param {number} channel MIDI channel (1-16)
+   * @param {number} number MIDI note (0-127)
+   * @param {number} velocity MIDI velocity (0-127)
+   */ 
+    function NoteOff(channel,number,velocity){
+       if(channel > 0 && channel < 17)
+	csound.MIDIin(127+channel,number,velocity);
+    }
+
+  /**
+   * Sends in a MIDI NOTEON message to Csound MIDI system
+   *
+   * @param {number} channel MIDI channel (1-16)
+   * @param {number} number MIDI note (0-127)
+   * @param {number} velocity MIDI velocity (0-127)
+   */
+    function NoteOn(channel,number,velocity){
+      if(channel > 0 && channel < 17)
+	csound.MIDIin(143+channel,number,velocity);
+    }
+
+   /**
+   * Sends in a MIDI POLYAFT message to Csound MIDI system
+   *
+   * @param {number} channel MIDI channel (1-16)
+   * @param {number} number MIDI note (0-127)
+   * @param {number} aftertouch MIDI aftertouch (0-127)
+   */ 
+    function PolyAftertouch(channel,number,aftertouch){
+       if(channel > 0 && channel < 17)
+	csound.MIDIin(160+channel,number,aftertouch);
+    }
+   
+   /**
+   * Sends in a MIDI CONTROLCHANGE message to Csound MIDI system
+   *
+   * @param {number} channel MIDI channel (1-16)
+   * @param {number} control MIDI cc number (0-127)
+   * @param {number} amount  cc amount change (0-127)
+   */ 
+    function ControlChange(channel,control,amount){
+       if(channel > 0 && channel < 17)
+	  csound.MIDIin(176+channel,control,amount);
+    }
+    
+   /**
+   * Sends in a MIDI PROGRAMCHANGE message to Csound MIDI system
+   *
+   * @param {number} channel MIDI channel (1-16)
+   * @param {number} number MIDI pgm number (0-127)
+   */ 
+    function ProgramChange(channel,control){
+       if(channel > 0 && channel < 17)
+	  csound.MIDIin(192+channel,control,0);
+    }
+    
+   /**
+   * Sends in a MIDI MONOAFT message to Csound MIDI system
+   *
+   * @param {number} channel MIDI channel (1-16)
+   * @param {number} amount  aftertouch amount (0-127)
+   */ 
+    function Aftertouch(channel,amount){
+       if(channel > 0 && channel < 17)
+	  csound.MIDIin(208+channel,amount,0);
+    }    
+
+   /**
+   * Sends in a MIDI PITCHBEND message to Csound MIDI system
+   *
+   * @param {number} channel MIDI channel (1-16)
+   * @param {number} fine fine PB amount (LSB) (0-127)
+   * @param {number} coarse coarse PB amount (MSB) (0-127)
+   */ 
+    function PitchBend(channel,fine,coarse){
+       if(channel > 0 && channel < 17)
+	   csound.MIDIin(224+channel,fine,coarse);
+    }
+
+    
+  /**
+   * Sets the value of a table position
+   *
+   * @param {string} num The table to be set.
+   * @param {string} pos The pos to set.
+   * @param {string} value The value to set.
+   */
+    function SetTable(num, pos, value){
+    var mess = 'setTable:' + num + ':' + pos + ':';
+    csound.module.postMessage(mess + value);
    }
 
   /**
@@ -296,6 +427,24 @@ var csound = (function() {
        return fileData;
    }
 
+  /**
+   * Requests the data from a table
+   * module sends "Complete" message when done.
+   *
+   * @param {number} num  The table number
+   */
+   function RequestTable(num) {
+     csound.module.postMessage("getTable:" + num);
+   }
+
+  /**
+   * Returns the most recently requested table data.
+   *
+   */
+   function GetTableData(){
+       return tableData;
+   }
+
    function input_ok(s) {
     csound.module.postMessage({input: s.getAudioTracks()[0]});
    }
@@ -309,7 +458,8 @@ var csound = (function() {
    *
    */
    function StartInputAudio() {
-     navigator.webkitGetUserMedia({'audio': true},input_ok,input_fail);
+     var constraints = {audio:  { mandatory: { echoCancellation: false }}}	
+     navigator.webkitGetUserMedia(constraints,input_ok,input_fail);
    }
 
    return {
@@ -325,20 +475,30 @@ var csound = (function() {
     CompileOrc: CompileOrc,
     ReadScore: ReadScore,
     Event: Event,
+    SetTable : SetTable,
     SetChannel: SetChannel,
     CopyToLocal: CopyToLocal,
     CopyUrlToLocal: CopyUrlToLocal,
     RequestFileFromLocal: RequestFileFromLocal,
     GetFileData : GetFileData,
     RequestChannel: RequestChannel,
+    GetTableData : GetTableData,
+    RequestTable: RequestTable,
     SetStringChannel: SetStringChannel,
-    StartInputAudio: StartInputAudio
+    StartInputAudio: StartInputAudio,
+    MIDIin : MIDIin,
+    NoteOn : NoteOn,
+    NoteOff : NoteOff,
+    PolyAftertouch : PolyAftertouch,
+    ControlChange : ControlChange,
+    ProgramChange : ProgramChange,
+    Aftertouch : Aftertouch,
+    PitchBend : PitchBend   
   };
 
 }());
 
 document.addEventListener('DOMContentLoaded', function() {
-
      csound.updateStatus('page loaded');
      if (!(navigator.mimeTypes['application/x-pnacl'] !== undefined)) {
         csound.updateStatus('No support for pNaCl (maybe disabled?)');
@@ -346,6 +506,7 @@ document.addEventListener('DOMContentLoaded', function() {
         csound.updateStatus('loading csound module');
         csound.attachDefaultListeners();
         csound.createModule();
+        console.log("Csound module created")
     } else {
       csound.updateStatus('not ready');
     }

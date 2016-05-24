@@ -67,7 +67,7 @@ def getEffectParameterSet(FX, path):
                     output = output.rstrip('\n')
                 elif 'tags' in line:
                     pass #effectParameterSet['tags'] = line.strip().partition('tags:')[-1].split(',')
-                else: # not input or tag: parameter (name range map) line
+                else: # not input or tag: parameter (name range map label) line
                     numParameters += 1
                     l = line.split('range')
                     parameter = l[0].split('"')[1]
@@ -81,7 +81,17 @@ def getEffectParameterSet(FX, path):
                     if 'int' in m[1]: pType = 'int'
                     elif 'float' in m[1]: pType = 'float'
                     else: pType = '*undefined*'
-                    parameterMap = [r, mapping, pType]
+
+                    rhs = line.split("label")
+                    labelText = ""
+
+                    # Get rid of this try-except-block when all inc files are updated with labels
+                    try:
+                        labelText = rhs[1].split('"')[1]
+                    except Exception, e:
+                        pass
+
+                    parameterMap = [r, mapping, pType, labelText]
                     parameters[parameter] = parameterMap # save the range, mapping type and parameter type
             if '/* input parameters for this effect' in line:
                 capture = 1
@@ -89,10 +99,6 @@ def getEffectParameterSet(FX, path):
         parameters['output'] = output
         print input, output
         effectParameterSet[effect] = parameters#, audioInput, audioOutput]
-
-    print len(FX), 'effects'
-    print numParameters, 'parameters'
-
     return effectParameterSet
 
 def getEffectParameterValues(effectParameterSet):
@@ -104,15 +110,15 @@ def getEffectParameterValues(effectParameterSet):
     for effect in effectParameterSet.keys():
         #log.write(str(effect))
         # generate parameter values
-        for key,value in effectParameterSet[effect].items():
+        for key, value in effectParameterSet[effect].items():
             #log.write('key:'+str(key)+ ' value:' + str(value))
             if key == 'input':
                 pass
             elif key == 'output':
                 pass
             else:
-                # parse parameterMap (key:parameterName, value:[range, mapping, parameterType])
-                r,mapping, pType = value
+                # parse parameterMap (key:parameterName, value:[range, mapping, parameterType, label])
+                r, mapping, pType, label = value
                 if mapping == 'lin':
                     v = (random.random()*(r[1]-r[0]))+r[0]
                 elif mapping == 'expon':
@@ -329,16 +335,267 @@ def writeCsoundFile(filename, effectParameterValues, systemfiles, userfiles, inp
     f.close
     return 0
 
-###########################
-# autogenerate test
+
+def writeCsoundFileInteractiveParameters(filename, effectParameterValues, systemfiles, userfiles):
+    
+    # Create file object
+    outfilename = filename
+    f = open(os.path.join(userfiles, outfilename), 'w')
+    print 'opened file', outfilename
+
+    # Top tags and options
+    f.write("<CsoundSynthesizer>\n<CsOptions>\n-odac -W -d -b1024 -B2048\n</CsOptions>\n<CsInstruments>")
+
+    # Header
+    f.write('\n\n')
+    inc = open(systemfiles + '/general/interactive_header.inc', 'r')
+    for line in inc:
+        f.write(line)
+    inc.close()
+    
+    # Input channel, target (instr 1)
+    inc = open(systemfiles + '/general/interactive_input_target.inc', 'r')
+    for line in inc:
+        f.write(line)
+    inc.close()
+
+    # Input channel, user (instr 2)
+    f.write('\n\n')
+    inc = open(systemfiles + '/general/interactive_input_user.inc', 'r')
+    for line in inc:
+        f.write(line)
+    inc.close()
+
+
+    # Start at instrument 100 (target_instr) and increase number based on number of effects
+    # Corresponding user_instr will always be target_instr + 100
+    instrumentNumber = 100
+
+    # Initialize an empty string which will start all appended instruments in CsScore
+    csScore = ""
+
+    # Generate target effect code
+    for effect in effectParameterValues.keys():
+        
+        f.write("\n;******************************** Effect: %s ********************************\n"%effect[:-4])
+        f.write("instr {}\n\n".format(instrumentNumber))
+
+        # read parameter values and audio routing
+        for key, value in effectParameterValues[effect].items():
+            if key == 'input':
+                audioInput = value
+            elif key == 'output':
+                audioOutput = value
+            else:
+                s = '\t'+key+'     \t= '+ str(value) + '\n'
+                f.write(s)
+
+        f.write("\n\ta1 chnget \"target_audio_left\"\n")
+        f.write("\ta2 chnget \"target_audio_right\"\n")
+
+        # dual mono
+        if ('mono' in audioInput) and ('mono' in audioOutput):
+            # process first signal channel and write it temporarily to a1out
+            inc = open(os.path.join(systemfiles, 'effects', effect), 'r')
+            capture = 0 # skip writing the first parts of include files (meta information)
+            for line in inc:
+                if capture == 1:
+                    f.write(line)
+                if '*/' in line:
+                    capture = 1
+            inc.close()
+            f.write('\n')
+            f.write('\ta1out \t\t= a1\n')  #save output to temporary signal a1out
+            # process second signal 
+            f.write('\ta1 \t\t= a2\n')  #read the second signal
+            inc = open(os.path.join(systemfiles, 'effects',effect), 'r')
+            capture = 0 # skip writing the first parts of include files (meta information)
+            for line in inc:
+                if capture == 1:
+                    f.write(line)
+                if '*/' in line:
+                    capture = 1
+            inc.close()
+            f.write('\n')
+            f.write('\ta2 \t\t= a1\n')  #save output from second channel to a2
+            f.write('\ta1 \t\t= a1out\n')  #restore a1 from temporary storage a1out
+    
+        # in a stereo signal chain, using a 'mono-input-to-stereo-output' effect
+        # we want to preserve the input stereo image so use two separate instances of the effect
+        # we will pan the (four) outputs equally across the output stereo image
+        if ('mono' in audioInput) and ('stereo' in audioOutput):
+            f.write('\ta2in \t\t= a2\n')  #save input on second channel temporarily to a2in
+            # process first channel
+            inc = open(os.path.join(systemfiles, 'effects',effect), 'r')
+            capture = 0 # skip writing the first parts of include files (meta information)
+            for line in inc:
+                if capture == 1:
+                    f.write(line)
+                if '*/' in line:
+                    capture = 1
+            inc.close()
+            f.write('\n')
+            f.write('\ta1_1 \t\t= a1\n')  #save output from first channel to a1_1
+            f.write('\ta2_1 \t\t= a2\n')  #save output from second channel to a2_1
+            # process second channel
+            f.write('\ta1 \t\t= a2in\n')  #restore input on second channel from temporary storage in a2in
+            inc = open(os.path.join(systemfiles, 'effects',effect), 'r')
+            capture = 0 # skip writing the first parts of include files (meta information)
+            for line in inc:
+                if capture == 1:
+                    f.write(line)
+                if '*/' in line:
+                    capture = 1
+            inc.close()
+            f.write('\n')
+            #pan and output
+            f.write('\ta1 \t\t= (a1_1+(a1*sqrt(0.33))+(a2_1*sqrt(0.66)))*0.5\n') 
+            f.write('\ta2 \t\t= (a2+(a1*sqrt(0.66))+(a2_1*sqrt(0.33)))*0.5\n')
+            
+        # normal stereo effect
+        if ('stereo' in audioInput) and ('stereo' in audioOutput):
+            inc = open(os.path.join(systemfiles, 'effects',effect), 'r')
+            capture = 0 # skip writing the first parts of include files (meta information)
+            for line in inc:
+                if capture == 1:
+                    f.write(line)
+                if '*/' in line:
+                    capture = 1
+            inc.close()
+            f.write('\n')
+
+        f.write("\tchnset a1, \"target_audio_left\"\n")
+        f.write("\tchnset a2, \"target_audio_right\"\n")
+
+        f.write("\nendin\n")
+        csScore += "i{} 0 999999999\n".format(instrumentNumber)
+        instrumentNumber += 10
+
+
+    instrumentNumber = 200
+
+    # Generate user effect code
+    for effect in effectParameterValues.keys():
+        
+        effect_name = effect[:-4]
+
+        f.write("\n;******************************** Effect: %s ********************************\n"%effect_name)
+        f.write("instr {}\n\n".format(instrumentNumber))
+
+        # read parameter values and audio routing
+        for key, value in effectParameterValues[effect].items():
+            if key == 'input':
+                audioInput = value
+            elif key == 'output':
+                audioOutput = value
+            else:
+                #s = '\t'+key+'     \t= '+ str(value) + '\n'
+                s = "{} \tchnget \"{}\"\n".format(key, effect_name + "_" + key)
+                f.write(s)
+
+        f.write("\n\ta1 chnget \"user_audio_left\"\n")
+        f.write("\ta2 chnget \"user_audio_right\"\n")
+
+        # dual mono
+        if ('mono' in audioInput) and ('mono' in audioOutput):
+            # process first signal channel and write it temporarily to a1out
+            inc = open(os.path.join(systemfiles, 'effects', effect), 'r')
+            capture = 0 # skip writing the first parts of include files (meta information)
+            for line in inc:
+                if capture == 1:
+                    f.write(line)
+                if '*/' in line:
+                    capture = 1
+            inc.close()
+            f.write('\n')
+            f.write('\ta1out \t\t= a1\n')  #save output to temporary signal a1out
+            # process second signal 
+            f.write('\ta1 \t\t= a2\n')  #read the second signal
+            inc = open(os.path.join(systemfiles, 'effects',effect), 'r')
+            capture = 0 # skip writing the first parts of include files (meta information)
+            for line in inc:
+                if capture == 1:
+                    f.write(line)
+                if '*/' in line:
+                    capture = 1
+            inc.close()
+            f.write('\n')
+            f.write('\ta2 \t\t= a1\n')  #save output from second channel to a2
+            f.write('\ta1 \t\t= a1out\n')  #restore a1 from temporary storage a1out
+    
+        # in a stereo signal chain, using a 'mono-input-to-stereo-output' effect
+        # we want to preserve the input stereo image so use two separate instances of the effect
+        # we will pan the (four) outputs equally across the output stereo image
+        if ('mono' in audioInput) and ('stereo' in audioOutput):
+            f.write('\ta2in \t\t= a2\n')  #save input on second channel temporarily to a2in
+            # process first channel
+            inc = open(os.path.join(systemfiles, 'effects',effect), 'r')
+            capture = 0 # skip writing the first parts of include files (meta information)
+            for line in inc:
+                if capture == 1:
+                    f.write(line)
+                if '*/' in line:
+                    capture = 1
+            inc.close()
+            f.write('\n')
+            f.write('\ta1_1 \t\t= a1\n')  #save output from first channel to a1_1
+            f.write('\ta2_1 \t\t= a2\n')  #save output from second channel to a2_1
+            # process second channel
+            f.write('\ta1 \t\t= a2in\n')  #restore input on second channel from temporary storage in a2in
+            inc = open(os.path.join(systemfiles, 'effects', effect), 'r')
+            capture = 0 # skip writing the first parts of include files (meta information)
+            for line in inc:
+                if capture == 1:
+                    f.write(line)
+                if '*/' in line:
+                    capture = 1
+            inc.close()
+            f.write('\n')
+            #pan and output
+            f.write('\ta1 \t\t= (a1_1+(a1*sqrt(0.33))+(a2_1*sqrt(0.66)))*0.5\n') 
+            f.write('\ta2 \t\t= (a2+(a1*sqrt(0.66))+(a2_1*sqrt(0.33)))*0.5\n')
+            
+        # normal stereo effect
+        if ('stereo' in audioInput) and ('stereo' in audioOutput):
+            inc = open(os.path.join(systemfiles, 'effects', effect), 'r')
+            capture = 0 # skip writing the first parts of include files (meta information)
+            for line in inc:
+                if capture == 1:
+                    f.write(line)
+                if '*/' in line:
+                    capture = 1
+            inc.close()
+            f.write('\n')
+
+        f.write("\tchnset a1, \"user_audio_left\"\n")
+        f.write("\tchnset a2, \"user_audio_right\"\n")
+
+        f.write("\nendin\n")
+        csScore += "i{} 0 999999999\n".format(instrumentNumber)
+        instrumentNumber += 10
+
+    # Master channel (instr 999)
+    f.write('\n\n')
+    inc = open(systemfiles + '/general/interactive_master.inc', 'r')
+    for line in inc:
+        f.write(line)
+    inc.close()
+    
+    # Closing tags and score
+    f.write("</CsInstruments>\n<CsScore>\n{}i999 0 999999999\n</CsScore>\n</CsoundSynthesizer>".format(csScore))
+    
+    f.close
+    return 0
+
 
 if __name__ == '__main__':
     path = sys.argv[1]
     print path
-    csoundFilename = 'temp.csd'
-    effectprocessors = getEffects(path) # list of available effects
+    csoundFilename = 'target_effect.inc'
+    effectprocessors = getEffects(path) # list of available effects    
+    #effectprocessors = ['reverbsc.inc', 'freeverb.inc'] # Temporarily only using reverbsc
 
-    numEffects = 3 # adjust difficulty: number of simultaneous effects (only used for random selection, not used if we specify a list of effects)
+    numEffects = 2 # adjust difficulty: number of simultaneous effects (only used for random selection, not used if we specify a list of effects)
     effects = [] # list to hold the effects we will use in this test (empty list will be filled with randomly chosen effects)
     try: 
         effectArg = sys.argv[2] # try to get effects list (or number of random effects) from command line input
@@ -354,7 +611,6 @@ if __name__ == '__main__':
         else: pass
     except: 
         pass
-    print effects
     if effects == []:
         i = 0
         while i < numEffects:
@@ -365,17 +621,22 @@ if __name__ == '__main__':
 
     effectParameterSet = getEffectParameterSet(effects, path) # get list of effect parameters for the chosen effects
     effectParameterValues = getEffectParameterValues(effectParameterSet) #get values for the effect parameters
-    
     inputsound = os.path.join(path,'samples',random.choice(getWavefileNames(path)))
-    retCode = writeCsoundFile(csoundFilename,effectParameterValues, path, inputsound)
+    retCode = writeCsoundFileInteractiveParameters(csoundFilename, effectParameterValues, path, path)
+    
+    '''
     print '*******************'
     print effectParameterSet
     print '*******************'
     print effectParameterValues
     print '*******************'
-        
+    
+    print "RETCODE:"
+    print retCode
+    
     import subprocess
     retcode = subprocess.call(['csound', csoundFilename])
+    print "RETCODE:"
     print retcode
     if retcode == 0:
         retcode = subprocess.call(['csound', 'normalize.csd'])
@@ -385,3 +646,5 @@ if __name__ == '__main__':
         print 'effects used:', effects
     else:
         print 'csound error'
+    '''
+

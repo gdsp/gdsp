@@ -1,9 +1,9 @@
 /* input parameters for this effect
-	"kMaxFreq" range (1000, 3000) map (expon float)
-	"kMinFreq" range (300, 800) map (expon float)
-	"kRate" range (0.1, 1) map (lin float)
-	"kOffset" range (1, 15)  map (expon float)
-	"kResonance" range (0, 0.8) map (lin float)
+	"kMaxFreq" range (1000, 3000) map (expon float) label "Max freq"
+	"kMinFreq" range (300, 800) map (expon float) label "Min freq"
+	"kRate" range (0.1, 1) map (lin float) label "Rate"
+	"kOffset" range (1, 15)  map (expon float) label "Offset"
+	"kResonance" range (0, 0.8) map (lin float) label "Resonance"
 	input:mono output:mono
 	tags:time based, phaser, modulation, filter, allpass
 */

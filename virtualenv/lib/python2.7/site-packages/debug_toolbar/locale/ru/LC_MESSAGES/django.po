@@ -1,0 +1,569 @@
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# 
+# 
+# Translators:
+# Ilya Baryshev <baryshev@gmail.com>, 2013
+# Mikhail Korobov, 2009
+# Алексей Борискин <sun.void@gmail.com>, 2013
+msgid ""
+msgstr ""
+"Project-Id-Version: Django Debug Toolbar\n"
+"Report-Msgid-Bugs-To: http://github.com/django-debug-toolbar/django-debug-toolbar/issues\n"
+"POT-Creation-Date: 2013-10-26 22:00+0200\n"
+"PO-Revision-Date: 2013-10-27 16:00+0000\n"
+"Last-Translator: Алексей Борискин <sun.void@gmail.com>\n"
+"Language-Team: Russian (http://www.transifex.com/projects/p/django-debug-toolbar/language/ru/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ru\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+#: panels/cache.py:190
+msgid "Cache"
+msgstr "Кэш"
+
+#: panels/cache.py:194
+#, python-format
+msgid "%(cache_calls)d call in %(time).2fms"
+msgid_plural "%(cache_calls)d calls in %(time).2fms"
+msgstr[0] "%(cache_calls)d обращение за %(time).2fms"
+msgstr[1] "%(cache_calls)d обращения за %(time).2fms"
+msgstr[2] "%(cache_calls)d обращений за %(time).2fms"
+
+#: panels/cache.py:201
+#, python-format
+msgid "Cache calls from %(count)d backend"
+msgid_plural "Cache calls from %(count)d backends"
+msgstr[0] "Обращения к кэшу от %(count)d бэкенда"
+msgstr[1] "Обращения к кэшу от %(count)d бэкендов"
+msgstr[2] "Обращения к кэшу от %(count)d бэкендов"
+
+#: panels/headers.py:39 panels/headers.py:42
+msgid "HTTP Headers"
+msgstr "HTTP-заголовки"
+
+#: panels/logger.py:127
+msgid "Logging"
+msgstr "Логи"
+
+#: panels/logger.py:132
+#, python-format
+msgid "%(count)s message"
+msgid_plural "%(count)s messages"
+msgstr[0] "%(count)s сообщение"
+msgstr[1] "%(count)s сообщений"
+msgstr[2] "%(count)s сообщений"
+
+#: panels/logger.py:136
+msgid "Log Messages"
+msgstr "Сообщения в логе"
+
+#: panels/profiling.py:152 panels/profiling.py:158
+msgid "Profiling"
+msgstr "Профилирование"
+
+#: panels/request_vars.py:20 panels/request_vars.py:23
+msgid "Request Vars"
+msgstr "Request переменные"
+
+#: panels/request_vars.py:38
+msgid "<no view>"
+msgstr "<нет view>"
+
+#: panels/request_vars.py:50
+msgid "<unavailable>"
+msgstr "<недоступно>"
+
+#: panels/settings_vars.py:20
+msgid "Settings"
+msgstr "Настройки"
+
+#: panels/settings_vars.py:23
+#, python-format
+msgid "Settings from <code>%s</code>"
+msgstr "Настройки из <code>%s</code>"
+
+#: panels/signals.py:43 panels/signals.py:61
+msgid "Signals"
+msgstr "Сигналы"
+
+#: panels/signals.py:52
+#, python-format
+msgid "%(num_receivers)d receiver of 1 signal"
+msgid_plural "%(num_receivers)d receivers of 1 signal"
+msgstr[0] "%(num_receivers)d получатель 1 сигнала"
+msgstr[1] "%(num_receivers)d получателя 1 сигнала"
+msgstr[2] "%(num_receivers)d получателей 1 сигнала"
+
+#: panels/signals.py:55
+#, python-format
+msgid "%(num_receivers)d receiver of %(num_signals)d signals"
+msgid_plural "%(num_receivers)d receivers of %(num_signals)d signals"
+msgstr[0] "%(num_receivers)d получатель %(num_signals)d сигнала(ов)"
+msgstr[1] "%(num_receivers)d получателя %(num_signals)d сигнала(ов)"
+msgstr[2] "%(num_receivers)d получателей %(num_signals)d сигнала(ов)"
+
+#: panels/sql.py:35
+msgid "Autocommit"
+msgstr "Autocommit"
+
+#: panels/sql.py:36
+msgid "Read uncommitted"
+msgstr "Read uncommitted"
+
+#: panels/sql.py:37
+msgid "Read committed"
+msgstr "Read committed"
+
+#: panels/sql.py:38
+msgid "Repeatable read"
+msgstr "Repeatable read"
+
+#: panels/sql.py:39
+msgid "Serializable"
+msgstr "Serializable"
+
+#: panels/sql.py:50
+msgid "Idle"
+msgstr "Ожидание"
+
+#: panels/sql.py:51
+msgid "Active"
+msgstr "Действие"
+
+#: panels/sql.py:52
+msgid "In transaction"
+msgstr "В транзакции"
+
+#: panels/sql.py:53
+msgid "In error"
+msgstr "Ошибка"
+
+#: panels/sql.py:54
+msgid "Unknown"
+msgstr "Неизвестно"
+
+#: panels/sql.py:122
+msgid "SQL"
+msgstr "SQL"
+
+#: panels/template.py:104
+msgid "Templates"
+msgstr "Шаблоны"
+
+#: panels/template.py:108
+#, python-format
+msgid "Templates (%(num_templates)s rendered)"
+msgstr "Шаблоны (обработано %(num_templates)s)"
+
+#: panels/timer.py:60 panels/timer.py:76
+#: templates/debug_toolbar/panels/logger.html:7
+#: templates/debug_toolbar/panels/sql_explain.html:11
+#: templates/debug_toolbar/panels/sql_profile.html:12
+#: templates/debug_toolbar/panels/sql_select.html:11
+msgid "Time"
+msgstr "Время"
+
+#: panels/timer.py:68
+#, python-format
+msgid "CPU: %(cum)0.2fms (%(total)0.2fms)"
+msgstr "CPU: %(cum)0.2fms (%(total)0.2fms)"
+
+#: panels/timer.py:73
+#, python-format
+msgid "TOTAL: %0.2fms"
+msgstr "ИТОГО: %0.2fms"
+
+#: panels/timer.py:87
+msgid "User CPU time"
+msgstr "User CPU time"
+
+#: panels/timer.py:87
+#, python-format
+msgid "%(utime)0.3f msec"
+msgstr "%(utime)0.3f мс"
+
+#: panels/timer.py:88
+msgid "System CPU time"
+msgstr "System CPU time"
+
+#: panels/timer.py:88
+#, python-format
+msgid "%(stime)0.3f msec"
+msgstr "%(stime)0.3f мс"
+
+#: panels/timer.py:89
+msgid "Total CPU time"
+msgstr "Total CPU time"
+
+#: panels/timer.py:89
+#, python-format
+msgid "%(total)0.3f msec"
+msgstr "%(total)0.3f мс"
+
+#: panels/timer.py:90
+msgid "Elapsed time"
+msgstr "Затраченное время"
+
+#: panels/timer.py:90
+#, python-format
+msgid "%(total_time)0.3f msec"
+msgstr "%(total_time)0.3f мс"
+
+#: panels/timer.py:91
+msgid "Context switches"
+msgstr "Переключений контекста"
+
+#: panels/timer.py:91
+#, python-format
+msgid "%(vcsw)d voluntary, %(ivcsw)d involuntary"
+msgstr "%(vcsw)d намеренных, %(ivcsw)d вынужденных"
+
+#: panels/version.py:23 panels/version.py:32
+msgid "Versions"
+msgstr "Версии"
+
+#: templates/debug_toolbar/base.html:11
+msgid "Hide Toolbar"
+msgstr "Скрыть панель"
+
+#: templates/debug_toolbar/base.html:11
+msgid "Hide"
+msgstr "Скрыть"
+
+#: templates/debug_toolbar/base.html:36
+msgid "Show Toolbar"
+msgstr "Показать панель"
+
+#: templates/debug_toolbar/base.html:42
+msgid "Close"
+msgstr "Закрыть"
+
+#: templates/debug_toolbar/redirect.html:7
+#: templates/debug_toolbar/panels/logger.html:10
+msgid "Location"
+msgstr "Место"
+
+#: templates/debug_toolbar/redirect.html:9
+msgid ""
+"The Django Debug Toolbar has intercepted a redirect to the above URL for "
+"debug viewing purposes.  You can click the above link to continue with the "
+"redirect as normal.  If you'd like to disable this feature, set the "
+"<code>DEBUG_TOOLBAR_CONFIG</code> dictionary's key "
+"<code>INTERCEPT_REDIRECTS</code> to <code>False</code>."
+msgstr "Django Debug Toolbar в отладочных целях перехватила редирект на адрес, указанный выше. Вы можете нажать на ссылку, чтобы продолжить обычное выполнение. Если вы хотите отключить это поведение, установите в словаре <code>DEBUG_TOOLBAR_CONFIG</code> ключ <code>INTERCEPT_REDIRECTS</code> в значение <code>False</code>."
+
+#: templates/debug_toolbar/panels/cache.html:2
+msgid "Summary"
+msgstr "Сводка"
+
+#: templates/debug_toolbar/panels/cache.html:6
+msgid "Total Calls"
+msgstr "Всего вызовов"
+
+#: templates/debug_toolbar/panels/cache.html:7
+msgid "Total Time"
+msgstr "Общее время"
+
+#: templates/debug_toolbar/panels/cache.html:8
+msgid "Cache Hits"
+msgstr "Попаданий в кэш"
+
+#: templates/debug_toolbar/panels/cache.html:9
+msgid "Cache Misses"
+msgstr "Промахов кэша"
+
+#: templates/debug_toolbar/panels/cache.html:21
+msgid "Commands"
+msgstr "Команды"
+
+#: templates/debug_toolbar/panels/cache.html:39
+msgid "Calls"
+msgstr "Вызовы"
+
+#: templates/debug_toolbar/panels/cache.html:43
+#: templates/debug_toolbar/panels/sql.html:21
+msgid "Time (ms)"
+msgstr "Время (мс)"
+
+#: templates/debug_toolbar/panels/cache.html:44
+msgid "Type"
+msgstr "Тип"
+
+#: templates/debug_toolbar/panels/cache.html:45
+#: templates/debug_toolbar/panels/request_vars.html:9
+msgid "args"
+msgstr "args"
+
+#: templates/debug_toolbar/panels/cache.html:46
+#: templates/debug_toolbar/panels/request_vars.html:10
+msgid "kwargs"
+msgstr "kwargs"
+
+#: templates/debug_toolbar/panels/cache.html:47
+msgid "Backend"
+msgstr "Бэкенд"
+
+#: templates/debug_toolbar/panels/headers.html:5
+msgid "Key"
+msgstr "Заголовок"
+
+#: templates/debug_toolbar/panels/headers.html:6
+#: templates/debug_toolbar/panels/request_vars.html:41
+#: templates/debug_toolbar/panels/request_vars.html:67
+#: templates/debug_toolbar/panels/request_vars.html:89
+#: templates/debug_toolbar/panels/request_vars.html:111
+#: templates/debug_toolbar/panels/settings_vars.html:6
+#: templates/debug_toolbar/panels/timer.html:11
+msgid "Value"
+msgstr "Значение"
+
+#: templates/debug_toolbar/panels/logger.html:6
+msgid "Level"
+msgstr "Уровень"
+
+#: templates/debug_toolbar/panels/logger.html:8
+msgid "Channel"
+msgstr "Канал"
+
+#: templates/debug_toolbar/panels/logger.html:9
+msgid "Message"
+msgstr "Сообщение"
+
+#: templates/debug_toolbar/panels/logger.html:26
+msgid "No messages logged"
+msgstr "Сообщений нет"
+
+#: templates/debug_toolbar/panels/profiling.html:6
+msgid "Call"
+msgstr "Вызов"
+
+#: templates/debug_toolbar/panels/profiling.html:7
+msgid "CumTime"
+msgstr "КумулВрем"
+
+#: templates/debug_toolbar/panels/profiling.html:8
+#: templates/debug_toolbar/panels/profiling.html:10
+msgid "Per"
+msgstr "ЗаВызов"
+
+#: templates/debug_toolbar/panels/profiling.html:9
+msgid "TotTime"
+msgstr "ИтогВремя"
+
+#: templates/debug_toolbar/panels/profiling.html:11
+msgid "Count"
+msgstr "Кол-во"
+
+#: templates/debug_toolbar/panels/request_vars.html:3
+msgid "View information"
+msgstr "View"
+
+#: templates/debug_toolbar/panels/request_vars.html:7
+msgid "View Function"
+msgstr "View функция"
+
+#: templates/debug_toolbar/panels/request_vars.html:8
+msgid "URL Name"
+msgstr "Название URL"
+
+#: templates/debug_toolbar/panels/request_vars.html:31
+msgid "COOKIES Variables"
+msgstr "COOKIES"
+
+#: templates/debug_toolbar/panels/request_vars.html:40
+#: templates/debug_toolbar/panels/request_vars.html:66
+#: templates/debug_toolbar/panels/request_vars.html:88
+#: templates/debug_toolbar/panels/request_vars.html:110
+msgid "Variable"
+msgstr "Переменная"
+
+#: templates/debug_toolbar/panels/request_vars.html:54
+msgid "No COOKIE data"
+msgstr "Нет COOKIE данных"
+
+#: templates/debug_toolbar/panels/request_vars.html:57
+msgid "SESSION Variables"
+msgstr "SESSION"
+
+#: templates/debug_toolbar/panels/request_vars.html:80
+msgid "No SESSION data"
+msgstr "Нет SESSION данных"
+
+#: templates/debug_toolbar/panels/request_vars.html:83
+msgid "GET Variables"
+msgstr "GET"
+
+#: templates/debug_toolbar/panels/request_vars.html:102
+msgid "No GET data"
+msgstr "Нет GET данных"
+
+#: templates/debug_toolbar/panels/request_vars.html:105
+msgid "POST Variables"
+msgstr "POST"
+
+#: templates/debug_toolbar/panels/request_vars.html:124
+msgid "No POST data"
+msgstr "Нет POST данных"
+
+#: templates/debug_toolbar/panels/settings_vars.html:5
+msgid "Setting"
+msgstr "Параметр"
+
+#: templates/debug_toolbar/panels/signals.html:5
+msgid "Signal"
+msgstr "Сигнал"
+
+#: templates/debug_toolbar/panels/signals.html:6
+msgid "Providing Args"
+msgstr "Аргументы сигнала"
+
+#: templates/debug_toolbar/panels/signals.html:7
+msgid "Receivers"
+msgstr "Получатели сигнала"
+
+#: templates/debug_toolbar/panels/sql.html:8
+#, python-format
+msgid "%(num)s query"
+msgid_plural "%(num)s queries"
+msgstr[0] "%(num)s запрос"
+msgstr[1] "%(num)s запроса"
+msgstr[2] "%(num)s запросов"
+
+#: templates/debug_toolbar/panels/sql.html:19
+msgid "Query"
+msgstr "Запрос"
+
+#: templates/debug_toolbar/panels/sql.html:20
+#: templates/debug_toolbar/panels/timer.html:36
+msgid "Timeline"
+msgstr "Временная диаграмма"
+
+#: templates/debug_toolbar/panels/sql.html:22
+msgid "Action"
+msgstr "Действие"
+
+#: templates/debug_toolbar/panels/sql.html:65
+msgid "Connection:"
+msgstr "Соединение:"
+
+#: templates/debug_toolbar/panels/sql.html:67
+msgid "Isolation level:"
+msgstr "Уровень изоляции:"
+
+#: templates/debug_toolbar/panels/sql.html:70
+msgid "Transaction status:"
+msgstr "Статус транзакции:"
+
+#: templates/debug_toolbar/panels/sql.html:84
+msgid "(unknown)"
+msgstr "(неизвестно)"
+
+#: templates/debug_toolbar/panels/sql.html:93
+msgid "No SQL queries were recorded during this request."
+msgstr "Во время обработки этого HTTP-запроса не было записано ни одного SQL-запроса."
+
+#: templates/debug_toolbar/panels/sql_explain.html:3
+#: templates/debug_toolbar/panels/sql_profile.html:3
+#: templates/debug_toolbar/panels/sql_select.html:3
+#: templates/debug_toolbar/panels/template_source.html:3
+msgid "Back"
+msgstr "Назад"
+
+#: templates/debug_toolbar/panels/sql_explain.html:4
+msgid "SQL Explained"
+msgstr "SQL Explain"
+
+#: templates/debug_toolbar/panels/sql_explain.html:9
+#: templates/debug_toolbar/panels/sql_profile.html:10
+#: templates/debug_toolbar/panels/sql_select.html:9
+msgid "Executed SQL"
+msgstr "Запрос"
+
+#: templates/debug_toolbar/panels/sql_explain.html:13
+#: templates/debug_toolbar/panels/sql_profile.html:14
+#: templates/debug_toolbar/panels/sql_select.html:13
+msgid "Database"
+msgstr "База данных"
+
+#: templates/debug_toolbar/panels/sql_profile.html:4
+msgid "SQL Profiled"
+msgstr "Профилирование SQL"
+
+#: templates/debug_toolbar/panels/sql_profile.html:37
+msgid "Error"
+msgstr "Ошибка"
+
+#: templates/debug_toolbar/panels/sql_select.html:4
+msgid "SQL Selected"
+msgstr "Выбранные SQL-запросы"
+
+#: templates/debug_toolbar/panels/sql_select.html:36
+msgid "Empty set"
+msgstr "Ничего, ноль строк"
+
+#: templates/debug_toolbar/panels/template_source.html:4
+msgid "Template Source"
+msgstr "Источник шаблона"
+
+#: templates/debug_toolbar/panels/templates.html:2
+msgid "Template path"
+msgid_plural "Template paths"
+msgstr[0] "Путь к шаблонам"
+msgstr[1] "Пути к шаблонам"
+msgstr[2] "Пути к шаблонам"
+
+#: templates/debug_toolbar/panels/templates.html:10
+#: templates/debug_toolbar/panels/templates.html:28
+#: templates/debug_toolbar/panels/templates.html:43
+msgid "None"
+msgstr "Нет"
+
+#: templates/debug_toolbar/panels/templates.html:13
+msgid "Template"
+msgid_plural "Templates"
+msgstr[0] "Шаблон"
+msgstr[1] "Шаблоны"
+msgstr[2] "Шаблоны"
+
+#: templates/debug_toolbar/panels/templates.html:21
+#: templates/debug_toolbar/panels/templates.html:37
+msgid "Toggle Context"
+msgstr "Контекст"
+
+#: templates/debug_toolbar/panels/templates.html:31
+msgid "Context processor"
+msgid_plural "Context processors"
+msgstr[0] "Контекст процессор"
+msgstr[1] "Контекст процессоры"
+msgstr[2] "Контекст процессоры"
+
+#: templates/debug_toolbar/panels/timer.html:2
+msgid "Resource Usage"
+msgstr "Потребление ресурсов"
+
+#: templates/debug_toolbar/panels/timer.html:10
+msgid "Resource"
+msgstr "Ресурс"
+
+#: templates/debug_toolbar/panels/timer.html:26
+msgid "Browser Timing"
+msgstr "Браузерное время"
+
+#: templates/debug_toolbar/panels/timer.html:35
+msgid "Timing Attribute"
+msgstr "Событие"
+
+#: templates/debug_toolbar/panels/timer.html:37
+msgid "Milliseconds since navigation start (+length)"
+msgstr "С начала навигации в мс (+продолжительность)"
+
+#: templates/debug_toolbar/panels/versions.html:5
+msgid "Name"
+msgstr "Название"
+
+#: templates/debug_toolbar/panels/versions.html:6
+msgid "Version"
+msgstr "Версия"

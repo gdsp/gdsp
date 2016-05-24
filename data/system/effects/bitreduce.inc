@@ -1,5 +1,5 @@
 /* input parameters for this effect
-	"kBits" range (1, 12) map (expon int)
+	"kBits" range (1, 12) map (expon int) label "Bits"
 	input:mono output:mono
 	tags:distortion, decimation, bit reduction
 */

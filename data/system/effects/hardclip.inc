@@ -1,5 +1,5 @@
 /* input parameters for this effect
-	"kClip" range (0.1, 0.9) map (expon float)
+	"kClip" range (0.1, 0.9) map (expon float) label "Clip"
 	input:mono output:mono
 	tags:distortion, clipping
 */

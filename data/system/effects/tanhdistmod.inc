@@ -1,7 +1,7 @@
 /* input parameters for this effect
-	"kDrive" range (1, 10) map (expon float)
-	"kShape1" range (0, 1) map (lin float)
-	"kShape2" range (0, 1) map (lin float)
+	"kDrive" range (1, 10) map (expon float) label "Drive"
+	"kShape1" range (0, 1) map (lin float) label "Shape A"
+	"kShape2" range (0, 1) map (lin float) label "Shape B"
 	input:mono output:mono
 	tags:distortion, clipping, waveshaping, tube amp
 */

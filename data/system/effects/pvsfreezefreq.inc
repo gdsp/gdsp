@@ -1,5 +1,5 @@
 /* input parameters for this effect
-	"krate" range (0.2, 10) map (expon float)
+	"kRate" range (0.2, 10) map (expon float) label "Rate"
 	input:mono output:mono
 	tags:spectral, fft, freeze
 */
@@ -9,6 +9,6 @@
 	iwinsize	= ifftsize
 	iwintype 	= 0
 	fsig1 		pvsanal a1, ifftsize, ioverlap, iwinsize, iwintype 
-	kfreez		oscil	1, krate, giSquarePosWide, 0.99
+	kfreez		oscil	1, kRate, giSquarePosWide, 0.99
 	freeze		pvsfreeze fsig1, 0, kfreez
 	a1	  	pvsynth   freeze

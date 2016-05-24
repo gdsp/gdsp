@@ -1,6 +1,6 @@
 /* input parameters for this effect
-	"kmodFreq" range (0.4, 7) map (log float)
-	"kFeed" range (0.1, 0.47) map (lin float)
+	"kmodFreq" range (0.4, 7) map (expon float) label "Modulation frequency"
+	"kFeed" range (0.1, 0.47) map (lin float) label "Feedback"
 	input:mono output:stereo
 	tags:modulation,amplitude modulation, single sideband, phaser
 */

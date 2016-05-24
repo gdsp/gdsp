@@ -46,7 +46,8 @@ MEDIA_URL = '/media/'
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/var/www/example.com/static/"
-STATIC_ROOT = path.join(PROJECT_DIRECTORY, 'collected_static_files')
+#STATIC_ROOT = path.join(PROJECT_DIRECTORY, 'collected_static_files')
+STATIC_ROOT = '/Users/Morten/Sites/mysite.com/static/'  
 
 # Absolute path to the data directory (used by the tutor)
 DATA_ROOT = path.join(PROJECT_DIRECTORY, 'data/')
@@ -91,7 +92,7 @@ WSGI_APPLICATION = 'gdsp.wsgi.application'
 
 TEMPLATE_DIRS = (
     # Don't forget to use absolute paths, not relative paths.
-    path.join(PROJECT_DIRECTORY, 'templates')
+    path.join(PROJECT_DIRECTORY, 'templates'),
 )
 
 INSTALLED_APPS = (
@@ -110,15 +111,15 @@ INSTALLED_APPS = (
     'tutor',
 )
 
-# Enable the Django Debug Toolbar in development
-if not environ.get('DJANGO_PRODUCTION', None):
-    MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + (
-            'debug_toolbar.middleware.DebugToolbarMiddleware',
-    )
-    INSTALLED_APPS = INSTALLED_APPS + (
-            'debug_toolbar',
-    )
-    INTERNAL_IPS = ('127.0.0.1',)
-    DEBUG_TOOLBAR_CONFIG = {
-            'INTERCEPT_REDIRECTS': False,
-    }
+# # Enable the Django Debug Toolbar in development
+# if not environ.get('DJANGO_PRODUCTION', None):
+#     MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + (
+#             'debug_toolbar.middleware.DebugToolbarMiddleware',
+#     )
+#     INSTALLED_APPS = INSTALLED_APPS + (
+#             'debug_toolbar',
+#     )
+#     INTERNAL_IPS = ('127.0.0.1',)
+#     DEBUG_TOOLBAR_CONFIG = {
+#             'INTERCEPT_REDIRECTS': False,
+#     }

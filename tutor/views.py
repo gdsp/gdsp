@@ -6,7 +6,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.template import RequestContext
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
-from django.conf.urls.defaults import patterns, include, url
+from django.conf.urls import patterns, include, url
 
 from tutor.models import Result
 import tests
@@ -22,6 +22,7 @@ def test(request, test_name, level, FX):
         lesson_id = path[:path.find('/')]
         request.COOKIES['lesson_id'] = lesson_id
 
+    print("request.COOKIES['lesson_id']: ", request.COOKIES['lesson_id'])
     context = {}
     context['test_name'] = test_name
     context['level'] = level
@@ -29,12 +30,12 @@ def test(request, test_name, level, FX):
 
     test = tests.find(test_name, level, FX, request.user)
 
-    correct = test.store_result(request) if request.method == 'POST' else False
+    correct = test.store_result(request) if request.method == 'POST' else False    
     answer, fxs, sound, csd = test.check(request, correct) if request.method == 'POST' else test.first()
 
     context['choices'] = fxs
     context['answer'] = answer 
-    context['sound'] = sound 
+    context['sound'] = sound
     context['csd'] = csd
     try:
         context['last_csd'] = Result.objects.filter(user = request.user).filter(correct = 1).latest('timestamp').csd
@@ -50,6 +51,146 @@ def test(request, test_name, level, FX):
 
     if key in request.META['HTTP_REFERER']:
         response.set_cookie('lesson_id', lesson_id)
+    return response
+
+def test_interactive(request, test_name, level, FX):
+
+    test = tests.find(test_name, level, FX, request.user)
+    #correct = test.store_result(request) if request.method == 'POST' else False  
+
+    context = {}
+
+    if request.method == 'GET':
+        effect_set, effect_values, sound, csd = test.first()
+        
+        # Remove input and output keys from the dictionary. 
+        # TODO: Do this in csdWriter.py instead
+        for key, val in effect_set.iteritems():
+            del val['input']
+            del val['output']
+
+        for key, val in effect_values.iteritems():
+            del val['input']
+            del val['output']
+
+        # Get all effect names
+        config = {}
+        execfile(md.systemfiles + '/effectsDict_edit.txt', config)
+        humanReadableEffectNames = config['effectsDict']
+
+        # Remove ".inc" from both the keys of both effect dictionaries
+        effect_keys = list(effect_set.keys())
+        for effect_key in effect_keys:
+            effect_set[effect_key[:-4]] = dict(effect_set.pop(effect_key))
+            effect_values[effect_key[:-4]] = dict(effect_values.pop(effect_key))
+
+        queryset = TestElement.objects.all()
+        queryset.default_factory = None
+
+        # Add a default answer value (0.0) in a touple along with the generated value 
+        for effect, parameters in effect_values.iteritems():
+            for parameter_name, parameter_value in parameters.iteritems():
+                min_value = effect_set[effect][parameter_name][0][0]
+                max_value = effect_set[effect][parameter_name][0][1]
+                shape = effect_set[effect][parameter_name][1]
+
+                effect_set[effect][parameter_name].append([parameter_value, test.getValueFromFunctionShape((max_value+min_value)*0.5, min_value, max_value, shape)])
+                effect_set[effect][parameter_name].append("unevaluated")
+                # Appending the effect title to each parameter. Not good...
+                effect_set[effect][parameter_name].append(humanReadableEffectNames[effect + ".inc"])
+
+        input_level = 1.0 # Default input level
+
+        context = {
+            'test_elements': queryset,
+            'test_name': test_name,
+            'level': level,
+            'effect_set': dict(effect_set),
+            'sound': sound,
+            'csd': csd,
+            'FX': FX,
+            'input_level': input_level,
+        }
+    elif request.method == 'POST':
+        correct, effect_set = test.store_result(request)
+
+        if correct:
+            effect_set, effect_values, sound, csd = test.first()
+        
+            # Remove input and output keys from the dictionary. 
+            # TODO: Do this in csdWriter.py instead
+            for key, val in effect_set.iteritems():
+                del val['input']
+                del val['output']
+
+            for key, val in effect_values.iteritems():
+                del val['input']
+                del val['output']
+
+            # Get all effect names
+            config = {}
+            execfile(md.systemfiles + '/effectsDict_edit.txt', config)
+            humanReadableEffectNames = config['effectsDict']
+
+            # Remove ".inc" from both the keys of both effect dictionaries
+            effect_keys = list(effect_set.keys())
+            for effect_key in effect_keys:
+                effect_set[effect_key[:-4]] = dict(effect_set.pop(effect_key))
+                effect_values[effect_key[:-4]] = dict(effect_values.pop(effect_key))
+
+            queryset = TestElement.objects.all()
+            queryset.default_factory = None
+
+            # Add a default answer value (0.0) in a touple along with the generated value 
+            for effect, parameters in effect_values.iteritems():
+                for parameter_name, parameter_value in parameters.iteritems():     
+                    min_value = effect_set[effect][parameter_name][0][0]
+                    max_value = effect_set[effect][parameter_name][0][1]
+                    shape = effect_set[effect][parameter_name][1]
+    
+                    effect_set[effect][parameter_name].append([parameter_value, test.getValueFromFunctionShape((max_value+min_value)*0.5, min_value, max_value, shape)])
+                    effect_set[effect][parameter_name].append("unevaluated")
+                    # Appending the effect title to each parameter. Not good...
+                    effect_set[effect][parameter_name].append(humanReadableEffectNames[effect + ".inc"])
+
+            msg = 'Good work!'
+            input_level = 1.0 # Default input level
+
+            context = {
+                'test_elements': queryset,
+                'test_name': test_name,
+                'level': level,
+                'effect_set': dict(effect_set),
+                'sound': sound,
+                'csd': csd,
+                'FX': FX,
+                'msg': msg,
+                'input_level': input_level,
+            }
+            #context['last_csd'] = Result.objects.filter(user = request.user).filter(correct = 1).latest('timestamp').csd
+        else:
+
+            msg = 'One or more parameters was too far off, please try again.'
+
+            context = {
+                'test_name': test_name,
+                'level': level,
+                'effect_set': effect_set,
+                'sound': request.POST.get("sound"),
+                'csd': request.POST.get("csd"),
+                'FX': FX,
+                'msg': msg,
+                'input_level': request.POST.get("input_level_hidden"),
+            }
+
+            print("input_level_hidden:")
+            print(request.POST.get("input_level_hidden"))
+
+            #context['last_csd'] = 'Not a single correct answer yet!?'
+        
+        #effect_values = validate_effect_parameters(effect_set, effect_values)
+
+    response = render_to_response('tutor/test_interactive.html', { 'context': context }, context_instance=RequestContext(request))
     return response
 
 def lesson_results(request):

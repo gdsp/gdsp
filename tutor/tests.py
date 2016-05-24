@@ -1,8 +1,8 @@
 #!/usr/bin/python
 # -*- coding: latin-1 -*-
 
-import random, copy, subprocess, pdb
-import time, inspect, sys, uuid
+import random, copy, subprocess, pdb, ast, math
+import time, inspect, sys, uuid, copy
 
 from tutor.models import Result, History
 from os import path
@@ -47,6 +47,7 @@ class TestCode(object):
     user = None
 
     def __init__(self, level, FX, user):
+        print("FX: ", FX)
         if level == 'Hard':
             self.level = self.hard
         if level == 'Medium':
@@ -105,32 +106,43 @@ class TestCode(object):
             level = max(lowest, min(highest, level+t))
         return level
 
-    def process(self, effectParameterValues):
-        inputSound = path.join(md.systemfiles, 'samples', random.choice(cs.getWavefileNames(md.systemfiles)))
-        csoundFilename = str(uuid.uuid4()) + '.csd'
-        csoundNormFilename = 'normalize.' + csoundFilename
-
-        csoundFilepath = path.join(md.userfiles, csoundFilename)
-        csoundNormFilepath = path.join(md.userfiles, csoundNormFilename)
-
-        # Store which effects are being used
-        for effect in effectParameterValues.keys():
-            History.objects.get_or_create(user = self.user, effect = effect)
+    def process(self, effectParameterValues, isInteractive):
+        if isInteractive:
+            inputSound = path.join(md.systemfiles, 'samples', random.choice(cs.getWavefileNames(md.systemfiles)))
             
-        cs.writeCsoundFile(csoundFilename, effectParameterValues, md.systemfiles, md.userfiles, inputSound.replace('\\','/'))       
-        retcode = subprocess.call(['csound', '-d', csoundFilepath])
-        if retcode == 0:
-            # Change the normalize CSD file.
-            normalizeFile = path.join(md.modular, 'normalize.csd')
-            subprocess.call('sed s,test,%s, ' % csoundFilepath.replace('\\','/') + normalizeFile + ' > ' + csoundNormFilepath, shell=True)
-            retcode = subprocess.call(['csound', csoundNormFilepath])
-            print '******************************'
-            print 'source sound:', inputSound
-            print effectParameterValues
+            csoundFilename = str(uuid.uuid4()) + '.csd'    
+            csoundFilepath = path.join(md.userfiles, csoundFilename)
+
+            # # Store which effects are being used
+            # for effect in effectParameterValues.keys():
+            #     History.objects.get_or_create(user = self.user, effect = effect)
+
+            #csoundFilename = 'target_effect.inc'
+
+            cs.writeCsoundFileInteractiveParameters(csoundFilename, effectParameterValues, md.systemfiles, md.userfiles)   
+            #retcode = subprocess.call(['csound', '-d', csoundFilepath])
 
         else:
-            print 'csound error'
-
+            inputSound = path.join(md.systemfiles, 'samples', random.choice(cs.getWavefileNames(md.systemfiles)))
+            csoundFilename = str(uuid.uuid4()) + '.csd'
+            csoundNormFilename = 'normalize.' + csoundFilename
+    
+            csoundFilepath = path.join(md.userfiles, csoundFilename)
+            csoundNormFilepath = path.join(md.userfiles, csoundNormFilename)
+    
+            # Store which effects are being used
+            for effect in effectParameterValues.keys():
+                History.objects.get_or_create(user = self.user, effect = effect)
+                
+            cs.writeCsoundFile(csoundFilename, effectParameterValues, md.systemfiles, md.userfiles, inputSound.replace('\\','/'))       
+            retcode = subprocess.call(['csound', '-d', csoundFilepath])
+            if retcode == 0:
+                # Change the normalize CSD file.
+                normalizeFile = path.join(md.modular, 'normalize.csd')
+                subprocess.call('sed s,test,%s, ' % csoundFilepath.replace('\\','/') + normalizeFile + ' > ' + csoundNormFilepath, shell=True)
+                retcode = subprocess.call(['csound', csoundNormFilepath])    
+            else:
+                print 'csound error'
         return path.basename(inputSound), csoundFilename
 
     def diminish_choices(self, request):
@@ -196,6 +208,166 @@ class GuessEffect(TestCode):
 
     def check(self, request, correct):
         return self.first() if correct else self.less_choices(request)
+
+class InteractiveTest(TestCode):
+
+    name = 'Interactive test'
+    tags = 'general'
+
+    def easy(self):
+        return 200 # 20 percent
+
+    def medium(self):
+        return 150
+
+    def hard(self):
+        return 100
+
+    def adaptive(self):
+        return self._calculate_integer_level(2, self.easy(), self.hard())
+
+    def first(self):
+        random.shuffle(self.FX)
+        self.FX = self.FX[0:self.level()]
+        effects = [ random.choice(self.FX) ]
+
+        print("level", self.level())
+        print("self.FX", self.FX)
+        print("effects", effects)
+
+        effectParameterSet = cs.getEffectParameterSet(effects, md.systemfiles)
+
+        # Making a deep copy of the dictionary, because getEffectParameterValues() for some reason is changing it
+        effectParameterSetCopy = copy.deepcopy(effectParameterSet)
+        effectParameterValues = cs.getEffectParameterValues(effectParameterSetCopy)
+        sound, csd = self.process(effectParameterValues, isInteractive = True)
+
+        # Return the csd-file as well as the dry sound file
+        return effectParameterSet, effectParameterValues, sound, csd
+
+    def validate(self, values):
+
+        threshold = self.level() * 0.001; #Convert int percentage to decimal
+
+        min_value = values[0][0]
+        max_value = values[0][1]
+        function_shape = values[1]
+        correct_answer = values[4][0]
+        user_answer = float(values[4][1])
+
+        max_valid_value = self.getValueFromFunctionShape(correct_answer + (max_value - min_value) * threshold, min_value, max_value, "lin")
+        min_valid_value = self.getValueFromFunctionShape(correct_answer - (max_value - min_value) * threshold, min_value, max_value, "lin")
+
+        # If user answer is outside ok threshold
+        if user_answer < max_valid_value and user_answer > min_valid_value:
+            return "ok"
+        return "bad"
+
+    def getValueFromFunctionShape(self, input_value, min_value, max_value, function_shape):
+        if min_value < 0.0000001:
+            min_value = 0.0000001
+        if max_value < 0.0000001:
+            max_value = 0.0000001
+        min_value_log = math.log(min_value)
+        max_value_log = math.log(max_value)
+
+        # Calculate adjustment factor
+        scale = (max_value_log - min_value_log)/(max_value - min_value)
+
+        if function_shape == "lin":
+            return input_value
+        elif (function_shape == "expon"):
+            return math.exp(min_value_log + scale*(input_value - min_value))
+        elif function_shape == "log":
+            return (math.log(input_value) - min_value_log)/scale + min_value
+        elif function_shape == "log_1p5":
+            NotImplementedError
+        return input_value
+
+    def getValueFromFunctionShapeInverse(self, input_value, min_value, max_value, function_shape):
+        if min_value < 0.00001:
+            min_value = 0.00001
+        min_value_log = math.log(min_value)
+        max_value_log = math.log(max_value)
+
+        # Calculate adjustment factor
+        scale = (max_value_log - min_value_log)/(max_value - min_value)
+
+        if function_shape == "lin":
+            return input_value
+        elif (function_shape == "expon"):
+            return math.exp(min_value_log + (input_value - min_value)*scale)
+        elif function_shape == "log":
+            return math.exp(min_value_log + scale*(input_value - min_value))
+        elif function_shape == "log_1p5":
+            NotImplementedError
+        return input_value
+
+    def check(self, request, correct):
+        return correct
+
+    def store_result(self, request):
+        print "\n\n Subclassed store_result \n\n"
+
+        # Get effect set as dict WITHOUT the user potmeter values
+        effect_set = ast.literal_eval(request.POST.get("effect_set"))
+
+        # Add user potmeter values to effect_set
+        for effect, parameters in effect_set.iteritems():
+            for parameter, values in parameters.iteritems():
+                values[4][1] = request.POST.get(effect + ":" + parameter) # Ugly delimiter, but it works
+
+        # TODO: Evaluate values.
+        test_valid = True
+        for effect, parameters in effect_set.iteritems():
+            for parameter, values in parameters.iteritems():
+                validity = self.validate(values)
+                values[5] = validity
+                if validity == "bad":
+                    test_valid = False
+
+        return test_valid, effect_set
+
+class InteractiveTestMultipleEffects(InteractiveTest):
+
+    name = 'Interactive test multiple effects'
+    tags = 'general'
+
+    def easy(self):
+        return 1
+
+    def medium(self):
+        return 2
+
+    def hard(self):
+        return 3
+
+    def adaptive(self):
+        return super(InteractiveTestMultipleEffects, self).adaptive()
+
+    def first(self):
+        random.shuffle(self.FX)
+        self.FX = self.FX[0:self.level()]
+        effects = self.FX
+        
+        effectParameterSet = cs.getEffectParameterSet(effects, md.systemfiles)
+
+        # Making a deep copy of the dictionary, because getEffectParameterValues() for some reason is changing it
+        effectParameterSetCopy = copy.deepcopy(effectParameterSet)
+        effectParameterValues = cs.getEffectParameterValues(effectParameterSetCopy)
+        sound, csd = self.process(effectParameterValues, isInteractive = True)
+
+        # Return the csd-file as well as the dry sound file
+        return effectParameterSet, effectParameterValues, sound, csd
+
+    def validate(self, values):
+        return super(InteractiveTestMultipleEffects, self).validate(values)
+
+    def check(self, request, correct):
+        return super(InteractiveTestMultipleEffects, self).check(request, correct)
+
+    def store_result(self, request):
+        return super(InteractiveTestMultipleEffects, self).store_result(request)
 
 class BandpassMusic(TestCode):
 
@@ -414,27 +586,27 @@ class Pan(TestCode):
             self.level = self.easy
 
         self.FX = ['pan.inc']
-	self.parameters = [0.5] # init
+        self.parameters = [0.5] # init
         self.user = user
 
     # Easy and hard returns a set of possible parameter values, and the scaling factor (in each direction).
     def easy(self):
-	self.parameters = [0.25, 0.5, 0.75] #not including the extremes, because an offset alternative is added
-	offset = 0.25 # ...so e.g. the alternative is 0.75 +/- 0.25 = [0.5, 0.75, 1.0]
+        self.parameters = [0.25, 0.5, 0.75] #not including the extremes, because an offset alternative is added
+        offset = 0.25 # ...so e.g. the alternative is 0.75 +/- 0.25 = [0.5, 0.75, 1.0]
         return offset
 
     def hard(self):	
-	self.parameters = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9] # not including the extremes (see easy())
-	offset = 0.1
-	return offset
+        self.parameters = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9] # not including the extremes (see easy())
+        offset = 0.1
+        return offset
 
     def shuffle_fxs(self, parms, offset):
-	fxs = [ parms-offset, parms, parms+offset]
+        fxs = [ parms-offset, parms, parms+offset]
         return fxs, fxs[random.randrange(3)]
 
     def first(self):
         offset = self.level()
-	parms = random.choice(self.parameters)
+        parms = random.choice(self.parameters)
         fxs, answer = self.shuffle_fxs(parms, offset)
         sound, csd = self.pan_effect(answer)
         return answer, fxs, sound, csd
@@ -449,14 +621,14 @@ class Pan(TestCode):
         else:
             return self.less_choices(request)
     
-    def pan_effect(self, answer):        
-	effectParameterSet = cs.getEffectParameterSet(self.FX, md.systemfiles)
+    def pan_effect(self, answer):
+        effectParameterSet = cs.getEffectParameterSet(self.FX, md.systemfiles)
         effectParameterValues = cs.getEffectParameterValues(effectParameterSet)
-	print 'effectParameterValues', effectParameterValues
-	print 'one', self.FX, answer
+        print 'effectParameterValues', effectParameterValues
+        print 'one', self.FX, answer
         effectParameterValues[self.FX[0]]['kPan'] = answer
-	print 'effectParameterValues', effectParameterValues
-	print 'two'
+        print 'effectParameterValues', effectParameterValues
+        print 'two'
         return self.process(effectParameterValues)
 
 class Combinations(TestCode):
