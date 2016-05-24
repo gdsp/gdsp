@@ -106,7 +106,7 @@ class TestCode(object):
             level = max(lowest, min(highest, level+t))
         return level
 
-    def process(self, effectParameterValues, isInteractive):
+    def process(self, effectParameterValues, isInteractive = False):
         if isInteractive:
             inputSound = path.join(md.systemfiles, 'samples', random.choice(cs.getWavefileNames(md.systemfiles)))
             

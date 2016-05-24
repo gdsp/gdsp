@@ -242,11 +242,15 @@ class TestElement(BaseTopicElement):
 
     def to_html(self):
         current_site = Site.objects.get_current()
+        current_test = self.test
+        if "Interactive" in self.test: current_test = "test_interactive/" + current_test
+        print current_test
+        
         #return u'<h2>{description}</h2><iframe src="http://127.0.0.1:8000/tutor/{test}/{difficulty}/{FX}" frameborder="0" scrolling="no" width="100%" height=300"></iframe>'.format( description=self.description, test="Guess the effect", difficulty = self.difficulty, FX=str(' '.join(self.effect_files)))
         #return u'<h2>{description}</h2><iframe src="http://{domain}/tutor/{test}/{difficulty}/{FX}" frameborder="0" scrolling="no" width="100%" height=300"></iframe>'.format(domain=current_site.domain, description=self.description, test=self.test, difficulty = self.difficulty, FX=str(' '.join(self.effect_files)))
         #return u'<h2>{description}</h2><iframe src="http://gdsp.hf.ntnu.no/tutor/{test}/{difficulty}/{FX}" frameborder="0" scrolling="no" width="100%" height=300"></iframe>'.format(domain=current_site.domain, description=self.description, test=self.test, difficulty = self.difficulty, FX=str(' '.join(self.effect_files)))
 
-        return u'<h2>{description}</h2><iframe class="testElement" src="http://{domain}/tutor/test_interactive/{test}/{level}/{FX}" frameborder="0" scrolling="yes" width="100%" height=750;"></iframe>'.format(domain=current_site.domain, description=self.description, test=self.test, level=self.difficulty, FX=str(' '.join(self.effect_files)))
+        return u'<h2>{description}</h2><iframe class="testElement" src="http://{domain}/tutor/{test}/{level}/{FX}" frameborder="0" scrolling="yes" width="100%" height=750;"></iframe>'.format(domain=current_site.domain, description=self.description, test=current_test, level=self.difficulty, FX=str(' '.join(self.effect_files)))
 
         #return u'<h2>{description}</h2><iframe src="http://folk.ntnu.no/mortengk/csound" frameborder="0" scrolling="yes" width="100%" height=600"></iframe>'
 
