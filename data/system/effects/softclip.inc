@@ -7,7 +7,7 @@
 
 ; softclip
 
-	kType		= int(kType)			;  Saturation (soft clip) type: 1=Bram de Jong, 2=sine, 3=tanh 
+	kType		= int(kType)			;  Saturation (soft clip) type: 0=Bram de Jong, 1=sine, 2=tanh
 	ipi		= 3.14159265358979323846264338	; The pi constant
 
 	aClip		limit	a1, -kClip, kClip	; hard clipping part
