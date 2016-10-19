@@ -5,7 +5,7 @@
 	input:mono output:mono
 */
 
-; barbarpole phaser, using single sideband modulation
+; barberpole phaser, using single sideband modulation
 	aFeed		init 0
 	aSin, aCos	hilbert	a1	
 	aModSin		oscili	1, kmodFreq, giSine, 0.0
