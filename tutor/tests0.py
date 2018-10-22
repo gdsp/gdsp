@@ -599,12 +599,6 @@ class Pan(TestCode):
         self.parameters = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9] # not including the extremes (see easy())
         offset = 0.1
         return offset
-        
-    def adaptive(self):
-        """ We examine the entire history of this effect, and look at the trend of corrects. Two corrects in a row yields and increase, 
-        two wrongs a decrease. A mix is no change. In the worst case, a student will have done this a couple of thousand times, which 
-        should pose no problem to the Django engine. """
-        return self._calculate_integer_level(2, self.easy(), self.hard())
 
     def shuffle_fxs(self, parms, offset):
         fxs = [ parms-offset, parms, parms+offset]
