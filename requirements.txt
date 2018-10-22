@@ -3,5 +3,5 @@ South<2.0
 Markdown<2.4
 Pygments<2.0
 django-model-utils<1.5
-Pillow<2.1
+Pillow>=3.5.0
 django-taggit<0.11

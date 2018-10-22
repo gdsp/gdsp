@@ -1,3 +1,5 @@
+The GDSP project code is release under GNU GPLv3. See LICENSE.TXT for details.
+
 An attempt to document the gdsp project source code (work in progress)
 ======================================================================
 
